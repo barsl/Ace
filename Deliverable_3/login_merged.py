@@ -24,14 +24,18 @@ class AoS(tk.Tk):
         # the dictionary will contain the different screens
         self.frames = {}
         
-        frame = LoginScreen(container, self)
-        self.frames[LoginScreen] = frame
-        
-        # with grid you can assign columns and rows to your
-        # sticky determines (alignment + stretch) 
-        # stretch the window to north south east or west (n,s,e,w)
-        frame.grid(row=0, column=0, sticky="nsew")
-        
+        # this loop adds screens to the dictionary,
+        # once we build more screens, add them to the tuple 
+        # for F in TUPLE e.g. (LoginScreen, HomeScreen, DataBlaBLa)
+        for F in (LoginScreen):
+            # here F is the name of the Screen
+            frame = F(container, self)
+            self.frames[F] = frame
+            # with grid you can assign columns and rows to your
+            # sticky determines (alignment + stretch) 
+            # stretch the window to north south east or west (n,s,e,w)
+            frame.grid(row=0, column=0, sticky="nsew")            
+            
         self.show_frame(LoginScreen)
 
 
