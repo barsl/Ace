@@ -38,7 +38,9 @@ class AoS(tk.Tk):
     def show_frame(self, cont):
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
-        wanted screen to the front'''
+        wanted screen to the front
+        @param cont - name of the screen that needs to be displayed
+        this is stored in the frames dictionary in self'''
         # get the frame from the dictionary
         frame = self.frames[cont]
         frame.tkraise()
