@@ -61,7 +61,7 @@ class LoginScreen(tk.Frame):
         # show '*' when somebody types in the password
         password_entry = tk.Entry(self, show="*")
         
-        login_btn = tk.Button(text="Login")
+        login_btn = ttk.Button(text="Login")
         
         # use the grid layout managing function
         # customize columns and rows
