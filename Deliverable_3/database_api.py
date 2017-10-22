@@ -40,6 +40,18 @@ def update_problem_subject(qid, new_sub, conn):
               "' WHERE id = " + str(qid))
     conn.commit()
     
+def get_question_details(conn, qid):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
+ 
+    rows = cur.fetchall()
+    
+    return rows    
+    
 """ Users Functions """   
 
 def add_user(role, name, email, password, conn):
@@ -86,3 +98,16 @@ def update_user_password(uid, new_sub, conn):
     c.execute("UPDATE users SET password = '" + new_password +
               "' WHERE id = " + str(uid))
     conn.commit()    
+    
+ 
+def get_user_details(conn, uid):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id=?", (uid,))
+ 
+    rows = cur.fetchall()
+    
+    return rows
