@@ -9,7 +9,10 @@ class AoS(tk.Tk):
     '''Class that contains everything in the Application '''
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        # title of the software
+        tk.Tk.wm_title(self, "Ace of Spades")
         container = tk.Frame(self)
+        
         container.pack(side="top", fill="both", expand = True)
         
         # configuration for the grid (0 is the min row or column)
@@ -63,8 +66,6 @@ class LoginScreen(tk.Frame):
         
         login_btn = ttk.Button(text="Login")
         
-        # use the grid layout managing function
-        # customize columns and rows
         # empty label to create some space between the top 
         # the entry labels
         empty_label = tk.Label(self, text="\n").pack()
