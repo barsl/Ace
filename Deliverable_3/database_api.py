@@ -43,7 +43,7 @@ def update_problem_subject(qid, new_sub, conn):
 def get_question_details(conn, qid):
     """
     returns an array of arrays containing rows' values for each column
-    conn is the is the sqlite3 connection objects, uid is the user id
+    conn is the is the sqlite3 connection objects, qid is the question id
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
