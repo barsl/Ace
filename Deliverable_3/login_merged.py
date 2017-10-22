@@ -11,6 +11,7 @@ class AoS(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         # title of the software
         tk.Tk.wm_title(self, "Ace of Spades")
+        tk.Tk.wm_minsize(self, width=300, height=200)
         container = tk.Frame(self)
         
         container.pack(side="top", fill="both", expand = True)
@@ -75,7 +76,7 @@ class LoginScreen(tk.Frame):
         username_entry.pack()
         password_label.pack()
         password_entry.pack()
-        login_btn.pack()        
+        login_btn.pack(pady=20)        
         
         
 if __name__ == "__main__":
