@@ -1,40 +1,82 @@
-from tkinter import *
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 from tkinter import font
 
-# create a new TK window
-window = Tk()
-# we dont want people to be able to change the size of the actual window
-window.resizable(width=False, height=False)
-window.title("Login")
-# dimensions of the window
-window.geometry("400x300")
+APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
+REGULAR_FONT = ("Helvetica", 12, "normal")
 
-appHighlightFont = font.Font(family='Helvetica', size=14, weight='bold')
-regularFont = font.Font(family='Helvetica', size=12, weight='normal')
-loginlbl = ttk.Label(window, text ="Please Log In: ", font=appHighlightFont)
+class AoS(tk.Tk):
+    '''Class that contains everything in the Application '''
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        
+        # configuration for the grid (0 is the min row or column)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        
+        # the frame that is on the top is the one that is on the screen
+        # the dictionary will contain the different screens
+        self.frames = {}
+        
+        frame = LoginScreen(container, self)
+        self.frames[LoginScreen] = frame
+        
+        # with grid you can assign columns and rows to your
+        # sticky determines (alignment + stretch) 
+        # stretch the window to north south east or west (n,s,e,w)
+        frame.grid(row=0, column=0, sticky="nsew")
+        
+        self.show_frame(LoginScreen)
 
-# create the username and password fields
 
-username_label = Label(window, text="Username", font=regularFont)
-username_entry = Entry(window, show="email address")
-password_label = Label(window, text="Password", font=regularFont)
-password_entry = Entry(window, show="*")
+    def show_frame(self, cont):
+        ''' function that determines which of the screens will be viewed by
+        the user. This function uses tkraise, in order to bring the
+        wanted screen to the front'''
+        # get the frame from the dictionary
+        frame = self.frames[cont]
+        frame.tkraise()
 
-login_btn = Button(text="Login")
 
-# use the grid layout managing function
-# customize columns and rows
-# empty label to create some space between the top 
-# the entry labels
-empty_label = Label(window, text="").grid(row=0, column=0, columnspan=5)
-# place our created label inside the
-loginlbl.grid(row=1, column=2, columnspan=2)
-username_label.grid(row=5, column=3, columnspan=2)
-username_entry.grid(row=5, column=5)
-password_label.grid(row=6, column=3, columnspan=2)
-password_entry.grid(row=6, column=5)
-login_btn.grid(row=7, column=3)
-
-window.mainloop()
+class LoginScreen(tk.Frame):
+    '''Creates a login screen, which will be the 
+    first screen of our Application'''
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.init_window()
+        
+    def init_window(self):
+        '''Initialises the GUI window and its elements
+        Sets the different widgets that will be on the screen '''
+        # login text
+        loginlbl = ttk.Label(self, text ="Please Log In: ",
+                             font=APP_HIGHLIGHT_FONT)
+        # create the username and password fields
+        username_label = tk.Label(self, text="Username", font=REGULAR_FONT)
+        username_entry = tk.Entry(self, show="email address")
+        password_label = tk.Label(self, text="Password", font=REGULAR_FONT)
+        # the show field of the password window makes sure that we only
+        # show '*' when somebody types in the password
+        password_entry = tk.Entry(self, show="*")
+        
+        login_btn = tk.Button(text="Login")
+        
+        # use the grid layout managing function
+        # customize columns and rows
+        # empty label to create some space between the top 
+        # the entry labels
+        empty_label = tk.Label(self, text="\n").pack()
+        # place our created label inside the
+        loginlbl.pack()
+        username_label.pack()
+        username_entry.pack()
+        password_label.pack()
+        password_entry.pack()
+        login_btn.pack()        
+        
+        
+if __name__ == "__main__":
+    app = AoS()
+    app.mainloop()
