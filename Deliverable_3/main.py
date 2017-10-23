@@ -8,6 +8,21 @@ APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
 
 
+
+def create_empty_label(location, num):
+    ''' creates an empty label with the designated number of newlines
+    create_empty_label(self, 1)
+    GUI: \n              <-- this is the label created
+        widget
+    '''
+    txt = ""
+    for i in range(num):
+        txt += "\n"
+    label = tk.Label(location)
+    label["text"] = txt
+    label.pack()
+
+
 class AoS(tk.Tk):
     '''Class that contains everything in the Application '''
     def __init__(self, *args, **kwargs):
@@ -74,7 +89,8 @@ class LoginScreen(tk.Frame):
         loginlbl["font"] = APP_HIGHLIGHT_FONT
         loginlbl["foreground"] = "blue"
         #empty label for format
-        tk.Label(self, text="\n\n\n\n").pack()
+        # tk.Label(self, text="\n\n\n\n").pack()
+        create_empty_label(self, 4)
         loginlbl.pack()
         
     def create_entry_fields(self, controller):
@@ -127,11 +143,8 @@ class LoginScreen(tk.Frame):
         # print msg to terminal if email doesnt exist
         except IndexError :
             showinfo("Fail", "This email address is not in the system")
-  
-    
 
-
-
+   
 class HomeScreen(tk.Frame):
     ''' Homescreen that appears after the user logs in
     at the moment the homescreen is just a placeholder for some buttons'''
@@ -165,7 +178,8 @@ class HomeScreen(tk.Frame):
         ''' initialises the homescreen and its elements'''
         homescreen_label = ttk.Label(self, text="Home", font=APP_HIGHLIGHT_FONT)
         # just to get the formatting correct
-        empty_label = ttk.Label(self, text="\n").pack()
+        # empty_label = ttk.Label(self, text="\n").pack()
+        create_empty_label(self, 1)
         homescreen_label.pack()
         self.create_add_user_button(controller)
         self.manage_problems_button(controller)
@@ -173,36 +187,62 @@ class HomeScreen(tk.Frame):
 
         
 class Problems(tk.Frame):
-    '''Creates a prob screen, which will used by admin to add/edit and remove problems from '''
+    '''Creates a prob screen, which will
+    used by admin to add/edit and remove problems from database'''
     def __init__(self, parent, controller):
+        self.functions = ["Add", "Remove", "Update", "Logout", "Back"]
         tk.Frame.__init__(self, parent)
         self.init_window(controller)
+
+    def create_problem_buttons(self, controller):
+        '''initialises the problem buttons'''
+        for function in self.functions:
+            #initialise the buttons
+            button = ttk.Button(self)
+            if ((function != "Logout") and (function != "Back")):
+                button["text"] = "%s a Problem" % function
+            else:
+                button["text"] = "%s" % function
+            # creates add button
+            if function == "Add":
+                button["command"] = lambda : controller.show_frame(AddProblems)
+                # creates Remove button
+            elif function == "Remove":
+                button["command"] = (lambda : 
+                                     controller.show_frame(RemoveProblems))
+                # creates update button
+            elif function == "Update":
+                button["command"] = (lambda :
+                                     controller.show_frame(UpdateProblems))
+                # creates logout button
+            elif function == "Logout":
+                button["command"] = (lambda :
+                                     controller.show_frame(LoginScreen))
+                # creates back button
+            elif function == "Back":
+                button["command"] = (lambda :
+                                     controller.show_frame(HomeScreen))
+            button.pack()
+            
+    def create_options_label(self):
+        ''' creates options label with spacing'''
+        # Create the question label
+        options_label = tk.Label(self)
+        options_label["text"] = '''To make changes to the Question Bank,
+        please select from the options below: '''
+        options_label["font"] = APP_HIGHLIGHT_FONT
+        options_label["foreground"] = 'blue'
+        options_label["wraplength"] = 300
+        options_label.pack()
+
 
     def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
-
-        # Create the question label
-        options_label = tk.Label(self, text="To make changes to the Question Bank, please select from the options below: ",
-                                 font=APP_HIGHLIGHT_FONT, foreground="blue", wraplength=300)
-
-        # Creates the Problem-Set Methods
-        add_btn = tk.Button(self, text="Add a Problem", command=lambda: controller.show_frame(AddProblems))
-        remove_btn = tk.Button(self, text="Remove a Problem", command=lambda: controller.show_frame(RemoveProblems))
-        update_btn = tk.Button(self, text="Update a Problem", command=lambda: controller.show_frame(UpdateProblems))
-        # Creates Logout Button
-        logout_btn = tk.Button(self, text="Logout", command=lambda: controller.show_frame(LoginScreen))
-        # empty label to create some space between the top
-        # the entry labels
-        empty_label = tk.Label(self, text="\n").pack()
-        # place our created label inside the
-
-        options_label.pack()
-        empty2_label = tk.Label(self, text="\n").pack()
-        update_btn.pack()
-        remove_btn.pack()
-        add_btn.pack()
-        logout_btn.pack()
+        create_empty_label(self, 1)    
+        self.create_options_label()
+        create_empty_label(self, 1)    
+        self.create_problem_buttons(controller)
 
 
 class AddProblems(tk.Frame):
