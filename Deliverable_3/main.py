@@ -1,8 +1,7 @@
 import tkinter as tk
-import database_api
 from tkinter import ttk, font,  Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
-from database_api import *
+import database_api as db
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -30,7 +29,8 @@ class AoS(tk.Tk):
         # this loop adds screens to the dictionary,
         # once we build more screens, add them to the tuple 
         # for F in TUPLE e.g. (LoginScreen, HomeScreen, DataBlaBLa)
-        for F in (LoginScreen, HomeScreen, Problems, AddProblems, RemoveProblems, AddUser, UpdateProblems):
+        for F in (LoginScreen, HomeScreen, Problems, AddProblems,
+                  RemoveProblems, AddUser, UpdateProblems):
             # here F is the name of the Screen
             frame = F(container, self)
             self.frames[F] = frame
@@ -89,6 +89,8 @@ class LoginScreen(tk.Frame):
         button.pack(pady=20)
         
     def verify_creds(self, controller):
+        ''' used to verify login credentials from the entry boxes
+        of the LoginScreen '''
         # get user's entries and store
         u_email = self.username_entry.get()
         u_pass = self.password_entry.get()
@@ -97,7 +99,7 @@ class LoginScreen(tk.Frame):
         self.password_entry.delete(0, END)
         # try getting user's details from database according to entered email
         try :
-            user_details = get_user_details(conn, u_email)
+            user_details = db.get_user_details(conn, u_email)
             # if the provided password matches the one stored
             if (u_pass == user_details[0][4]) :
                 # move to home screen
@@ -445,8 +447,7 @@ class AddUser(tk.Frame):
        
 
 if __name__ == "__main__":
-    conn = sqlite3.connect('ace.db')
+    conn = db.sqlite3.connect('ace.db')
     app = AoS()
     app.mainloop()
     
-    logout
