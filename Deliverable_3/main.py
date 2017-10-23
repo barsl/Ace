@@ -18,7 +18,7 @@ def create_empty_label(location, num):
     txt = ""
     for i in range(num):
         txt += "\n"
-    label = tk.Label(location)
+    label = ttk.Label(location)
     label["text"] = txt
     label.pack()
 
@@ -30,7 +30,7 @@ class AoS(tk.Tk):
         # title of the software
         tk.Tk.wm_title(self, "Ace of Spades")
         tk.Tk.wm_minsize(self, width=350, height=350)
-        container = tk.Frame(self)
+        container = ttk.Frame(self)
         
         container.pack(side="top", fill="both", expand = True)
         
@@ -70,13 +70,13 @@ class AoS(tk.Tk):
         
 
 
-class LoginScreen(tk.Frame):
+class LoginScreen(ttk.Frame):
     '''Creates a login screen, which will be the 
     first screen of our Application'''
     def __init__(self, parent, controller):
         self.items = ["Username", "Password"]
         self.credentials = {}        
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.create_login_labels()
         self.create_entry_fields(controller)
 
@@ -97,13 +97,13 @@ class LoginScreen(tk.Frame):
         ''' creates the entry fields for username and password'''
         # create the username and password fields
         for field in self.items:
-            myframe = tk.Frame(self)
+            myframe = ttk.Frame(self)
             self.credentials[field] = StringVar()
-            field_label = tk.Label(myframe)
+            field_label = ttk.Label(myframe)
             field_label["text"] = field
             field_label["font"] = REGULAR_FONT
             field_label.pack({"side": "left"}, padx=10)
-            enterbox = tk.Entry(myframe)
+            enterbox = ttk.Entry(myframe)
             if field == "Password":
                 # the show field of the password window makes sure that we only
                 # show '*' when somebody types in the password                
@@ -124,11 +124,10 @@ class LoginScreen(tk.Frame):
         ''' used to verify login credentials from the entry boxes
         of the LoginScreen '''
         i = 0;
-        creds = ["", ""]
+        creds = []
         for field in self.items:
             # get user's entries and store
-            creds[i] = self.credentials[field].get()
-
+            creds.append(self.credentials[field].get())
             i += 1
         # try getting user's details from database according to entered email
         try :
@@ -145,11 +144,11 @@ class LoginScreen(tk.Frame):
             showinfo("Fail", "This email address is not in the system")
 
    
-class HomeScreen(tk.Frame):
+class HomeScreen(ttk.Frame):
     ''' Homescreen that appears after the user logs in
     at the moment the homescreen is just a placeholder for some buttons'''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.init_window(controller)
     
     def create_logout_button(self, controller):
@@ -186,12 +185,12 @@ class HomeScreen(tk.Frame):
         self.create_logout_button(controller)
 
         
-class Problems(tk.Frame):
+class Problems(ttk.Frame):
     '''Creates a prob screen, which will
     used by admin to add/edit and remove problems from database'''
     def __init__(self, parent, controller):
-        self.functions = ["Add", "Remove", "Update", "Logout", "Back"]
-        tk.Frame.__init__(self, parent)
+        self.functions = ["Add", "Remove", "Update", "Back", "Logout"]
+        ttk.Frame.__init__(self, parent)
         self.init_window(controller)
 
     def create_problem_buttons(self, controller):
@@ -227,7 +226,7 @@ class Problems(tk.Frame):
     def create_options_label(self):
         ''' creates options label with spacing'''
         # Create the question label
-        options_label = tk.Label(self)
+        options_label = ttk.Label(self)
         options_label["text"] = '''To make changes to the Question Bank,
         please select from the options below: '''
         options_label["font"] = APP_HIGHLIGHT_FONT
@@ -245,24 +244,24 @@ class Problems(tk.Frame):
         self.create_problem_buttons(controller)
 
 
-class AddProblems(tk.Frame):
+class AddProblems(ttk.Frame):
     '''Creates a prob screen, which will used
     by admin to add/edit and remove problems from '''
     def __init__(self, parent, controller):
         self.headers = ["subject", "question", "answer"]
         self.buttons = ["Add", "Back"]
         self.hentries = {}
-        tk.Frame.__init__(self, parent)    
+        ttk.Frame.__init__(self, parent)    
         self.init_window(controller)
 
 
     def create_entries(self):
         ''' creates entry boxes and their labels'''
         for header in self.headers:
-            myframe = tk.Frame(self)
+            myframe = ttk.Frame(self)
             self.hentries[header] = StringVar()
             # create the label
-            header_label = tk.Label(myframe)
+            header_label = ttk.Label(myframe)
             # just to stay grammatically correct....
             if header != "answer":
                 header_label["text"] = "Please enter a %s" % header
@@ -272,14 +271,14 @@ class AddProblems(tk.Frame):
             header_label["foreground"] = "red"
             header_label.pack({"side": "left"})
             # create the entry box
-            enterbox = Entry(myframe)
+            enterbox = ttk.Entry(myframe)
             enterbox.pack({"side" : "left"})
             enterbox["textvariable"] = self.hentries[header]
             myframe.pack()
     
     def create_buttons(self, controller):
         ''' creates the buttons for the Add Problem Screen'''
-        myframe = tk.Frame(self)
+        myframe = ttk.Frame(self)
         for button in self.buttons:
             # create a new frame
             new_button = ttk.Button(myframe)
@@ -302,7 +301,7 @@ class AddProblems(tk.Frame):
         create_empty_label(self, 2)
         self.create_entries()
         self.create_buttons(controller)
-        self.feedback_label = tk.Label(self, text="")
+        self.feedback_label = ttk.Label(self, text="")
         self.feedback_label.pack()            
 
 
@@ -317,30 +316,30 @@ class AddProblems(tk.Frame):
         print(message)
         self.feedback_label.config(text="Added Successfully!")
 
-class RemoveProblems(tk.Frame):
+class RemoveProblems(ttk.Frame):
     '''Screen to remove a problem from database'''
     def __init__(self, parent, controller):
         self.entries = {}
         self.buttons = ["Remove", "Back"]
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.init_window(controller)
         
     def create_entries(self):
         '''creates label and entry side by side'''
-        myframe = tk.Frame(self)
+        myframe = ttk.Frame(self)
         self.entries["qid"] = StringVar()
-        label = tk.Label(myframe)
+        label = ttk.Label(myframe)
         label["text"] = "Enter question ID to remove"
         label["font"] = REGULAR_FONT
         label.pack({"side": "left"})
-        new_entry = tk.Entry(myframe)
+        new_entry = ttk.Entry(myframe)
         new_entry.pack({"side" : "left"})
         new_entry["textvariable"] = self.entries["qid"]
         myframe.pack()
         
     def create_buttons(self, controller):
         ''' adds the buttons for the RemoveProblem Screen'''
-        myframe = tk.Frame(self)
+        myframe = ttk.Frame(self)
         for button in self.buttons:
             new_button = ttk.Button(myframe)
             new_button["text"] = button
@@ -354,11 +353,12 @@ class RemoveProblems(tk.Frame):
     def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
+        create_empty_label(self, 4)
         self.create_entries()
         self.create_buttons(controller)
         # this label will display the result from
         # a function that tells the user if remove was sucessful
-        self.feedback_label = tk.Label(self, text = "")
+        self.feedback_label = ttk.Label(self, text = "")
         # place widges inside the grid
         self.feedback_label.pack()
 
@@ -373,152 +373,201 @@ class RemoveProblems(tk.Frame):
 
         self.feedback_label.config(text="Removed Successfully!")
         
-class UpdateProblems(tk.Frame):
+class UpdateProblems(ttk.Frame):
     '''Screen to update a problem from database'''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        self.buttons = ["Question", "Subject", "Answer"]
+        self.entries = {}
+        ttk.Frame.__init__(self, parent)
         self.init_window(controller)
+        
+    def create_label(self):
+        '''creates intro label to the Update Problem Screen'''
+        # create and initialise the label
+        label = ttk.Label(self)
+        label["text"] = "Enter question ID to update"
+        label["font"] = REGULAR_FONT
+        label["foreground"] = "red"
+        label.pack()
+    
+    def create_button(self, location, name, controller=None):
+        '''creates a button for to match the entry field'''
+        button = ttk.Button(location)
+        button["text"] = name
+        if name == "Back":
+            button["command"] = lambda : controller.show_frame(Problems)
+        if name == "Question":
+            button["command"] = self.update_question
+        elif name == "Subject":
+            button["command"] = self.update_subject
+        elif name == "Answer":
+            button["command"] = self.update_answer
+        button.pack({"side": "left"})
+        
+    
+    def create_fields(self):
+        '''creates the buttons and fields required for the updateUser
+        Screen '''
+        for button in self.buttons:
+            myframe = ttk.Frame(self)
+            # initialise a stringvar that can use to call the entrybox
+            self.entries[button] = StringVar()
+            enterbox = ttk.Entry(myframe)
+            enterbox.pack({"side": "left"})
+            enterbox["textvariable"] = self.entries[button]
+            self.create_button(myframe, button)
+            myframe.pack()
+        
+    def create_back_button(self, controller):
+        '''creates the back button of the screen that will return to the
+        problems screen '''
+        myframe = ttk.Frame(self)
+        self.create_button(myframe, "Back", controller)
+        myframe.pack()
+        
+    def create_qid_field(self):
+        ''' creates Qid field and label so the user can enter the QID they want
+        to update '''
+        myframe = ttk.Frame(self)
+        label = ttk.Label(myframe)
+        label["text"] = "Enter a question Id to update"
+        label["font"] = REGULAR_FONT
+        label.pack({"side" : "left"})
+        entries = ttk.Entry(myframe)
+        self.entries["qid"] = StringVar()
+        entries.pack({"side" : "left"})
+        entries["textvariable"] = self.entries["qid"]
+        myframe.pack()
 
     def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
-        back_btn = tk.Button(self, text="Back", command=lambda: controller.show_frame(Problems))
-        back_btn.pack(pady=20)
-
-        # creates "Update" buttons and labels
-        update_problem_label = tk.Label(self, text="Enter question ID to update", font=REGULAR_FONT, foreground="red")
-        self.problem_entry = tk.Entry(self)
-        update_question_btn = ttk.Button(self, text="Update Question", command=self.press)
-        self.problem_entry1 = tk.Entry(self)
-        update_subject_btn = ttk.Button(self, text="Update Subject", command=self.press1)
-        self.problem_entry2 = tk.Entry(self)
-        update_answer_btn = ttk.Button(self, text="Update Answer", command=self.press2)
-        self.problem_entry3 = tk.Entry(self)
-
-        #this label will display the result from a function that tells the user if update was sucessful
-        self.feedback_label = tk.Label(self, text = "")
-        self.feedback_label1 = tk.Label(self, text = "")
-        self.feedback_label2 = tk.Label(self, text = "")
-        self.feedback_label3 = tk.Label(self, text = "")
-        # empty label to create some space between the top
-        # the entry labels
-        empty_label = tk.Label(self, text="\n").pack()
-        empty_label1 = tk.Label(self, text="\n").pack()
-        empty_label2 = tk.Label(self, text="\n").pack()
-        empty_label3 = tk.Label(self, text="\n").pack()
-
-        # display id label on grid
-        update_problem_label.pack()
-        self.problem_entry.pack()
-
-        # display question label on grid
-        update_question_btn.pack()
-        self.problem_entry1.pack()
-
-        # display subject label on grid
-        update_subject_btn.pack()
-        self.problem_entry2.pack()
-
-        # display answer label on grid
-        update_answer_btn.pack()
-        self.problem_entry3.pack()
-
+        #this label will display the result from a function that tells
+        # the user if update was sucessful
+        title = ttk.Label(self);
+        create_empty_label(self, 4)
+        self.create_qid_field()
+        self.feedback_label = ttk.Label(self, text = "")
+        create_empty_label(self, 2)
+        self.create_fields()
+        # create a back button
+        self.create_back_button(controller)
         # display if update was successful
         self.feedback_label.pack()
-        self.feedback_label1.pack()
-        self.feedback_label2.pack()
-        self.feedback_label3.pack()
 
 
-    def press(self):
+    def update_question(self):
         '''calls a function that tells the user if update  of question was
         sucessful and displays appropriate message on label'''
 
-        qid = self.problem_entry.get()
-        new_question = self.problem_entry1.get()
-
-        message = db.update_problem_question(qid, new_question, db.sqlite3.connect('ace.db'))
+        qid = self.entries["qid"].get()
+        new_question = self.entries["Question"].get()
+        message = db.update_problem_question(qid, new_question,
+                                             db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Updated Successfully!")
 
-    def press1(self):
-        '''calls a function that tells the user if update of subject was sucessful
-        and displays appropriate message on label'''
+    def update_subject(self):
+        '''calls a function that tells the user if update of subject
+        was sucessful and displays appropriate message on label'''
+        
+        qid = self.entries["qid"].get()
+        new_subject = self.entries["Subject"].get()
 
-        qid = self.problem_entry.get()
-        new_subject = self.problem_entry2.get()
-
-        message = db.update_problem_subject(qid, new_subject, db.sqlite3.connect('ace.db'))
+        message = db.update_problem_subject(qid, new_subject,
+                                            db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Updated Successfully!")
 
-    def press2(self):
-        '''calls a function that tells the user if update of answer was sucessful
-        and displays appropriate message on label'''
+    def update_answer(self):
+        '''calls a function that tells the user if update of answer
+        was sucessful and displays appropriate message on label'''
+        qid = self.entries["qid"].get()
+        new_answer = self.entries["Answer"].get()
 
-        qid = self.problem_entry.get()
-        new_answer = self.problem_entry3.get()
-
-        message = db.update_problem_answer(qid, new_answer, db.sqlite3.connect('ace.db'))
+        message = db.update_problem_answer(qid, new_answer,
+                                           db.sqlite3.connect('ace.db'))
         print(message)
-
         self.feedback_label.config(text="Updated Successfully!")
         
-class AddUser(tk.Frame):
+class AddUser(ttk.Frame):
     '''Creates a login screen, which will be the 
     first screen of our Application'''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        self.info_needed = ["Role", "Name", "Email", "Password"]
+        self.userinfo = {}
+        self.buttons = ["Add User", "Back"]
         self.cont = controller
-        self.credentials = {'Username' : '','Password': ''}
+        ttk.Frame.__init__(self, parent)
+        self.init_window(controller)
         
-        '''creates the entry fields'''
+    def create_entries(self):
+        ''' creates the entry fields to get user info'''
+        for info in self.info_needed:
+            # create a stringvar that we can call the entryforms by
+            self.userinfo[info] = StringVar()
+            myframe = ttk.Frame(self)
+            # create the label
+            label = ttk.Label(myframe)
+            label["text"] = info
+            label["font"] = REGULAR_FONT
+            # pack label
+            label.pack({"side" : "left"}, padx= 5)
+            # create new entry 
+            new_entry = ttk.Entry(myframe)
+            if info == "Password":
+                # the show field of the password window makes sure that we only
+                # show '*' when somebody types in the password                
+                new_entry["show"] = "*"            
+            new_entry.pack({"side" : "left"})
+            new_entry["textvariable"] = self.userinfo[info]
+            myframe.pack()
+    
+    def init_buttons(self, controller):
+        '''initialises the buttons on this screen'''
+        myframe = ttk.Frame(self)
+        for button in self.buttons:
+            new_butt = ttk.Button(myframe)
+            new_butt["text"] = button
+            # change the function of the button
+            if button == "Back": 
+                new_butt["command"] = lambda : controller.show_frame(HomeScreen)
+            elif button == "Add User":
+                new_butt["command"] = self.add_user
+            new_butt.pack({"side" : "left"})
+        myframe.pack()
+            
+    
+    def init_window(self, controller):
+        '''function that initialises the window of the AddUser screen'''
         # login text
         loginlbl = ttk.Label(self, text="Please enter details for new user",
                              font=REGULAR_FONT, foreground="red")     
-        
-        # create the username and password lables and entries
-        role_label = tk.Label(self, text="Role", font=REGULAR_FONT)
-        name_label = tk.Label(self, text="Name", font=REGULAR_FONT)
-        email_label = tk.Label(self, text="Email", font=REGULAR_FONT)
-        password_label = tk.Label(self, text="Password", font=REGULAR_FONT) 
-        
-        self.role_entry = tk.Entry(self)
-        self.name_entry = tk.Entry(self)
-        self.email_entry = tk.Entry(self)
-        self.password_entry = tk.Entry(self)
-        
-        self.add_user_button = Button(self, text="Add User", font=REGULAR_FONT, 
-                                      command=self.add_user)
-        
         # pack elements
+        create_empty_label(self,1)
         loginlbl.pack() 
-        role_label.pack()
-        self.role_entry.pack()
-        name_label.pack()
-        self.name_entry.pack()
-        email_label.pack()
-        self.email_entry.pack()
-        password_label.pack()
-        self.password_entry.pack()
-        tk.Label(self, text="\n\n\n\n").pack()
-        self.add_user_button.pack()
+        create_empty_label(self, 1)
+        self.create_entries()
+        create_empty_label(self, 2)
+        self.init_buttons(controller)
         
     def add_user(self):
+        ''' the function that takes input in the entry fields, and adds
+        the user to the database'''
+        user_items = []
+        for info in self.info_needed:
+            # add it to the list
+            user_items.append(self.userinfo[info].get())
+            self.userinfo[info] = StringVar()
         # print(self.user_name)
-        number = db.add_user(self.role_entry.get(), self.name_entry.get(),
-                      self.email_entry.get(), self.password_entry.get(), conn)
-        self.role_entry.delete(0, END)
-        self.name_entry.delete(0, END)
-        self.email_entry.delete(0, END)
-        self.password_entry.delete(0, END)   
+        number = db.add_user(user_items[0], user_items[1],
+                      user_items[2], user_items[3], conn) 
         showinfo("Success", "ID of new user is: " + str(number))
         self.cont.show_frame(HomeScreen)
 
         
-       
 
 if __name__ == "__main__":
     conn = db.sqlite3.connect('ace.db')
