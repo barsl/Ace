@@ -23,22 +23,11 @@ class AoS(tk.Tk):
         # the frame that is on the top is the one that is on the screen
         # the dictionary will contain the different screens
         self.frames = {}
-        
-<<<<<<< HEAD
-        frame = Problems(container, self)
-        self.frames[Problems] = frame
-        
-        # with grid you can assign columns and rows to your
-        # sticky determines (alignment + stretch) 
-        # stretch the window to north south east or west (n,s,e,w)
-        frame.grid(row=0, column=0, sticky="nsew")
-        
-        self.show_frame(Problems)
-=======
+    
         # this loop adds screens to the dictionary,
         # once we build more screens, add them to the tuple 
         # for F in TUPLE e.g. (LoginScreen, HomeScreen, DataBlaBLa)
-        for F in (LoginScreen):
+        for F in (LoginScreen, Problems):
             # here F is the name of the Screen
             frame = F(container, self)
             self.frames[F] = frame
@@ -48,7 +37,6 @@ class AoS(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")            
             
         self.show_frame(LoginScreen)
->>>>>>> 45f4bd98185d728f8557b532a2343a0c3242b4ff
 
 
     def show_frame(self, cont):
@@ -58,7 +46,7 @@ class AoS(tk.Tk):
         @param cont - name of the screen that needs to be displayed
         this is stored in the frames dictionary in self'''
         # get the frame from the dictionary
-        frame = self.frames[cont]
+        frame = self.frames[cont]   
         frame.tkraise()
 
 
@@ -67,9 +55,10 @@ class LoginScreen(tk.Frame):
     first screen of our Application'''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.init_window()
+        self.controller = controller
+        self.init_window(controller)
         
-    def init_window(self):
+    def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
         # login text
@@ -83,8 +72,7 @@ class LoginScreen(tk.Frame):
         # show '*' when somebody types in the password
         password_entry = tk.Entry(self, show="*")
         
-        login_btn = ttk.Button(text="Login")
-        
+        login_btn = tk.Button(self, text="Log in", command=lambda: controller.show_frame(Problems))        
         # empty label to create some space between the top 
         # the entry labels
         empty_label = tk.Label(self, text="\n").pack()
@@ -97,13 +85,38 @@ class LoginScreen(tk.Frame):
         login_btn.pack(pady=20)        
 
 class Problems(tk.Frame):
-    '''Creates a prob screen, which will be the 
-    first screen of our Application'''
+    '''Creates a prob screen, which will used by admin to add/edit and remove problems from '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.init_window()
+        self.init_window(controller)
         
-    def init_window(self):
+    def init_window(self, controller):
+        '''Initialises the GUI window and its elements
+        Sets the different widgets that will be on the screen '''
+ 
+        # create the question label
+        addproblem_label = tk.Label(self, text="Please select from the options below: ", font=REGULAR_FONT, foreground="red")
+        problem_entry = tk.Entry(self)
+        
+        add_btn = ttk.Button(text="Add")
+        remove_btn = tk.Button(self, text="Remove")
+        # empty label to create some space between the top 
+        # the entry labels
+        empty_label = tk.Label(self, text="\n").pack()
+        # place our created label inside the
+
+        addproblem_label.pack()
+        problem_entry.pack()
+        add_btn.pack(pady=20)
+        remove_btn.pack(pady=20)
+
+class AddProblems(tk.Frame):
+    '''Creates a prob screen, which will used by admin to add/edit and remove problems from '''
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.init_window(controller)
+        
+    def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
         # login text
@@ -111,12 +124,12 @@ class Problems(tk.Frame):
                              font=APP_HIGHLIGHT_FONT)
         removeproblemlbl = ttk.Label(self, text ="Remove a problem from the Question Bank ",
                              font=APP_HIGHLIGHT_FONT)
-        # create the username and password fields
-        addproblem_label = tk.Label(self, text="Question", font=REGULAR_FONT, foreground="red")
+        # create the question label
+        addproblem_label = tk.Label(self, text="Please enter a new question", font=REGULAR_FONT, foreground="red")
         problem_entry = tk.Entry(self)
         
         add_btn = ttk.Button(text="Add")
-        remove_btn = ttk.Button(text="Remove")
+        remove_btn = tk.Button(self, text="Remove")
         # empty label to create some space between the top 
         # the entry labels
         empty_label = tk.Label(self, text="\n").pack()
