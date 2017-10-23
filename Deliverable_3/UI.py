@@ -126,11 +126,11 @@ class HomeScreen(tk.Frame):
         logout_btn["command"] = lambda : controller.show_frame(LoginScreen)
         logout_btn.pack()
     
-    def manage_problem_button(self, controller):
+    def manage_problems_button(self, controller):
         ''' creates edit problem button'''
         button = ttk.Button(self)
         button["text"] = "Manage Question Bank"
-        button["command"] = lambda : controller.showframe(Problems)
+        button["command"] = lambda : controller.show_frame(Problems)
         button.pack()
         
     def create_add_user_button(self):
@@ -147,7 +147,7 @@ class HomeScreen(tk.Frame):
         empty_label = ttk.Label(self, text="\n").pack()
         homescreen_label.pack()
         self.create_add_user_button()
-        self.manage_problem_button(controller)
+        self.manage_problems_button(controller)
         self.create_logout_button(controller)
 
         
