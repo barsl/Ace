@@ -273,7 +273,7 @@ class AddProblems(tk.Frame):
         question = self.problem_entry1.get()
         answer = self.problem_entry2.get()
 
-        message = database_api.add_problem(subject, question, answer, sqlite3.connect('ace.db'))
+        message = db.add_problem(subject, question, answer, db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Added Successfully!")
@@ -311,7 +311,7 @@ class RemoveProblems(tk.Frame):
 
         qid = self.problem_entry.get()
 
-        message = database_api.remove_problem(qid, sqlite3.connect('ace.db'))
+        message = db.remove_problem(qid, db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Removed Successfully!")
@@ -380,7 +380,7 @@ class UpdateProblems(tk.Frame):
         qid = self.problem_entry.get()
         new_question = self.problem_entry1.get()
 
-        message = database_api.update_problem_question(qid, new_question, sqlite3.connect('ace.db'))
+        message = db.update_problem_question(qid, new_question, db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Updated Successfully!")
@@ -392,7 +392,7 @@ class UpdateProblems(tk.Frame):
         qid = self.problem_entry.get()
         new_subject = self.problem_entry2.get()
 
-        message = database_api.update_problem_subject(qid, new_subject, sqlite3.connect('ace.db'))
+        message = db.update_problem_subject(qid, new_subject, db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Updated Successfully!")
@@ -404,7 +404,7 @@ class UpdateProblems(tk.Frame):
         qid = self.problem_entry.get()
         new_answer = self.problem_entry3.get()
 
-        message = database_api.update_problem_answer(qid, new_answer, sqlite3.connect('ace.db'))
+        message = db.update_problem_answer(qid, new_answer, db.sqlite3.connect('ace.db'))
         print(message)
 
         self.feedback_label.config(text="Updated Successfully!")
