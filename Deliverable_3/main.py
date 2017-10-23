@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, font,  Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL, END, W, E
+from tkinter import ttk, font,  Tk, Label, Button, Entry,\
+                    StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
 
@@ -58,29 +59,44 @@ class LoginScreen(tk.Frame):
     '''Creates a login screen, which will be the 
     first screen of our Application'''
     def __init__(self, parent, controller):
+        self.items = ["Username", "Password"]
+        self.credentials = {}        
         tk.Frame.__init__(self, parent)
-        self.credentials = {'Username' : '','Password': ''}
-        
-        '''creates the entry fields for username and password'''
+        self.create_login_labels()
+        self.create_entry_fields(controller)
+
+
+    def create_login_labels(self):
+        '''creates the beginning labels'''
         # login text
-        loginlbl = ttk.Label(self, text ="Welcome to Ace! Please Log In: ",
-                             font=APP_HIGHLIGHT_FONT, foreground="blue")  
+        loginlbl = ttk.Label(self)
+        loginlbl["text"] = "Welcome to Ace! Please Log In: "
+        loginlbl["font"] = APP_HIGHLIGHT_FONT
+        loginlbl["foreground"] = "blue"
+        #empty label for format
         tk.Label(self, text="\n\n\n\n").pack()
-        # create the username and password fields
-        username_label = tk.Label(self, text="Username", font=REGULAR_FONT)
-        self.username_entry = tk.Entry(self)
-        password_label = tk.Label(self, text="Password", font=REGULAR_FONT)
-        # the show field of the password window makes sure that we only
-        # show '*' when somebody types in the password
-        self.password_entry = tk.Entry(self, show="*")
         loginlbl.pack()
-        username_label.pack()
-        self.username_entry.pack()
-        password_label.pack()
-        self.password_entry.pack()      
+        
+    def create_entry_fields(self, controller):
+        ''' creates the entry fields for username and password'''
+        # create the username and password fields
+        for field in self.items:
+            myframe = tk.Frame(self)
+            self.credentials[field] = StringVar()
+            field_label = tk.Label(myframe)
+            field_label["text"] = field
+            field_label["font"] = REGULAR_FONT
+            field_label.pack({"side": "left"}, padx=10)
+            enterbox = tk.Entry(myframe)
+            if field == "Password":
+                # the show field of the password window makes sure that we only
+                # show '*' when somebody types in the password                
+                enterbox["show"] = "*"
+            enterbox.pack({"side": "left"})
+            enterbox["textvariable"] = self.credentials[field]
+            myframe.pack()   
         self.create_login(controller)
 
-        
     def create_login(self, controller):
         '''creates login button'''
         button = ttk.Button(self)
@@ -91,17 +107,18 @@ class LoginScreen(tk.Frame):
     def verify_creds(self, controller):
         ''' used to verify login credentials from the entry boxes
         of the LoginScreen '''
-        # get user's entries and store
-        u_email = self.username_entry.get()
-        u_pass = self.password_entry.get()
-        # reset the entry bars
-        self.username_entry.delete(0, END)
-        self.password_entry.delete(0, END)
+        i = 0;
+        creds = ["", ""]
+        for field in self.items:
+            # get user's entries and store
+            creds[i] = self.credentials[field].get()
+
+            i += 1
         # try getting user's details from database according to entered email
         try :
-            user_details = db.get_user_details(conn, u_email)
+            user_details = db.get_user_details(conn, creds[0])
             # if the provided password matches the one stored
-            if (u_pass == user_details[0][4]) :
+            if (creds[1] == user_details[0][4]) :
                 # move to home screen
                 controller.show_frame(HomeScreen)
             else :
@@ -434,7 +451,7 @@ class AddUser(tk.Frame):
         
     def add_user(self):
         # print(self.user_name)
-        number = add_user(self.role_entry.get(), self.name_entry.get(),
+        number = db.add_user(self.role_entry.get(), self.name_entry.get(),
                       self.email_entry.get(), self.password_entry.get(), conn)
         self.role_entry.delete(0, END)
         self.name_entry.delete(0, END)
