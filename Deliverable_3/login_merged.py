@@ -24,6 +24,7 @@ class AoS(tk.Tk):
         # the dictionary will contain the different screens
         self.frames = {}
         
+<<<<<<< HEAD
         frame = Problems(container, self)
         self.frames[Problems] = frame
         
@@ -33,12 +34,29 @@ class AoS(tk.Tk):
         frame.grid(row=0, column=0, sticky="nsew")
         
         self.show_frame(Problems)
+=======
+        # this loop adds screens to the dictionary,
+        # once we build more screens, add them to the tuple 
+        # for F in TUPLE e.g. (LoginScreen, HomeScreen, DataBlaBLa)
+        for F in (LoginScreen):
+            # here F is the name of the Screen
+            frame = F(container, self)
+            self.frames[F] = frame
+            # with grid you can assign columns and rows to your
+            # sticky determines (alignment + stretch) 
+            # stretch the window to north south east or west (n,s,e,w)
+            frame.grid(row=0, column=0, sticky="nsew")            
+            
+        self.show_frame(LoginScreen)
+>>>>>>> 45f4bd98185d728f8557b532a2343a0c3242b4ff
 
 
     def show_frame(self, cont):
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
-        wanted screen to the front'''
+        wanted screen to the front
+        @param cont - name of the screen that needs to be displayed
+        this is stored in the frames dictionary in self'''
         # get the frame from the dictionary
         frame = self.frames[cont]
         frame.tkraise()
