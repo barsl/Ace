@@ -246,76 +246,75 @@ class Problems(tk.Frame):
 
 
 class AddProblems(tk.Frame):
-    '''Creates a prob screen, which will used by admin to add/edit and remove problems from '''
+    '''Creates a prob screen, which will used
+    by admin to add/edit and remove problems from '''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        self.headers = ["subject", "question", "answer"]
+        self.buttons = ["Add", "Back"]
+        self.hentries = {}
+        tk.Frame.__init__(self, parent)    
         self.init_window(controller)
-        feedback_label = tk.Label(self, text="")
-        feedback_label.pack()
 
+
+    def create_entries(self):
+        ''' creates entry boxes and their labels'''
+        for header in self.headers:
+            myframe = tk.Frame(self)
+            self.hentries[header] = StringVar()
+            # create the label
+            header_label = tk.Label(myframe)
+            # just to stay grammatically correct....
+            if header != "answer":
+                header_label["text"] = "Please enter a %s" % header
+            else:
+                header_label["text"] = "Please enter an %s" % header
+            header_label["font"] = REGULAR_FONT
+            header_label["foreground"] = "red"
+            header_label.pack({"side": "left"})
+            # create the entry box
+            enterbox = Entry(myframe)
+            enterbox.pack({"side" : "left"})
+            enterbox["textvariable"] = self.hentries[header]
+            myframe.pack()
+    
+    def create_buttons(self, controller):
+        ''' creates the buttons for the Add Problem Screen'''
+        for button in self.buttons:
+            # create a new frame
+            myframe = tk.Frame(self)
+            new_button = ttk.Button(self)
+            new_button["text"] = button
+            if button == "Back":
+                new_button["command"] = (lambda :
+                                         controller.show_frame(Problems))
+            elif button == "Add":
+                # if add button is clicked retrieves input values
+                new_button["command"] = self.press
+            new_button.pack({"side": "top"}, pady=4, padx=5)
+            myframe.pack()
+            
+    
     def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
-
-        # creates a back button
-        back_btn = tk.Button(self, text="Back", command=lambda: controller.show_frame(Problems))
-        back_btn.pack(pady=20)
-        # creates the subject label
-        add_problem_label = tk.Label(self, text="Please enter the subject", font=REGULAR_FONT, foreground="red")
-        self.problem_entry = tk.Entry(self)
-
-        self.feedback_label = tk.Label(self, text="")
-
-        # creates the question label
-        add_problem_label1 = tk.Label(self, text="Please enter a new question", font=REGULAR_FONT, foreground="red")
-        self.problem_entry1 = tk.Entry(self)
-        self.feedback_label1 = tk.Label(self, text="")
-
-        # creates the answer label
-        add_problem_label2 = tk.Label(self, text="Please enter the answer", font=REGULAR_FONT, foreground="red")
-        self.problem_entry2 = tk.Entry(self)
-        self.feedback_label2 = tk.Label(self, text="")
-
-
         # empty label to create some space between the top
         # the entry labels
-        empty_label = tk.Label(self, text="\n").pack()
-
-        # Displays subject label on grid
-        add_problem_label.pack()
-        self.problem_entry.pack()
-        self.problem_entry.focus_set()
-
-        # Displays question label on grid
-        add_problem_label1.pack()
-        self.problem_entry1.pack()
-
-        # Displays answer label on grid
-        add_problem_label2.pack()
-        self.problem_entry2.pack()
-        self.problem_entry2.focus_set()
-
-        # If "Add Button" is clicked, retrieves input values
-        add_btn = ttk.Button(self, text="Add", command=self.press)
-        # Displays Add Button on grid
-        add_btn.pack(pady=20)
-
-        self.feedback_label.pack()
-        self.feedback_label1.pack()
-        self.feedback_label2.pack()
+        create_empty_label(self, 2)
+        self.create_entries()
+        self.create_buttons(controller)
+        self.feedback_label = tk.Label(self, text="")
+        self.feedback_label.pack()            
 
 
     def press(self):
         #calls a function that tells the user if add was sucessfully,
         #displays appropriate message on label
-
-        subject = self.problem_entry.get()
-        question = self.problem_entry1.get()
-        answer = self.problem_entry2.get()
-
-        message = db.add_problem(subject, question, answer, db.sqlite3.connect('ace.db'))
+        subjects = []
+        for subject in self.headers:
+            subjects.append(self.hentries[subject].get())
+        message = db.add_problem(subjects[0], subjects[1],
+                                 subjects[2], db.sqlite3.connect('ace.db'))
         print(message)
-
         self.feedback_label.config(text="Added Successfully!")
 
 class RemoveProblems(tk.Frame):
