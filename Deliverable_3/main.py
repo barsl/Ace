@@ -279,10 +279,10 @@ class AddProblems(tk.Frame):
     
     def create_buttons(self, controller):
         ''' creates the buttons for the Add Problem Screen'''
+        myframe = tk.Frame(self)
         for button in self.buttons:
             # create a new frame
-            myframe = tk.Frame(self)
-            new_button = ttk.Button(self)
+            new_button = ttk.Button(myframe)
             new_button["text"] = button
             if button == "Back":
                 new_button["command"] = (lambda :
@@ -290,8 +290,8 @@ class AddProblems(tk.Frame):
             elif button == "Add":
                 # if add button is clicked retrieves input values
                 new_button["command"] = self.press
-            new_button.pack({"side": "top"}, pady=4, padx=5)
-            myframe.pack()
+            new_button.pack({"side": "left"}, pady=4, padx=5)
+        myframe.pack()
             
     
     def init_window(self, controller):
@@ -320,35 +320,53 @@ class AddProblems(tk.Frame):
 class RemoveProblems(tk.Frame):
     '''Screen to remove a problem from database'''
     def __init__(self, parent, controller):
+        self.entries = {}
+        self.buttons = ["Remove", "Back"]
         tk.Frame.__init__(self, parent)
         self.init_window(controller)
+        
+    def create_entries(self):
+        '''creates label and entry side by side'''
+        myframe = tk.Frame(self)
+        self.entries["qid"] = StringVar()
+        label = tk.Label(myframe)
+        label["text"] = "Enter question ID to remove"
+        label["font"] = REGULAR_FONT
+        label.pack({"side": "left"})
+        new_entry = tk.Entry(myframe)
+        new_entry.pack({"side" : "left"})
+        new_entry["textvariable"] = self.entries["qid"]
+        myframe.pack()
+        
+    def create_buttons(self, controller):
+        ''' adds the buttons for the RemoveProblem Screen'''
+        myframe = tk.Frame(self)
+        for button in self.buttons:
+            new_button = ttk.Button(myframe)
+            new_button["text"] = button
+            if button == "Back":
+                new_button["command"] = lambda : controller.show_frame(Problems)
+            elif button == "Remove":
+                new_button["command"] = self.press
+            new_button.pack({"side" : "left"})
+        myframe.pack()
 
     def init_window(self, controller):
         '''Initialises the GUI window and its elements
         Sets the different widgets that will be on the screen '''
-        back_btn = tk.Button(self, text="Back", command=lambda: controller.show_frame(Problems))
-        back_btn.pack(pady=20)
-
-        # remove the question label and button
-        remove_problem_label = tk.Label(self, text="Enter question ID to remove", font=REGULAR_FONT, foreground="red")
-        self.problem_entry = tk.Entry(self)
-        remove_btn = ttk.Button(self, text="Remove", command=self.press)
-        #this label will display the result from a function that tells the user if remove was sucessful
+        self.create_entries()
+        self.create_buttons(controller)
+        # this label will display the result from
+        # a function that tells the user if remove was sucessful
         self.feedback_label = tk.Label(self, text = "")
-        # empty label to create some space between the top
-        # the entry labels
-        empty_label = tk.Label(self, text="\n").pack()
         # place widges inside the grid
-        remove_problem_label.pack()
-        self.problem_entry.pack()
-        remove_btn.pack(pady=20)
         self.feedback_label.pack()
 
     def press(self):
         #calls a function that tells the user if add was sucessfully,
         #displays appropriate message on label
 
-        qid = self.problem_entry.get()
+        qid = self.entries["qid"].get()
 
         message = db.remove_problem(qid, db.sqlite3.connect('ace.db'))
         print(message)
