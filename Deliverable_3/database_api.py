@@ -159,14 +159,29 @@ def update_user_password(uid, new_password, conn):
     return "Updated user " + str(uid) + "'s password to " + new_password + "!"
 
  
-def get_user_details(conn, email):
+def get_user_details(conn, uid):
     """
     returns an array of arrays containing rows' values for each column
     conn is the is the sqlite3 connection objects, uid is the user id
     """
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE email=?", (email,))
+    cur.execute("SELECT * FROM users WHERE id=?", (uid,))
  
     rows = cur.fetchall()
     
     return rows
+
+def get_user_ids(conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users")
+ 
+    rows = cur.fetchall()
+    ids = []
+    for row in rows:
+        ids.append(row[0])
+    
+    return ids
