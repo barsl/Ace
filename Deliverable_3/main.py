@@ -31,13 +31,13 @@ class AoS(tk.Tk):
         # title of the software
         tk.Tk.wm_title(self, "Ace of Spades")
         tk.Tk.wm_minsize(self, width=350, height=350)
-        container = tk.Frame(self)
+        self.container = tk.Frame(self)
         
-        container.pack(side="top", fill="both", expand = True)
+        self.container.pack(side="top", fill="both", expand = True)
         
         # configuration for the grid (0 is the min row or column)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
         
         # the frame that is on the top is the one that is on the screen
         # the dictionary will contain the different screens
@@ -49,7 +49,7 @@ class AoS(tk.Tk):
         for F in (LoginScreen, HomeScreen, Problems, AddProblems,
                   RemoveProblems, UserInterface, UpdateProblems):
             # here F is the name of the Screen
-            frame = F(container, self)
+            frame = F(self.container, self)
             self.frames[F] = frame
             # with grid you can assign columns and rows to your
             # sticky determines (alignment + stretch) 
@@ -467,8 +467,6 @@ class UpdateProblems(tk.Frame):
 
         self.feedback_label.config(text="Updated Successfully!")
         
-        
-       
 
 if __name__ == "__main__":
     conn = db.sqlite3.connect('ace.db')
