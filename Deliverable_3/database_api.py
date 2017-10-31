@@ -102,7 +102,7 @@ def add_user(role, name, email, password, conn):
     conn.commit()
     
     # return number of new user
-    return get_user_details(conn, email)[0][0]
+    return get_user_details_by_email(conn, email)[0][0]
 
 def remove_user(uid, conn):
     '''
@@ -166,6 +166,18 @@ def get_user_details(conn, uid):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE id=?", (uid,))
+ 
+    rows = cur.fetchall()
+    
+    return rows
+
+def get_user_details_by_email(conn, email):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE email=?", (email,))
  
     rows = cur.fetchall()
     
