@@ -3,27 +3,60 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
-from user import *
-from problem import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
+NICE_BLUE = "#3399FF"
 
+class GUISkeleton(ttk.Frame):
+    '''Skeleton for creating frames in Tkinter'''
+    def __init__(self, parent):
+        self.entry_fields = {}
+        ttk.Frame.__init__(self, parent)
+        
+    def create_label(self, location, text, font=None, foreground=None):
+        '''creates a label the programmer will be able to assign
+        this to a variable, edit the parameters, and pack to their liking'''
+        label = ttk.Label(location)
+        label["text"] = text
+        if (font != None):
+            label["font"] = font
+        if (foreground != None):
+            label["foreground"] = foreground
+        return label
+    
+    def create_entry(self, location, key, font=None):
+        ''' Returns an entry box that the programmer is able to pack'''
+        # create an entrybox
+        new_entry = ttk.Entry(location)
+        if (font != None):
+            new_entry["font"] = font
+        # assign a stringvar to the Entry
+        self.entry_fields[key] = StringVar()
+        new_entry["textvariable"] = self.entry_fields[key]
+        return new_entry
+    
+    def create_button(self, location, text):
+        ''' creates a button with the wanted text that the programmer
+        can customize'''
+        new_button = ttk.Button(location)
+        new_button["text"] = text
+        return new_button   
 
-
-def create_empty_label(location, num):
-    ''' creates an empty label with the designated number of newlines
-    create_empty_label(self, 1)
-    GUI: \n              <-- this is the label created
+        
+    def create_empty_label(location, num):
+        ''' creates an empty label with the designated number of newlines
+        create_empty_label(self, 1)
+        GUI: \n              <-- this is the label created
         widget
-    '''
-    txt = ""
-    for i in range(num):
-        txt += "\n"
-    label = tk.Label(location)
-    label["text"] = txt
-    label.pack()
-
+        '''
+        txt = ""
+        for i in range(num):
+            txt += "\n"
+            label = ttk.Label(location)
+            label["text"] = txt
+        label.pack()
+        
 
 class AoS(tk.Tk):
     '''Class that contains everything in the Application '''
@@ -72,13 +105,12 @@ class AoS(tk.Tk):
         
 
 
-class LoginScreen(tk.Frame):
+class LoginScreen(GUISkeleton):
     '''Creates a login screen, which will be the 
     first screen of our Application'''
     def __init__(self, parent, controller):
-        self.items = ["Username", "Password"]
-        self.credentials = {}        
-        tk.Frame.__init__(self, parent)
+        self.entry_keys = ["Email", "Password"]      
+        GUISkeleton.__init__(self, parent)
         self.create_login_labels()
         self.create_entry_fields(controller)
 
@@ -86,39 +118,33 @@ class LoginScreen(tk.Frame):
     def create_login_labels(self):
         '''creates the beginning labels'''
         # login text
-        loginlbl = ttk.Label(self)
-        loginlbl["text"] = "Welcome to Ace! Please Log In: "
-        loginlbl["font"] = APP_HIGHLIGHT_FONT
-        loginlbl["foreground"] = "blue"
+        login_label = self.create_label(self, "Welcome to Ace! Please Log In: ",
+                          APP_HIGHLIGHT_FONT, "blue")
         #empty label for format
         # tk.Label(self, text="\n\n\n\n").pack()
-        create_empty_label(self, 4)
-        loginlbl.pack()
+        self.create_empty_label(4)
+        login_label.pack()
+        
         
     def create_entry_fields(self, controller):
         ''' creates the entry fields for username and password'''
         # create the username and password fields
-        for field in self.items:
-            myframe = tk.Frame(self)
-            self.credentials[field] = StringVar()
-            field_label = tk.Label(myframe)
-            field_label["text"] = field
-            field_label["font"] = REGULAR_FONT
-            field_label.pack({"side": "left"}, padx=10)
-            enterbox = tk.Entry(myframe)
+        for field in self.entry_keys:
+            myframe = ttk.Frame(self)
+            new_label = self.create_label(myframe, field, REGULAR_FONT)
+            new_label.pack({"side": "left"}, padx=10)
+            enterbox = self.create_entry(myframe, field)
             if field == "Password":
                 # the show field of the password window makes sure that we only
                 # show '*' when somebody types in the password                
                 enterbox["show"] = "*"
             enterbox.pack({"side": "left"})
-            enterbox["textvariable"] = self.credentials[field]
-            myframe.pack()   
+            myframe.pack()
         self.create_login(controller)
 
     def create_login(self, controller):
         '''creates login button'''
-        button = ttk.Button(self)
-        button["text"] = "Login"
+        button = self.create_button(self, "Login")
         button["command"] = lambda : self.verify_creds(controller)
         button.pack(pady=20)
         
@@ -126,17 +152,16 @@ class LoginScreen(tk.Frame):
         ''' used to verify login credentials from the entry boxes
         of the LoginScreen '''
         i = 0;
-        creds = ["", ""]
-        for field in self.items:
+        creds = []
+        for field in self.entry_keys:
             # get user's entries and store
-            creds[i] = self.credentials[field].get()
-
+            creds.append(self.entry_fields[field].get())
             i += 1
         # try getting user's details from database according to entered email
         try :
             user_details = db.get_user_details_by_email(conn, creds[0])
             # if the provided password matches the one stored
-            if (creds[1] == user_details[0][4]) :
+            if (creds[1] == user_details[0][4]):
                 # move to home screen
                 controller.show_frame(HomeScreen)
             else :
@@ -147,329 +172,418 @@ class LoginScreen(tk.Frame):
             showinfo("Fail", "This email address is not in the system")
 
    
-class HomeScreen(tk.Frame):
+class HomeScreen(GUISkeleton):
     ''' Homescreen that appears after the user logs in
     at the moment the homescreen is just a placeholder for some buttons'''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        GUISkeleton.__init__(self, parent)
+        self.buttons = ["Add User", "Manage Question Bank", "Logout"]
         self.init_window(controller)
     
-    def create_logout_button(self, controller):
+    def create_buttons(self, controller):
         ''' creates logout button'''
         # button will go to login screen
-        logout_btn = ttk.Button(self)
-        logout_btn["text"] = "Logout"
-        logout_btn["command"] = lambda : controller.show_frame(LoginScreen)
-        logout_btn.pack()
-    
-    def manage_problems_button(self, controller):
-        ''' creates edit problem button'''
-        button = ttk.Button(self)
-        button["text"] = "Manage Question Bank"
-        button["command"] = lambda : controller.show_frame(ProblemInterface)
-        button.pack()
-        
-    def create_add_user_button(self, controller):
-        ''' creates add user button'''
-        button = ttk.Button(self)
-        button["text"] = "Add User"
-        button["command"] = lambda : controller.show_frame(UserInterface)
-        button.pack()
+        for button in self.buttons:
+            new_button = self.create_button(self, button)
+            if button == "Add User":
+                new_button["command"] = lambda : controller.show_frame(UserInterface)
+            elif button == "Manage Question Bank":
+                new_button["command"] = lambda : controller.show_frame(ProblemInterface)
+            elif button == "Logout":
+                new_button["command"] = (lambda :
+                                         controller.show_frame(LoginScreen))
+            new_button.pack()
     
     def init_window(self, controller):
         ''' initialises the homescreen and its elements'''
-        homescreen_label = ttk.Label(self, text="Home", font=APP_HIGHLIGHT_FONT)
+        homescreen_label = self.create_label(self, "Home", APP_HIGHLIGHT_FONT)
         # just to get the formatting correct
         # empty_label = ttk.Label(self, text="\n").pack()
-        create_empty_label(self, 1)
+        self.create_empty_label(1)
         homescreen_label.pack()
-        self.create_add_user_button(controller)
-        self.manage_problems_button(controller)
-        self.create_logout_button(controller)
-
-
-"""
-class Problems(tk.Frame):
-    '''Creates a prob screen, which will
-    used by admin to add/edit and remove problems from database'''
-    def __init__(self, parent, controller):
-        self.functions = ["Add", "Remove", "Update", "Logout", "Back"]
-        tk.Frame.__init__(self, parent)
-        self.init_window(controller)
-
-    def create_problem_buttons(self, controller):
-        '''initialises the problem buttons'''
-        for function in self.functions:
-            #initialise the buttons
-            button = ttk.Button(self)
-            if ((function != "Logout") and (function != "Back")):
-                button["text"] = "%s a Problem" % function
-            else:
-                button["text"] = "%s" % function
-            # creates add button
-            if function == "Add":
-                button["command"] = lambda : controller.show_frame(AddProblems)
-                # creates Remove button
-            elif function == "Remove":
-                button["command"] = (lambda : 
-                                     controller.show_frame(RemoveProblems))
-                # creates update button
-            elif function == "Update":
-                button["command"] = (lambda :
-                                     controller.show_frame(UpdateProblems))
-                # creates logout button
-            elif function == "Logout":
-                button["command"] = (lambda :
-                                     controller.show_frame(LoginScreen))
-                # creates back button
-            elif function == "Back":
-                button["command"] = (lambda :
-                                     controller.show_frame(HomeScreen))
-            button.pack()
-            
-    def create_options_label(self):
-        ''' creates options label with spacing'''
-        # Create the question label
-        options_label = tk.Label(self)
-        options_label["text"] = '''To make changes to the Question Bank,
-        please select from the options below: '''
-        options_label["font"] = APP_HIGHLIGHT_FONT
-        options_label["foreground"] = 'blue'
-        options_label["wraplength"] = 300
-        options_label.pack()
-
-
-    def init_window(self, controller):
-        '''Initialises the GUI window and its elements
-        Sets the different widgets that will be on the screen '''
-        create_empty_label(self, 1)    
-        self.create_options_label()
-        create_empty_label(self, 1)    
-        self.create_problem_buttons(controller)
-
-
-class AddProblems(tk.Frame):
-    '''Creates a prob screen, which will used
-    by admin to add/edit and remove problems from '''
-    def __init__(self, parent, controller):
-        self.headers = ["subject", "question", "answer"]
-        self.buttons = ["Add", "Back"]
-        self.hentries = {}
-        tk.Frame.__init__(self, parent)    
-        self.init_window(controller)
-
-
-    def create_entries(self):
-        ''' creates entry boxes and their labels'''
-        for header in self.headers:
-            myframe = tk.Frame(self)
-            self.hentries[header] = StringVar()
-            # create the label
-            header_label = tk.Label(myframe)
-            # just to stay grammatically correct....
-            if header != "answer":
-                header_label["text"] = "Please enter a %s" % header
-            else:
-                header_label["text"] = "Please enter an %s" % header
-            header_label["font"] = REGULAR_FONT
-            header_label["foreground"] = "red"
-            header_label.pack({"side": "left"})
-            # create the entry box
-            enterbox = Entry(myframe)
-            enterbox.pack({"side" : "left"})
-            enterbox["textvariable"] = self.hentries[header]
-            myframe.pack()
-    
-    def create_buttons(self, controller):
-        ''' creates the buttons for the Add Problem Screen'''
-        myframe = tk.Frame(self)
-        for button in self.buttons:
-            # create a new frame
-            new_button = ttk.Button(myframe)
-            new_button["text"] = button
-            if button == "Back":
-                new_button["command"] = (lambda :
-                                         controller.show_frame(Problems))
-            elif button == "Add":
-                # if add button is clicked retrieves input values
-                new_button["command"] = self.press
-            new_button.pack({"side": "left"}, pady=4, padx=5)
-        myframe.pack()
-            
-    
-    def init_window(self, controller):
-        '''Initialises the GUI window and its elements
-        Sets the different widgets that will be on the screen '''
-        # empty label to create some space between the top
-        # the entry labels
-        create_empty_label(self, 2)
-        self.create_entries()
         self.create_buttons(controller)
-        self.feedback_label = tk.Label(self, text="")
-        self.feedback_label.pack()            
+        
 
+class User():
+    '''
+    A user object which is used to interact with users' data,
+    and perform actions that affect users' data
+    '''
+    def __init__(self, uid):
+        '''
+        uid is the user id of the student we want to create
+        '''
+        # get user details from database
+        user = db.get_user_details(conn, uid)[0]
+        # assign corresponding values to variables
+        self.uid = user[0]
+        self.role = user[1]
+        self.name = user[2]
+        self.email = user[3]
+        self.password = user[4]
+        
+    # getters and setters
+    def get_uid(self):
+        return self.uid
+    def get_role(self):
+        return self.role      
+    def get_name(self):
+        return self.name
+    def get_email(self):
+        return self.email
+    def get_password(self):
+        return self.password  
 
-    def press(self):
-        #calls a function that tells the user if add was sucessfully,
-        #displays appropriate message on label
-        subjects = []
-        for subject in self.headers:
-            subjects.append(self.hentries[subject].get())
-        message = db.add_problem(subjects[0], subjects[1],
-                                 subjects[2], db.sqlite3.connect('ace.db'))
-        print(message)
-        self.feedback_label.config(text="Added Successfully!")
-
-class RemoveProblems(tk.Frame):
-    '''Screen to remove a problem from database'''
+class UserInterface(GUISkeleton):
+    '''
+    Objects of this type are used to generate the GUI for the User Database
+    Management screen
+    '''
     def __init__(self, parent, controller):
-        self.entries = {}
-        self.buttons = ["Remove", "Back"]
-        tk.Frame.__init__(self, parent)
-        self.init_window(controller)
+        GUISkeleton.__init__(self, parent)
+        self.cont = controller
+        self.labels = ["Role", "Name", "Email"]
+        # label at top of the frame
+        new_label = self.create_label(self, "User Database Management\n",
+                                      REGULAR_FONT,
+                                      "Green").grid(row=0, column=1) 
+        # dictionaries to contain the widgets and associate widget to
+        # corresponding user id
+        self.roles = {}
+        self.names = {}
+        self.emails = {}
+        self.updates = {}
+        self.deletes = {}
         
-    def create_entries(self):
-        '''creates label and entry side by side'''
-        myframe = tk.Frame(self)
-        self.entries["qid"] = StringVar()
-        label = tk.Label(myframe)
-        label["text"] = "Enter question ID to remove"
-        label["font"] = REGULAR_FONT
-        label.pack({"side": "left"})
-        new_entry = tk.Entry(myframe)
-        new_entry.pack({"side" : "left"})
-        new_entry["textvariable"] = self.entries["qid"]
-        myframe.pack()
+        # the 3 static lables that are always there
+        i = 0
+        for label in self.labels:
+            new_label = self.create_label(self, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=1, column=i)
+            # create first row of entries for add_problem function
+            # set everything nicely on the grid
+            # create first row of entries for add_user function
+            # set everything nicely on the grid            
+            new_entry = self.create_entry(self, label,
+                                          REGULAR_FONT).grid(row=2, column=i)
+            i += 1         
+        # create add user button
+        add_user_button = self.create_button(self, "Add User")
+        # set button method to add_user  
+        add_user_button["command"] = lambda : self.add_user()        
+        add_user_button.grid(row=2, column=3, columnspan=2)
         
-    def create_buttons(self, controller):
-        ''' adds the buttons for the RemoveProblem Screen'''
-        myframe = tk.Frame(self)
-        for button in self.buttons:
-            new_button = ttk.Button(myframe)
-            new_button["text"] = button
-            if button == "Back":
-                new_button["command"] = lambda : controller.show_frame(Problems)
-            elif button == "Remove":
-                new_button["command"] = self.press
-            new_button.pack({"side" : "left"})
-        myframe.pack()
-
-    def init_window(self, controller):
-        '''Initialises the GUI window and its elements
-        Sets the different widgets that will be on the screen '''
-        self.create_entries()
-        self.create_buttons(controller)
-        # this label will display the result from
-        # a function that tells the user if remove was sucessful
-        self.feedback_label = tk.Label(self, text = "")
-        # place widges inside the grid
-        self.feedback_label.pack()
-
-    def press(self):
-        #calls a function that tells the user if add was sucessfully,
-        #displays appropriate message on label
-
-        qid = self.entries["qid"].get()
-
-        message = db.remove_problem(qid, db.sqlite3.connect('ace.db'))
-        print(message)
-
-        self.feedback_label.config(text="Removed Successfully!")
+        # generate all the dynamically generaterd widget rows
+        self.gen_rows()
         
-class UpdateProblems(tk.Frame):
-    '''Screen to update a problem from database'''
+        # enable clicking functionality for all the buttons
+        self.enable_buttons()
+        
+          
+        
+    def gen_rows(self):
+        # get a list of all the user ids in the database
+        ids = db.get_user_ids(conn)
+        # set iterator for grid rows
+        i = 0
+        # for each id create a row
+        for uid in ids:
+            # create new entries 
+            role_entry = ttk.Entry(self, font=REGULAR_FONT)
+            name_entry = ttk.Entry(self, font=REGULAR_FONT)
+            email_entry = ttk.Entry(self, font=REGULAR_FONT)
+            # add to corresponding dictonaries with user ids as keys
+            self.roles[uid] = role_entry
+            self.names[uid] = name_entry    
+            self.emails[uid] = email_entry
+          
+            # create new buttons
+            update_button = self.create_button(self, "Update")
+            delete_button = self.create_button(self, "Delete")
+            # add to corresponding dictonaries with user ids as keys        
+            self.deletes[uid] = delete_button
+            self.updates[uid] = update_button
+            
+            # set everything nicely on the grid using an iterator i
+            role_entry.grid(row=i+3, column=0)
+            name_entry.grid(row=i+3, column=1)
+            email_entry.grid(row=i+3, column=2)
+            update_button.grid(row=i+3, column=3)
+            delete_button.grid(row=i+3, column=4)
+            i += 1
+            
+            # create new user object to contain user info
+            user = User(uid)
+            # set each entry with the corresponding value from the user object
+            role_entry.insert(0, user.get_role())
+            name_entry.insert(0, user.get_name())
+            email_entry.insert(0, user.get_email())
+            
+        
+            
+    def del_user(self, button):
+        '''
+        delete a user from the database and show a success popup
+        '''
+        # remove user from databse
+        db.remove_user(button, conn)
+        
+        self.refresh()
+        
+        # show popup
+        showinfo("Success", "User #" + str(button) + " has been deleted")
+    
+    def up_user(self, button):
+        '''
+        delete a user details in the database and show a success popup
+        '''        
+        # get new parameters from entry widgets in the dictionaries
+        new_role = self.roles[button].get()
+        new_name = self.names[button].get()
+        new_email = self.emails[button].get()
+        # update the database with new entries
+        db.update_user_role(button, new_role, conn)
+        db.update_user_name(button, new_name, conn)
+        db.update_user_email(button, new_email, conn)
+        
+        self.refresh()
+        
+        # show popup
+        showinfo("Success", "User #" + str(button) + " has been updated")
+        
+    def add_user(self):
+        '''
+        delete a user from the database and show a success popup
+        '''
+        # get new parameters from entry widgets in the dictionaries
+        new_role = self.entry_fields["Role"].get()
+        new_name = self.entry_fields["Name"].get()
+        new_email = self.entry_fields["Email"].get()        
+        # add new user to databse and save his id number
+        uid = db.add_user(new_role, new_name, new_email, "", conn)
+        # show popup
+        self.refresh()
+        # clear entries
+        self.entry_fields["Role"].set('')
+        self.entry_fields["Name"].set('')
+        self.entry_fields["Email"].set('')        
+        showinfo("Success", "User #" + str(uid ) + " has been added to database")
+        
+
+    def refresh(self):
+        for role in list(self.roles.items()):
+            role[1].destroy()
+        for name in list(self.names.items()):
+            name[1].destroy()
+        for email in list(self.emails.items()):
+            email[1].destroy()
+        for update in list(self.updates.items()):
+            update[1].destroy()
+        for delete in list(self.deletes.items()):
+            delete[1].destroy()
+        self.gen_rows()
+        self.enable_buttons()
+        
+    def enable_buttons(self):
+        # get a list of all existing user ids
+        user_ids = db.get_user_ids(conn)        
+        # configure clicking function for all the delete buttons
+        for uid in user_ids:
+            self.deletes[uid].config(command=lambda j=uid: self.del_user(j))
+        # configure clicking function for all the update buttons
+        for uid in user_ids:
+            self.updates[uid].config(command=lambda j=uid: self.up_user(j))         
+
+
+class Problem():
+    '''
+    A problem object which is used to interact with problems' data,
+    and perform actions that affect problems' data
+    '''
+    def __init__(self, qid):
+        '''
+        qid is the problem id of the student we want to create
+        '''
+        # get problem details from database
+        problem = db.get_problem_details(conn, qid)[0]
+        # assign corresponding values to variables
+        self.qid = problem[0]
+        self.subject = problem[1]
+        self.question = problem[2]
+        self.answer = problem[3]
+        
+    # getters and setters
+    def get_qid(self):
+        return self.qid
+    def get_subject(self):
+        return self.subject      
+    def get_question(self):
+        return self.question
+    def get_answer(self):
+        return self.answer
+
+class ProblemInterface(GUISkeleton):
+    '''
+    Objects of this type are used to genereate the GUI for the problem Database
+    Management screen
+    '''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.init_window(controller)
-
-    def init_window(self, controller):
-        '''Initialises the GUI window and its elements
-        Sets the different widgets that will be on the screen '''
-        back_btn = tk.Button(self, text="Back", command=lambda: controller.show_frame(Problems))
-        back_btn.pack(pady=20)
-
-        # creates "Update" buttons and labels
-        update_problem_label = tk.Label(self, text="Enter question ID to update", font=REGULAR_FONT, foreground="red")
-        self.problem_entry = tk.Entry(self)
-        update_question_btn = ttk.Button(self, text="Update Question", command=self.press)
-        self.problem_entry1 = tk.Entry(self)
-        update_subject_btn = ttk.Button(self, text="Update Subject", command=self.press1)
-        self.problem_entry2 = tk.Entry(self)
-        update_answer_btn = ttk.Button(self, text="Update Answer", command=self.press2)
-        self.problem_entry3 = tk.Entry(self)
-
-        #this label will display the result from a function that tells the user if update was sucessful
-        self.feedback_label = tk.Label(self, text = "")
-        self.feedback_label1 = tk.Label(self, text = "")
-        self.feedback_label2 = tk.Label(self, text = "")
-        self.feedback_label3 = tk.Label(self, text = "")
-        # empty label to create some space between the top
-        # the entry labels
-        empty_label = tk.Label(self, text="\n").pack()
-        empty_label1 = tk.Label(self, text="\n").pack()
-        empty_label2 = tk.Label(self, text="\n").pack()
-        empty_label3 = tk.Label(self, text="\n").pack()
-
-        # display id label on grid
-        update_problem_label.pack()
-        self.problem_entry.pack()
-
-        # display question label on grid
-        update_question_btn.pack()
-        self.problem_entry1.pack()
-
-        # display subject label on grid
-        update_subject_btn.pack()
-        self.problem_entry2.pack()
-
-        # display answer label on grid
-        update_answer_btn.pack()
-        self.problem_entry3.pack()
-
-        # display if update was successful
-        self.feedback_label.pack()
-        self.feedback_label1.pack()
-        self.feedback_label2.pack()
-        self.feedback_label3.pack()
-
-
-    def press(self):
-        '''calls a function that tells the user if update  of question was
-        sucessful and displays appropriate message on label'''
-
-        qid = self.problem_entry.get()
-        new_question = self.problem_entry1.get()
-
-        message = db.update_problem_question(qid, new_question, db.sqlite3.connect('ace.db'))
-        print(message)
-
-        self.feedback_label.config(text="Updated Successfully!")
-
-    def press1(self):
-        '''calls a function that tells the user if update of subject was sucessful
-        and displays appropriate message on label'''
-
-        qid = self.problem_entry.get()
-        new_subject = self.problem_entry2.get()
-
-        message = db.update_problem_subject(qid, new_subject, db.sqlite3.connect('ace.db'))
-        print(message)
-
-        self.feedback_label.config(text="Updated Successfully!")
-
-    def press2(self):
-        '''calls a function that tells the user if update of answer was sucessful
-        and displays appropriate message on label'''
-
-        qid = self.problem_entry.get()
-        new_answer = self.problem_entry3.get()
-
-        message = db.update_problem_answer(qid, new_answer, db.sqlite3.connect('ace.db'))
-        print(message)
-
-        self.feedback_label.config(text="Updated Successfully!")
+        GUISkeleton.__init__(self, parent)
+        self.cont = controller
+        self.labels = ["Subject", "Question", "Answer"]
+        # label at top of the frame
+        title = self.create_label(self, "Problem Database Management\n",
+                                  REGULAR_FONT, "Green").grid(
+                                 row=0, column=1)
+        # dictionaries to contain the widgets and associate widget to
+        # correspondin problem id
+        self.subjects = {}
+        self.questions = {}
+        self.answers = {}
+        # the buttons
+        self.updates = {}
+        self.deletes = {}
         
-"""
+        # the 3 static lables that are always there
+        i = 0
+        for label in self.labels:
+            new_label = self.create_label(self, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=1, column=i)
+            # create first row of entries for add_problem function
+            # set everything nicely on the grid
+            new_entry = self.create_entry(self, label,
+                                          REGULAR_FONT).grid(row=2, column=i)
+            i += 1
+        # create add problem button
+        add_problem_button = self.create_button(self, "Add problem")
+        add_problem_button.grid(row=2, column=3)
+        back_button = self.create_button(self, "Back")
+        # set button method to add_problem
+        add_problem_button.config(command=lambda : self.add_problem())
+        back_button["command"] = lambda: controller.show_frame(HomeScreen)
+        back_button.grid(row=2, column=4)
+        
+        # generate all the dynamically generated widget rows
+        self.gen_rows()
+        
+        # enable clicking functionality for all the buttons
+        self.enable_buttons()
+        
+          
+        
+    def gen_rows(self):
+        # get a list of all the problem ids in the database
+        ids = db.get_problem_ids(conn)
+        # set iterator for grid rows
+        i = 0
+        # for each id create a row
+        for qid in ids:
+            # create new entries 
+            subject_entry = ttk.Entry(self, font=REGULAR_FONT)
+            question_entry = ttk.Entry(self, font=REGULAR_FONT)
+            answer_entry = ttk.Entry(self, font=REGULAR_FONT)
+            # add to corresponding dictonaries with problem ids as keys
+            self.subjects[qid] = subject_entry
+            self.questions[qid] = question_entry    
+            self.answers[qid] = answer_entry
+          
+            # create new buttons
+            update_button = ttk.Button(self, text="Update")
+            delete_button = ttk.Button(self, text="Delete")
+            # add to corresponding dictonaries with problem ids as keys        
+            self.deletes[qid] = delete_button
+            self.updates[qid] = update_button
+            
+            # set everything nicely on the grid using an iterator i
+            subject_entry.grid(row=i+3, column=0)
+            question_entry.grid(row=i+3, column=1)
+            answer_entry.grid(row=i+3, column=2)
+            update_button.grid(row=i+3, column=3)
+            delete_button.grid(row=i+3, column=4)
+            i += 1
+            
+            # create new problem object to contain problem info
+            problem = Problem(qid)
+            # set each entry with the corresponding value from the problem object
+            subject_entry.insert(0, problem.get_subject())
+            question_entry.insert(0, problem.get_question())
+            answer_entry.insert(0, problem.get_answer())
+            
+        
+            
+    def del_problem(self, button):
+        '''
+        delete a problem from the database and show a success popup
+        '''
+        # remove problem from databse
+        db.remove_problem(button, conn)
+        
+        self.refresh()
+        
+        # show popup
+        showinfo("Success", "problem #" + str(button) + " has been deleted")
+    
+    def up_problem(self, button):
+        '''
+        delete a problem details in the database and show a success popup
+        '''        
+        # get new parameters from entry widgets in the dictionaries
+        new_subject = self.subjects[button].get()
+        new_question = self.questions[button].get()
+        new_answer = self.answers[button].get()
+        # update the database with new entries
+        db.update_problem_subject(button, new_subject, conn)
+        db.update_problem_question(button, new_question, conn)
+        db.update_problem_answer(button, new_answer, conn)
+        
+        self.refresh()
+        
+        # show popup
+        showinfo("Success", "problem #" + str(button) + " has been updated")
+        
+    def add_problem(self):
+        '''
+        delete a problem from the database and show a success popup
+        '''
+        # get new parameters from entry widgets in the dictionaries
+        new_subject = self.entry_fields["Subject"] .get()
+        new_question = self.entry_fields["Question"].get()
+        new_answer = self.entry_fields["Answer"].get()        
+        # add new problem to databse and save his id number
+        qid = db.add_problem(new_subject, new_question, new_answer, conn)
+        # show popup
+        self.refresh()
+        # clear entries
+        self.entry_fields["Subject"].set('')
+        self.entry_fields["Question"].set('')
+        self.entry_fields["Answer"].set('')      
+        showinfo("Success", "problem #" + str(qid) + " has been added to database")
+
+    def refresh(self):
+        for subject in list(self.subjects.items()):
+            subject[1].destroy()
+        for question in list(self.questions.items()):
+            question[1].destroy()
+        for answer in list(self.answers.items()):
+            answer[1].destroy()
+        for update in list(self.updates.items()):
+            update[1].destroy()
+        for delete in list(self.deletes.items()):
+            delete[1].destroy()
+        self.gen_rows()
+        self.enable_buttons()
+        
+    def enable_buttons(self):
+        # get a list of all existing problem ids
+        problem_ids = db.get_problem_ids(conn)        
+        # configure clicking function for all the delete buttons
+        for qid in problem_ids:
+            self.deletes[qid].config(command=lambda j=qid: self.del_problem(j))
+        # configure clicking function for all the update buttons
+        for qid in problem_ids:
+            self.updates[qid].config(command=lambda j=qid: self.up_problem(j))         
+
+
 if __name__ == "__main__":
     conn = db.sqlite3.connect('ace.db')
     app = AoS()
