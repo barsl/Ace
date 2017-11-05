@@ -80,7 +80,7 @@ class AoS(tk.Tk):
         # this loop adds screens to the dictionary,
         # once we build more screens, add them to the tuple 
         # for F in TUPLE e.g. (LoginScreen, HomeScreen, DataBlaBLa)
-        for F in (LoginScreen, HomeScreen, ProblemInterface,
+        for F in (LoginScreen, HomeScreen, ProblemInterface, UserHome,
                   UserInterface):
             # here F is the name of the Screen
             frame = F(self.container, self)
@@ -162,16 +162,41 @@ class LoginScreen(GUISkeleton):
             user_details = db.get_user_details_by_email(conn, creds[0])
             # if the provided password matches the one stored
             if (creds[1] == user_details[0][4]):
+                # check if user or admin
+                # print(user_details)
+                if (user_details[0][1] == 'student'):
+                    controller.show_frame(UserHome)
                 # move to home screen
-                controller.show_frame(HomeScreen)
+                elif (user_details[0][1] == 'admin'):
+                    controller.show_frame(HomeScreen)
+                else:
+                    showinfo("Fail", "User has no role")
             else :
                 # otherwise pop msg to terminal
                 showinfo("Fail", "Wrong combo")
+            self.entry_fields["Email"].set('')
+            self.entry_fields["Password"].set('')
         # print msg to terminal if email doesnt exist
-        except IndexError :
+        except IndexError:
             showinfo("Fail", "This email address is not in the system")
 
-   
+class UserHome(GUISkeleton):
+    '''HomeScreen that appears if login person is user'''
+    def __init__(self, parent, controller):
+        GUISkeleton.__init__(self, parent)
+        self.buttons = ["View Assignments", "Logout"]
+        self.init_window(controller)
+        
+    def init_window(self, controller):
+        '''initialises the window'''
+        self.create_empty_label(5)
+        for button in self.buttons:
+            new_button = self.create_button(self, button)
+            if (button == "Logout"):
+                new_button["command"] = (lambda :
+                                         controller.show_frame(LoginScreen))
+            new_button.pack()
+
 class HomeScreen(GUISkeleton):
     ''' Homescreen that appears after the user logs in
     at the moment the homescreen is just a placeholder for some buttons'''
