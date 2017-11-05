@@ -149,7 +149,7 @@ class LoginScreen(GUISkeleton):
         button.pack(pady=20)
         
     def verify_creds(self, controller):
-        ''' used to verify login credentials from the entry boxes
+        ''' used to verify  login credentials from the entry boxes
         of the LoginScreen '''
         i = 0;
         creds = []
@@ -271,8 +271,10 @@ class UserInterface(GUISkeleton):
         add_user_button = self.create_button(self, "Add User")
         # set button method to add_user  
         add_user_button["command"] = lambda : self.add_user()        
-        add_user_button.grid(row=2, column=3, columnspan=2)
-        
+        add_user_button.grid(row=2, column=3)
+        back_button = self.create_button(self, "Back")
+        back_button["command"] = lambda : controller.show_frame(HomeScreen)
+        back_button.grid(row=2, column=4)
         # generate all the dynamically generaterd widget rows
         self.gen_rows()
         
