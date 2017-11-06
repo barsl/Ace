@@ -8,6 +8,7 @@ from gui_skeleton import *
 from assignments import *
 from user import *
 from problem import *
+from user_assignments import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -48,7 +49,7 @@ class AoS(tk.Tk):
 
 
 
-    def show_frame(self, cont):
+    def show_frame(self, cont, uid=None):
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
         wanted screen to the front
@@ -57,6 +58,9 @@ class AoS(tk.Tk):
         # get the frame from the dictionary
         frame = self.frames[cont]
         frame.tkraise()
+        
+        if (uid):
+            frame.set_uid(uid)
         
 
 
@@ -126,7 +130,7 @@ class LoginScreen(GUISkeleton):
                 # check if user or admin
                 # print(user_details)
                 if (user_details[0][1] == 'student'):
-                    controller.show_frame('UserHome')
+                    controller.show_frame('UserHome', user_details[0])
                 # move to home screen
                 elif (user_details[0][1] == 'admin'):
                     controller.show_frame('HomeScreen')
@@ -143,10 +147,10 @@ class LoginScreen(GUISkeleton):
 
 class UserHome(GUISkeleton):
     '''HomeScreen that appears if login person is user'''
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, uid=None):
         GUISkeleton.__init__(self, parent)
         self.buttons = ["View Assignments", "Logout"]
-        self.init_window(controller)
+        self.cont = controller
         
     def init_window(self, controller):
         '''initialises the window'''
@@ -157,11 +161,16 @@ class UserHome(GUISkeleton):
         for button in self.buttons:
             new_button = self.create_button(self, button)
             if button == "View Assignments":
-                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments")
+                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid[0])
             elif (button == "Logout"):
                 new_button["command"] = (lambda :
                                          controller.show_frame("LoginScreen"))
             new_button.pack()
+            
+    def set_uid(self, uid):
+        self.uid = uid  
+        self.init_window(self.cont)
+
 
 class HomeScreen(GUISkeleton):
     ''' Homescreen that appears after the user logs in

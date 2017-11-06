@@ -14,9 +14,6 @@ c.execute('''CREATE TABLE problems
 
 c.execute('''CREATE TABLE assignments
           (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
-
-c.execute('''CREATE TABLE attempts
-          (aNum INTEGER PRIMARY KEY, aid integer, qids text, user text, date text, mark real, answers text)''')
 """
 def get_problem_details(conn, qid):
     """
@@ -293,91 +290,43 @@ def get_assignments_ids(conn):
     ids = []
     for row in rows:
         ids.append(row[0])
-    
+        
     return ids
 
-""" Attempts Functions """
-def get_attempt_details(conn, aNum):
-    """
-    returns an array of arrays containing rows' values for each column
-    conn is the is the sqlite3 connection objects, aNum is the problem id
-    """
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM attempts WHERE aNum=?", (aNum,))
- 
-    rows = cur.fetchall()
-    
-    return rows
-
-def get_attempt_ids(conn):
-    """
-    returns an array of arrays containing rows' values for each column
-    conn is the is the sqlite3 connection objects, aNum is the assignment id
-    """
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM attempts")
- 
-    rows = cur.fetchall()
-    ids = []
-    for row in rows:
-        ids.append(row[0])
-    
-    return ids
-
-def add_attempt(aNum, aid, qids, user, date, mark, answers, conn):
+def add_attempt(table_name, uid, problem_ids, conn):
     '''
-    Adds an attempts to the database. Returns a message of success.
+    Adds an assignment to the database. Returns the id of the new assignment.
     '''
+    # need to take in table name and build querry properly
+    
+    
     # create a cursor to database conn
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO attempts (aNum,aid,qids,user,date,mark,answers) VALUES ('" +
-              aNum + "','" + aid + "','" + qids + "','" + user + "','" + date + "','" + mark + "','" + answers + "')")
+    c.execute("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade)"+
+              "VALUES ('" + str(uid) + "','" + str(problem_ids) + "','','')")
 
     # Save (commit) the changes
     conn.commit()
-    return "Added attempt to database!"
+    
+def get_user_attempts(table_name, uid, conn):
+    '''
+    return a list of user attempts entries for user with uid
+    from the assignment with name table_name
+    '''
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + str(table_name) + " WHERE uid=" + str(uid))
+    
+    rows = cur.fetchall()
+    
+    return rows
 
-def remove_attempt(aNum, conn):
-    '''
-    Removes an attempts from the database. Returns a message of success.
-    '''
-    c = conn.cursor()
-    # Deletes a row of data
-    c.execute("DELETE FROM attempts WHERE id = " + str(aNum))
-    conn.commit()
-    return "Removed attempt " + str(aNum) + " from database!"
+def get_assignment_details(aid, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))
+ 
+    rows = cur.fetchall()
 
-def update_attempt_date(aNum, new_date, conn):
-    '''
-    Updates a username on the database. Returns a message of success.
-    '''
-    c = conn.cursor()
-    # Updates a question
-    c.execute("UPDATE attempts SET date = '" + new_date +
-              "' WHERE id = " + str(aNum))
-    conn.commit()
-    return "Updated attempt # " + str(aNum) + "'s date to " + new_date + "!"
-
-def update_attempt_mark(aNum, new_mark, conn):
-    '''
-    Updates a username on the database. Returns a message of success.
-    '''
-    c = conn.cursor()
-    # Updates a question
-    c.execute("UPDATE attempts SET mark = '" + new_mark +
-              "' WHERE id = " + str(aNum))
-    conn.commit()
-    return "Updated attempt # " + str(aNum) + "'s mark to " + new_mark + "!"
-
-def update_attempt_answers(aNum, new_answers, conn):
-    '''
-    Updates a username on the database. Returns a message of success.
-    '''
-    c = conn.cursor()
-    # Updates a question
-    c.execute("UPDATE attempts SET answers = '" + new_answers +
-              "' WHERE id = " + str(aNum))
-    conn.commit()
-    return "Updated attempt # " + str(aNum) + "'s answers to " + new_answers + "!"
+        
+    return rows[0]
