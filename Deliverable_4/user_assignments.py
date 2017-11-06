@@ -35,10 +35,7 @@ class ViewUserAssignments(GUISkeleton):
         # the buttons
         self.past_attempts = {}
         self.new_attempts = {}
-<<<<<<< HEAD
         self.cont = controller
-=======
->>>>>>> del4_separated
 
         i = 0
         for label in self.labels:
@@ -68,11 +65,7 @@ class ViewUserAssignments(GUISkeleton):
         for qid in problem_ids:
             self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
     '''
-<<<<<<< HEAD
     def set_uid(self, uid=None, aid=None):
-=======
-    def set_uid(self, uid):
->>>>>>> del4_separated
         self.uid = uid
         self.gen_rows()
     
@@ -87,10 +80,7 @@ class ViewUserAssignments(GUISkeleton):
             attempts = db.get_user_attempts("a"+str(aid), self.uid, conn)
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
-<<<<<<< HEAD
-=======
-            print(dets)
->>>>>>> del4_separated
+            
             # create new entries 
             name_label = Label(self, font=REGULAR_FONT, text=dets[1])
             deadline_label = Label(self, font=REGULAR_FONT, text=dets[3])
@@ -102,13 +92,9 @@ class ViewUserAssignments(GUISkeleton):
           
             # create new buttons
             past_attempt_button = self.create_button(self, "Past Attempts")
-<<<<<<< HEAD
             new_attempt_button = self.create_button(self, "Current Attempt")
             new_attempt_button.config(command=lambda j=aid: self.cont.show_frame("Attempt" ,self.uid, j))
             
-=======
-            new_attempt_button = self.create_button(self, "New Attempt")
->>>>>>> del4_separated
             # add to corresponding dictonaries with user ids as keys        
             self.past_attempts[aid] = past_attempt_button
             self.new_attempts[aid] = new_attempt_button

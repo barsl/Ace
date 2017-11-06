@@ -333,13 +333,10 @@ def get_user_attempts(table_name, uid, conn):
     
     return rows
 
-<<<<<<< HEAD
 def get_user_first_attempt(aid, uid, conn):
 
     return get_user_attempts("a"+str(aid), uid, conn)[0]
 
-=======
->>>>>>> del4_separated
 def get_assignment_details(aid, conn):
     cur = conn.cursor()
     cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))

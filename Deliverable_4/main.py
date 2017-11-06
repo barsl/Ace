@@ -9,11 +9,7 @@ from assignments import *
 from user import *
 from problem import *
 from user_assignments import *
-<<<<<<< HEAD
 from attempt import *
-
-=======
->>>>>>> del4_separated
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -40,21 +36,6 @@ class AoS(tk.Tk):
         # the frame that is on the top is the one that is on the screen
         # the dictionary will contain the different screens
         self.frames = {}
-<<<<<<< HEAD
-=======
-
-        for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
-                       "ProblemInterface":ProblemInterface, "UserHome":UserHome,
-                       "UserInterface":UserInterface, "AddAssignment":AddAssignment
-                       ,"ViewUserAssignments":ViewUserAssignments}.items():
-            new_frame = frame[1](self.container, self)
-            self.frames[frame[0]] = new_frame
-            new_frame.grid(row=0, column=1, sticky="nsew")
-                     
-
-        self.show_frame("LoginScreen")
->>>>>>> del4_separated
-
         for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
                        "ProblemInterface":ProblemInterface, "UserHome":UserHome,
                        "UserInterface":UserInterface, "AddAssignment":AddAssignment
@@ -67,13 +48,7 @@ class AoS(tk.Tk):
 
         self.show_frame("LoginScreen")
 
-
-<<<<<<< HEAD
-
     def show_frame(self, cont, uid=None, aid=None):
-=======
-    def show_frame(self, cont, uid=None):
->>>>>>> del4_separated
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
         wanted screen to the front
@@ -84,14 +59,7 @@ class AoS(tk.Tk):
         frame.tkraise()
         
         if (uid):
-<<<<<<< HEAD
             frame.set_uid(uid, aid)
-           
-=======
-            frame.set_uid(uid)
->>>>>>> del4_separated
-        
-
 
 class LoginScreen(GUISkeleton):
     '''Creates a login screen, which will be the 
@@ -195,12 +163,9 @@ class UserHome(GUISkeleton):
                 new_button["command"] = (lambda :
                                          controller.show_frame("LoginScreen"))
             new_button.pack()
-            
-<<<<<<< HEAD
+
     def set_uid(self, uid=None, aid=None):
-=======
-    def set_uid(self, uid):
->>>>>>> del4_separated
+        del4_separated
         self.uid = uid  
         self.init_window(self.cont)
 
