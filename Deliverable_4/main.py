@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
-from PIL import ImageTk, Image
+# from PIL import ImageTk, Image
 from tkinter.messagebox import showinfo
 import database_api as db
 from gui_skeleton import *
@@ -67,17 +67,18 @@ class LoginScreen(GUISkeleton):
     def __init__(self, parent, controller):
         self.entry_keys = ["Email", "Password"]      
         GUISkeleton.__init__(self, parent)
-        img = "logo2.jpg"
-        self.add_pic_panel(img)
+        # img = "logo2.jpg"
+   #     self.add_pic_panel(img)
         self.create_login_labels()
         self.create_entry_fields(controller)
-        
+    
+    '''    
     def add_pic_panel(self, pic):
         img = ImageTk.PhotoImage(Image.open(pic))
         label = Label(self, image=img)
         label.img = img # to keep the reference for the image.
         label.pack(side="left") # <--- pack
-
+'''
     def create_login_labels(self):
         '''creates the beginning labels'''
         # login text
