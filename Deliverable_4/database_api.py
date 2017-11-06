@@ -254,3 +254,29 @@ def add_assignment(name, formula, deadline, visible, conn):
     # Save (commit) the changes
     conn.commit()
     
+    # return the new assignment id
+    return get_assignments_ids(conn)[-1]
+    
+def create_assignment_table(num, conn):
+    # create a cursor to database conn
+    c = conn.cursor()
+    
+    # create the table table query
+    query = ("CREATE TABLE a" + num + "uid int, questions text, progress text, "+
+             "grade text")
+    # execute querry
+    c.execute(query)
+    
+    # Save (commit) the changes
+    conn.commit()    
+    
+def get_assignments_ids(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM assignments")
+ 
+    rows = cur.fetchall()
+    ids = []
+    for row in rows:
+        ids.append(row[0])
+    
+    return ids

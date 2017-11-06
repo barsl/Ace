@@ -11,7 +11,9 @@ conn = sqlite3.connect('ace.db')
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
+TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
+HOME_FONT = ("Comic Sans", 26, "bold")
 
 
 class AddAssignment(GUISkeleton):
@@ -140,6 +142,13 @@ class AddAssignment(GUISkeleton):
         '''
         self.create_formula()
         self.update_assignments_table()
+        # create the assignment table with it's proper name, and save it's new id
+        num = db.create_assignment_table(num, conn)
+        
+        # get a list of currently existing user ids in the system
+        ids = db.get_user_ids()
+        
+        # for each user id, create a table
         
 class ViewUserAssignments(GUISkeleton):
     '''
@@ -222,7 +231,38 @@ class ViewUserAssignments(GUISkeleton):
             i += 1
         
 
- 
+class Assignment():
+    '''
+    A problem object which is used to interact with assignment's data,
+    and perform actions that affect assignment's data
+    '''
+    def __init__(self,aid):
+        '''
+        aid is the assignment id of the assignment we want to create
+        '''
+        # get user details from database
+        assignment = db.get_assignment_details(conn, aid)[0]
+        # assign corresponding values to variables
+        self.aid = assignment[0]
+        self.topic = assignment[1]
+        self.deadline = assignment[2]
+        self.visible = assignment[3]
+        self.questions = assignment[4]
+        self.length = assignment[5]
+        
+    # getters and setters
+    def get_aid(self):
+        return self.aid
+    def get_deadline(self):
+        return self.deadline
+    def get_length(self):
+        return self.length     
+    def get_topic(self):
+        return self.topic
+    def get_questions(self):
+        return self.questions
+    def get_visible(self):
+        return self.visible 
             
           
         

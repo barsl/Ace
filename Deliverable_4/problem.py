@@ -8,7 +8,9 @@ from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
+TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
+HOME_FONT = ("Comic Sans", 26, "bold")
 
 conn = sqlite3.connect('ace.db')
 
@@ -50,8 +52,8 @@ class ProblemInterface(GUISkeleton):
         self.labels = ["Subject", "Question", "Answer"]
         # label at top of the frame
         title = self.create_label(self, "Problem Database Management\n",
-                                  REGULAR_FONT, "Green").grid(
-                                 row=0, column=1)
+                                  TITLE_FONT,
+                                  "Red").grid(row=0, column=1, pady=10)
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
         self.subjects = {}
@@ -78,7 +80,7 @@ class ProblemInterface(GUISkeleton):
         # set button method to add_problem
         add_problem_button.config(command=lambda : self.add_problem())
         back_button["command"] = lambda: controller.show_frame('HomeScreen')
-        back_button.grid(row=2, column=4)
+        back_button.grid(row=0, column=3)
         
         # generate all the dynamically generated widget rows
         self.gen_rows()
@@ -198,12 +200,4 @@ class ProblemInterface(GUISkeleton):
             self.deletes[qid].config(command=lambda j=qid: self.del_problem(j))
         # configure clicking function for all the update buttons
         for qid in problem_ids:
-            self.updates[qid].config(command=lambda j=qid: self.up_problem(j))         
-        
-        
-
- 
-            
-          
-        
-        
+            self.updates[qid].config(command=lambda j=qid: self.up_problem(j))

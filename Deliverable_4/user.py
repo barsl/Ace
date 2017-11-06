@@ -8,9 +8,13 @@ from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
+TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
+HOME_FONT = ("Comic Sans", 26, "bold")
 
 conn = sqlite3.connect('ace.db')
+
+
 
 class User():
     '''
@@ -53,8 +57,8 @@ class UserInterface(GUISkeleton):
         self.labels = ["Role", "Name", "Email"]
         # label at top of the frame
         new_label = self.create_label(self, "User Database Management\n",
-                                      REGULAR_FONT,
-                                      "Green").grid(row=0, column=1) 
+                                      TITLE_FONT,
+                                      "Red").grid(row=0, column=1,pady=10) 
         # dictionaries to contain the widgets and associate widget to
         # corresponding user id
         self.roles = {}
@@ -82,7 +86,7 @@ class UserInterface(GUISkeleton):
         add_user_button.grid(row=2, column=3)
         back_button = self.create_button(self, "Back")
         back_button["command"] = lambda : controller.show_frame('HomeScreen')
-        back_button.grid(row=2, column=4)
+        back_button.grid(row=0, column=3)
         # generate all the dynamically generaterd widget rows
         self.gen_rows()
         
@@ -202,4 +206,4 @@ class UserInterface(GUISkeleton):
             self.deletes[uid].config(command=lambda j=uid: self.del_user(j))
         # configure clicking function for all the update buttons
         for uid in user_ids:
-            self.updates[uid].config(command=lambda j=uid: self.up_user(j))         
+            self.updates[uid].config(command=lambda j=uid: self.up_user(j))

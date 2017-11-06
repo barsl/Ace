@@ -143,15 +143,17 @@ class UserHome(GUISkeleton):
         
     def init_window(self, controller):
         '''initialises the window'''
-        self.create_empty_label(5)
+        homescreen_label = self.create_label(self, "Home", HOME_FONT, "blue")
+        self.create_empty_label(1)
+        homescreen_label.pack()
+        self.create_empty_label(2)
         for button in self.buttons:
             new_button = self.create_button(self, button)
-            if (button == "Logout"):
+            if button == "View Assignments":
+                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments")
+            elif (button == "Logout"):
                 new_button["command"] = (lambda :
-                                         controller.show_frame('LoginScreen'))
-            if (button == "View Assignments"):
-                new_button["command"] = (lambda :
-                                         controller.show_frame('ViewUserAssignments'))
+                                         controller.show_frame("LoginScreen"))
             new_button.pack()
 
 class HomeScreen(GUISkeleton):
