@@ -34,8 +34,8 @@ class AddAssignment(GUISkeleton):
         
         # label at top of the frame
         ttk.Label(self, text="Add Assignment Menu\n",
-                             font=APP_HIGHLIGHT_FONT, foreground="green").grid(
-                                 row=self.row_counter, column=1)
+                             font=TITLE_FONT, foreground="red").grid(
+                                 row=self.row_counter, column=1, pady=10)
         # increment current row counter
         self.row_counter += 1
         
@@ -158,9 +158,9 @@ class ViewUserAssignments(GUISkeleton):
         GUISkeleton.__init__(self, parent)        
         self.labels = ["Topic", "Deadline", "Grade"]
         # label at top of the frame
-        title = self.create_label(self, "User Assignments\n",
+        title = self.create_label(self, "Your Assignments\n",
                                   TITLE_FONT,
-                                  "Red").grid(row=1, column=1)
+                                  "Red").grid(row=1, column=1, pady=10)
         # dictionaries to contain the widgets and associate widget to
         # correspondin assignment id
         self.names = {}

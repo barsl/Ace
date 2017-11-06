@@ -184,11 +184,12 @@ class HomeScreen(GUISkeleton):
     
     def init_window(self, controller):
         ''' initialises the homescreen and its elements'''
-        homescreen_label = self.create_label(self, "Home", APP_HIGHLIGHT_FONT)
+        homescreen_label = self.create_label(self, "Home", HOME_FONT, "blue")
         # just to get the formatting correct
         # empty_label = ttk.Label(self, text="\n").pack()
         self.create_empty_label(1)
         homescreen_label.pack()
+        self.create_empty_label(2)
         self.create_buttons(controller)
         
 
