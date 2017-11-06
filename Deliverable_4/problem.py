@@ -40,6 +40,7 @@ class Problem():
         return self.question
     def get_answer(self):
         return self.answer
+    
 
 class ProblemInterface(GUISkeleton):
     '''

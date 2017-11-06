@@ -6,6 +6,7 @@ import database_api as db
 import sqlite3
 from user import *
 from main import *
+from random import sample
 
 conn = sqlite3.connect('ace.db')
 
@@ -89,6 +90,20 @@ class AddAssignment(GUISkeleton):
         self.done_button.grid(row=self.row_counter, column=4)          
         self.row_counter += 1 
         
+    def refresh(self):
+        self.name_entry.delete(0, END)
+        self.deadline_entry.delete(0, END)
+        self.visible_entry.delete(0, END)
+        self.subj_entry.delete(0, END)
+        self.num_quests_entry.delete(0, END)
+        
+        for subj in self.subjs:
+            subj.destroy()
+        for num in self.nums:
+            num.destroy()
+            
+        self.formula = ""
+        
     def gen_row(self, subj, num_quests):
         '''
         takes a subject a number of questions from that subject, add these
@@ -97,13 +112,13 @@ class AddAssignment(GUISkeleton):
         '''
         # create a subj label, add to list of labels, and fill with details
         subj_label = Label(self, text=subj,
-                         font=REGULAR_FONT, foreground="black").grid(
-                             row=self.row_counter, column=0)
+                         font=REGULAR_FONT, foreground="black")
+        subj_label.grid(row=self.row_counter, column=0)
         self.subjs.append(subj_label)
         # create a #q's label, add to list of labels, and fill with details
         num_quests_label = Label(self, text=num_quests,
-                         font=REGULAR_FONT, foreground="black").grid(
-                             row=self.row_counter, column=1)
+                         font=REGULAR_FONT, foreground="black")
+        num_quests_label.grid(row=self.row_counter, column=1)
         self.nums.append(num_quests_label)
         
         # create a dictinary pair
@@ -127,13 +142,15 @@ class AddAssignment(GUISkeleton):
             self.formula += str(pair[0]) + ":" + str(pair[1]) + ","
             
         self.formula = self.formula[:-1]
-        
+
     def update_assignments_table(self):
         ''' 
         insert a new row to the assignments table with the details
         '''
-        db.add_assignment(self.name_entry.get(), self.formula, 
+        num = db.add_assignment(self.name_entry.get(), self.formula, 
                           self.deadline_entry.get(), self.visible_entry.get(), conn)
+        # return id of new assignment
+        return num
         
     def done(self):
         '''
@@ -141,14 +158,47 @@ class AddAssignment(GUISkeleton):
         create new assignment table->add row for each user
         '''
         self.create_formula()
-        self.update_assignments_table()
-        # create the assignment table with it's proper name, and save it's new id
-        num = db.create_assignment_table(num, conn)
+        num = self.update_assignments_table()
+        # create the assignment table with it's proper name in the format: a#
+        db.create_assignment_table(num, conn)
         
         # get a list of currently existing user ids in the system
-        ids = db.get_user_ids()
+        ids = db.get_user_ids(conn)
         
-        # for each user id, create a table
+        # for each user id, create a first attempt entry using a unique set 
+        # of questions
+        print(self.create_problem_set(self.formula))
+        
+        self.refresh()
+        
+        
+    def create_problem_set(self, formula):
+        '''
+        takes a formula "subj1:num1,subj2:num2..." , creates a unique set
+        of problems set according to the formula
+        '''
+        problem_set = []
+        pairs = {}
+        # separate the string to pairs, break at the ","
+        str_pairs = formula.split(",")
+        # for each pair , split at the ":" and add to dictionary
+        for pair in str_pairs:
+            p = pair.split(":")
+            pairs[p[0]] = p[1]
+        # for each pair in the dictionary:
+        for item in pairs.items():
+            # get a list of the problems with the same subject
+            rows = db.get_problems_by_subj(item[0], conn)
+            # get a sample space of random rows with the right amount of problems
+            sample_rows = sample(rows, int(item[1]))
+            # add subj sample rows to problem_set
+            problem_set += sample_rows
+            
+        return problem_set
+    
+    
+            
+
         
 class ViewUserAssignments(GUISkeleton):
     '''

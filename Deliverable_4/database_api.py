@@ -12,7 +12,7 @@ c.execute('''CREATE TABLE users
 c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
 
-c.execute('''CREATE TABLE assignemnts
+c.execute('''CREATE TABLE assignments
           (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
 """
 def get_problem_details(conn, qid):
@@ -22,6 +22,18 @@ def get_problem_details(conn, qid):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
+ 
+    rows = cur.fetchall()
+    
+    return rows
+
+def get_problems_by_subj(subj, conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, qid is the problem id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM problems WHERE subject=?", (subj,))
  
     rows = cur.fetchall()
     
@@ -248,7 +260,7 @@ def add_assignment(name, formula, deadline, visible, conn):
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO assignemnts (name,formula,deadline,visible) VALUES ('" +
+    c.execute("INSERT INTO assignments (name,formula,deadline,visible) VALUES ('" +
               name + "','" + formula + "','" + deadline + "','" + visible + "')")
 
     # Save (commit) the changes
@@ -262,8 +274,8 @@ def create_assignment_table(num, conn):
     c = conn.cursor()
     
     # create the table table query
-    query = ("CREATE TABLE a" + num + "uid int, questions text, progress text, "+
-             "grade text")
+    query = ("CREATE TABLE a" + str(num) + "(uid int, questions text, progress text, "+
+             "grade text)")
     # execute querry
     c.execute(query)
     
