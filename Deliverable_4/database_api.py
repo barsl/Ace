@@ -38,6 +38,18 @@ def get_problems_by_subj(subj, conn):
     
     return rows
 
+def get_problems_by_subj(subj, conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, qid is the problem id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM problems WHERE subject=?", (subj,))
+ 
+    rows = cur.fetchall()
+    
+    return rows
+
 def get_user_details_by_email(conn, email):
     """
     returns an array of arrays containing rows' values for each column
@@ -321,10 +333,13 @@ def get_user_attempts(table_name, uid, conn):
     
     return rows
 
+<<<<<<< HEAD
 def get_user_first_attempt(aid, uid, conn):
 
     return get_user_attempts("a"+str(aid), uid, conn)[0]
 
+=======
+>>>>>>> del4_separated
 def get_assignment_details(aid, conn):
     cur = conn.cursor()
     cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))

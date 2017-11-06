@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
+from PIL import ImageTk, Image
 from tkinter.messagebox import showinfo
 import database_api as db
 from gui_skeleton import *
@@ -8,8 +9,11 @@ from assignments import *
 from user import *
 from problem import *
 from user_assignments import *
+<<<<<<< HEAD
 from attempt import *
 
+=======
+>>>>>>> del4_separated
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -36,6 +40,20 @@ class AoS(tk.Tk):
         # the frame that is on the top is the one that is on the screen
         # the dictionary will contain the different screens
         self.frames = {}
+<<<<<<< HEAD
+=======
+
+        for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
+                       "ProblemInterface":ProblemInterface, "UserHome":UserHome,
+                       "UserInterface":UserInterface, "AddAssignment":AddAssignment
+                       ,"ViewUserAssignments":ViewUserAssignments}.items():
+            new_frame = frame[1](self.container, self)
+            self.frames[frame[0]] = new_frame
+            new_frame.grid(row=0, column=1, sticky="nsew")
+                     
+
+        self.show_frame("LoginScreen")
+>>>>>>> del4_separated
 
         for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
                        "ProblemInterface":ProblemInterface, "UserHome":UserHome,
@@ -50,8 +68,12 @@ class AoS(tk.Tk):
         self.show_frame("LoginScreen")
 
 
+<<<<<<< HEAD
 
     def show_frame(self, cont, uid=None, aid=None):
+=======
+    def show_frame(self, cont, uid=None):
+>>>>>>> del4_separated
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
         wanted screen to the front
@@ -62,8 +84,12 @@ class AoS(tk.Tk):
         frame.tkraise()
         
         if (uid):
+<<<<<<< HEAD
             frame.set_uid(uid, aid)
            
+=======
+            frame.set_uid(uid)
+>>>>>>> del4_separated
         
 
 
@@ -73,20 +99,26 @@ class LoginScreen(GUISkeleton):
     def __init__(self, parent, controller):
         self.entry_keys = ["Email", "Password"]      
         GUISkeleton.__init__(self, parent)
+        img = "logo2.jpg"
+        self.add_pic_panel(img)
         self.create_login_labels()
         self.create_entry_fields(controller)
-
+        
+    def add_pic_panel(self, pic):
+        img = ImageTk.PhotoImage(Image.open(pic))
+        label = Label(self, image=img)
+        label.img = img # to keep the reference for the image.
+        label.pack(side="left") # <--- pack
 
     def create_login_labels(self):
         '''creates the beginning labels'''
         # login text
         login_label = self.create_label(self, "Welcome to Ace! Please Log In: ",
-                          APP_HIGHLIGHT_FONT, "blue")
+                          HOME_FONT, "Blue")
         #empty label for format
         # tk.Label(self, text="\n\n\n\n").pack()
-        self.create_empty_label(4)
-        login_label.pack()
-        
+        self.create_empty_label(5)
+        login_label.pack(side="top", padx=10)  
         
     def create_entry_fields(self, controller):
         ''' creates the entry fields for username and password'''
@@ -164,7 +196,11 @@ class UserHome(GUISkeleton):
                                          controller.show_frame("LoginScreen"))
             new_button.pack()
             
+<<<<<<< HEAD
     def set_uid(self, uid=None, aid=None):
+=======
+    def set_uid(self, uid):
+>>>>>>> del4_separated
         self.uid = uid  
         self.init_window(self.cont)
 
