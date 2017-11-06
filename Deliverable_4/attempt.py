@@ -29,17 +29,12 @@ class Attempt(GUISkeleton):
         self.labels = ["Subject", "Question", "Answer"]
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
-        self.subjects = {}
-        self.questions = {}
-        self.answers = {}
-        # the buttons
-        self.updates = {}
-        self.deletes = {}
+        self.entries = []
+        self.labels = []
         
 
         back_button = self.create_button(self, "Back")
-        back_button["command"] = lambda: controller.show_frame('ViewUserAssignments',
-                                                               self.uid)
+        back_button["command"] = lambda: self.refresh()
         back_button.grid(row=0, column=3)
         
         
@@ -70,7 +65,8 @@ class Attempt(GUISkeleton):
             # create new entries 
             question_label = Label(self, font=REGULAR_FONT)
             answer_entry = Entry(self, font=REGULAR_FONT)
- 
+            self.labels.append(question_label)
+            self.entries.append(answer_entry)
             # add to corresponding dictonaries with problem ids as keys
             # self.subjects[qid] = subject_entry
             # self.questions[qid] = question_entry
@@ -86,6 +82,12 @@ class Attempt(GUISkeleton):
             question_label.config(text=db.get_problem_details(conn, qid)[0][2])
     
             
+    def refresh(self):
+        for i in self.entries:
+            i.destroy()
+        for j in self.labels:
+            j.destroy()
+        self.cont.show_frame('ViewUserAssignments', self.uid)
         
     """       
     def del_problem(self, button):
@@ -136,19 +138,7 @@ class Attempt(GUISkeleton):
         self.entry_fields["Answer"].set('')      
         showinfo("Success", "problem #" + str(qid) + " has been added to database")
 
-    def refresh(self):
-        for subject in list(self.subjects.items()):
-            subject[1].destroy()
-        for question in list(self.questions.items()):
-            question[1].destroy()
-        for answer in list(self.answers.items()):
-            answer[1].destroy()
-        for update in list(self.updates.items()):
-            update[1].destroy()
-        for delete in list(self.deletes.items()):
-            delete[1].destroy()
-        self.gen_rows()
-        self.enable_buttons()
+
         
     def enable_buttons(self):
         # get a list of all existing problem ids
