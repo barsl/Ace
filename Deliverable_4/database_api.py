@@ -11,9 +11,10 @@ c.execute('''CREATE TABLE users
 
 c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
+
+c.execute('''CREATE TABLE assignments
+          (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
 """
-
-
 def get_problem_details(conn, qid):
     """
     returns an array of arrays containing rows' values for each column
@@ -21,6 +22,18 @@ def get_problem_details(conn, qid):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
+ 
+    rows = cur.fetchall()
+    
+    return rows
+
+def get_problems_by_subj(subj, conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, qid is the problem id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM problems WHERE subject=?", (subj,))
  
     rows = cur.fetchall()
     
@@ -236,3 +249,84 @@ def get_user_ids(conn):
         ids.append(row[0])
     
     return ids
+
+
+''' *************** Assignments ********************* '''
+def add_assignment(name, formula, deadline, visible, conn):
+    '''
+    Adds an assignment to the database. Returns the id of the new assignment.
+    '''
+    # create a cursor to database conn
+    c = conn.cursor()
+
+    # Insert a row of data
+    c.execute("INSERT INTO assignments (name,formula,deadline,visible) VALUES ('" +
+              name + "','" + formula + "','" + deadline + "','" + visible + "')")
+
+    # Save (commit) the changes
+    conn.commit()
+    
+    # return the new assignment id
+    return get_assignments_ids(conn)[-1]
+    
+def create_assignment_table(num, conn):
+    # create a cursor to database conn
+    c = conn.cursor()
+    
+    # create the table table query
+    query = ("CREATE TABLE a" + str(num) + "(uid int, questions text, progress text, "+
+             "grade text)")
+    # execute querry
+    c.execute(query)
+    
+    # Save (commit) the changes
+    conn.commit()    
+    
+def get_assignments_ids(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM assignments")
+ 
+    rows = cur.fetchall()
+    ids = []
+    for row in rows:
+        ids.append(row[0])
+        
+    return ids
+
+def add_attempt(table_name, uid, problem_ids, conn):
+    '''
+    Adds an assignment to the database. Returns the id of the new assignment.
+    '''
+    # need to take in table name and build querry properly
+    
+    
+    # create a cursor to database conn
+    c = conn.cursor()
+
+    # Insert a row of data
+    c.execute("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade)"+
+              "VALUES ('" + str(uid) + "','" + str(problem_ids) + "','','')")
+
+    # Save (commit) the changes
+    conn.commit()
+    
+def get_user_attempts(table_name, uid, conn):
+    '''
+    return a list of user attempts entries for user with uid
+    from the assignment with name table_name
+    '''
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + str(table_name) + " WHERE uid=" + str(uid))
+    
+    rows = cur.fetchall()
+    
+    return rows
+
+def get_assignment_details(aid, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))
+ 
+    rows = cur.fetchall()
+
+        
+    return rows[0]
