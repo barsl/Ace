@@ -3,13 +3,14 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
-import sqlite3
-
-conn = sqlite3.connect('ace.db')
+from assignments import *
+from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
 NICE_BLUE = "#3399FF"
+
+conn = sqlite3.connect('ace.db')
 
 class User():
     '''
@@ -41,21 +42,21 @@ class User():
     def get_password(self):
         return self.password  
 
-class UserInterface(tk.Frame):
+class UserInterface(GUISkeleton):
     '''
-    Objects of this type are used to genereate the GUI for the User Database
+    Objects of this type are used to generate the GUI for the User Database
     Management screen
     '''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        GUISkeleton.__init__(self, parent)
         self.cont = controller
-        
+        self.labels = ["Role", "Name", "Email"]
         # label at top of the frame
-        ttk.Label(self, text="User Database Management\n",
-                             font=REGULAR_FONT, foreground="Green").grid(
-                                 row=0, column=1)
+        new_label = self.create_label(self, "User Database Management\n",
+                                      REGULAR_FONT,
+                                      "Green").grid(row=0, column=1) 
         # dictionaries to contain the widgets and associate widget to
-        # correspondin user id
+        # corresponding user id
         self.roles = {}
         self.names = {}
         self.emails = {}
@@ -63,27 +64,25 @@ class UserInterface(tk.Frame):
         self.deletes = {}
         
         # the 3 static lables that are always there
-        tk.Label(self, text="Role", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=0)
-        tk.Label(self, text="Name", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=1)
-        tk.Label(self, text="Email", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=2)
-        
-        # create first row of entries for add_user function
-        self.role_entry = tk.Entry(self, font=REGULAR_FONT)
-        self.name_entry = tk.Entry(self, font=REGULAR_FONT)
-        self.email_entry = tk.Entry(self, font=REGULAR_FONT)   
-        # set everything nicely on the grid
-        self.role_entry.grid(row=2, column=0)
-        self.name_entry.grid(row=2, column=1)
-        self.email_entry.grid(row=2, column=2)  
+        i = 0
+        for label in self.labels:
+            new_label = self.create_label(self, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=1, column=i)
+            # create first row of entries for add_problem function
+            # set everything nicely on the grid
+            # create first row of entries for add_user function
+            # set everything nicely on the grid            
+            new_entry = self.create_entry(self, label,
+                                          REGULAR_FONT).grid(row=2, column=i)
+            i += 1         
         # create add user button
-        add_user_button = Button(self, text="Add User", font=REGULAR_FONT)
-        add_user_button.grid(row=2, column=3, columnspan=2)
-        # set button method to add_user
-        add_user_button.config(command=lambda : self.add_user())
-        
+        add_user_button = self.create_button(self, "Add User")
+        # set button method to add_user  
+        add_user_button["command"] = lambda : self.add_user()        
+        add_user_button.grid(row=2, column=3)
+        back_button = self.create_button(self, "Back")
+        back_button["command"] = lambda : controller.show_frame('HomeScreen')
+        back_button.grid(row=2, column=4)
         # generate all the dynamically generaterd widget rows
         self.gen_rows()
         
@@ -100,17 +99,17 @@ class UserInterface(tk.Frame):
         # for each id create a row
         for uid in ids:
             # create new entries 
-            role_entry = tk.Entry(self, font=REGULAR_FONT)
-            name_entry = tk.Entry(self, font=REGULAR_FONT)
-            email_entry = tk.Entry(self, font=REGULAR_FONT)
+            role_entry = ttk.Entry(self, font=REGULAR_FONT)
+            name_entry = ttk.Entry(self, font=REGULAR_FONT)
+            email_entry = ttk.Entry(self, font=REGULAR_FONT)
             # add to corresponding dictonaries with user ids as keys
             self.roles[uid] = role_entry
             self.names[uid] = name_entry    
             self.emails[uid] = email_entry
           
             # create new buttons
-            update_button = Button(self, text="Update", font=REGULAR_FONT)
-            delete_button = Button(self, text="Delete", font=REGULAR_FONT)
+            update_button = self.create_button(self, "Update")
+            delete_button = self.create_button(self, "Delete")
             # add to corresponding dictonaries with user ids as keys        
             self.deletes[uid] = delete_button
             self.updates[uid] = update_button
@@ -167,18 +166,18 @@ class UserInterface(tk.Frame):
         delete a user from the database and show a success popup
         '''
         # get new parameters from entry widgets in the dictionaries
-        new_role = self.role_entry.get()
-        new_name = self.name_entry.get()
-        new_email = self.email_entry.get()        
+        new_role = self.entry_fields["Role"].get()
+        new_name = self.entry_fields["Name"].get()
+        new_email = self.entry_fields["Email"].get()        
         # add new user to databse and save his id number
         uid = db.add_user(new_role, new_name, new_email, "", conn)
         # show popup
         self.refresh()
         # clear entries
-        self.role_entry.delete(0, 'end')
-        self.name_entry.delete(0, 'end')
-        self.email_entry.delete(0, 'end')        
-        showinfo("Success", "User #" + str(uid) + " has been added to database")
+        self.entry_fields["Role"].set('')
+        self.entry_fields["Name"].set('')
+        self.entry_fields["Email"].set('')        
+        showinfo("Success", "User #" + str(uid ) + " has been added to database")
         
 
     def refresh(self):
@@ -204,12 +203,3 @@ class UserInterface(tk.Frame):
         # configure clicking function for all the update buttons
         for uid in user_ids:
             self.updates[uid].config(command=lambda j=uid: self.up_user(j))         
-        
-        
-
- 
-            
-          
-        
-        
-            

@@ -11,9 +11,10 @@ c.execute('''CREATE TABLE users
 
 c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
+
+c.execute('''CREATE TABLE assignemnts
+          (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
 """
-
-
 def get_problem_details(conn, qid):
     """
     returns an array of arrays containing rows' values for each column
@@ -236,3 +237,20 @@ def get_user_ids(conn):
         ids.append(row[0])
     
     return ids
+
+
+''' *************** Assignments ********************* '''
+def add_assignment(name, formula, deadline, visible, conn):
+    '''
+    Adds an assignment to the database. Returns the id of the new assignment.
+    '''
+    # create a cursor to database conn
+    c = conn.cursor()
+
+    # Insert a row of data
+    c.execute("INSERT INTO assignemnts (name,formula,deadline,visible) VALUES ('" +
+              name + "','" + formula + "','" + deadline + "','" + visible + "')")
+
+    # Save (commit) the changes
+    conn.commit()
+    

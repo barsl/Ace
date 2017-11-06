@@ -3,13 +3,14 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
-import sqlite3
-
-conn = sqlite3.connect('ace.db')
+from assignments import *
+from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
 NICE_BLUE = "#3399FF"
+
+conn = sqlite3.connect('ace.db')
 
 class Problem():
     '''
@@ -38,18 +39,18 @@ class Problem():
     def get_answer(self):
         return self.answer
 
-class ProblemInterface(tk.Frame):
+class ProblemInterface(GUISkeleton):
     '''
     Objects of this type are used to genereate the GUI for the problem Database
     Management screen
     '''
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        GUISkeleton.__init__(self, parent)
         self.cont = controller
-        
+        self.labels = ["Subject", "Question", "Answer"]
         # label at top of the frame
-        ttk.Label(self, text="Problem Database Management\n",
-                             font=REGULAR_FONT, foreground="Green").grid(
+        title = self.create_label(self, "Problem Database Management\n",
+                                  REGULAR_FONT, "Green").grid(
                                  row=0, column=1)
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
@@ -61,28 +62,25 @@ class ProblemInterface(tk.Frame):
         self.deletes = {}
         
         # the 3 static lables that are always there
-        tk.Label(self, text="Subject", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=0)
-        tk.Label(self, text="Question", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=1)
-        tk.Label(self, text="Answer", font=REGULAR_FONT, fg=NICE_BLUE).grid(
-            row=1, column=2)
-        
-        # create first row of entries for add_problem function
-        self.subject_entry = tk.Entry(self, font=REGULAR_FONT)
-        self.question_entry = tk.Entry(self, font=REGULAR_FONT)
-        self.answer_entry = tk.Entry(self, font=REGULAR_FONT)   
-        # set everything nicely on the grid
-        self.subject_entry.grid(row=2, column=0)
-        self.question_entry.grid(row=2, column=1)
-        self.answer_entry.grid(row=2, column=2)  
+        i = 0
+        for label in self.labels:
+            new_label = self.create_label(self, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=1, column=i)
+            # create first row of entries for add_problem function
+            # set everything nicely on the grid
+            new_entry = self.create_entry(self, label,
+                                          REGULAR_FONT).grid(row=2, column=i)
+            i += 1
         # create add problem button
-        add_problem_button = Button(self, text="Add problem", font=REGULAR_FONT)
-        add_problem_button.grid(row=2, column=3, columnspan=2)
+        add_problem_button = self.create_button(self, "Add problem")
+        add_problem_button.grid(row=2, column=3)
+        back_button = self.create_button(self, "Back")
         # set button method to add_problem
         add_problem_button.config(command=lambda : self.add_problem())
+        back_button["command"] = lambda: controller.show_frame('HomeScreen')
+        back_button.grid(row=2, column=4)
         
-        # generate all the dynamically generaterd widget rows
+        # generate all the dynamically generated widget rows
         self.gen_rows()
         
         # enable clicking functionality for all the buttons
@@ -98,17 +96,17 @@ class ProblemInterface(tk.Frame):
         # for each id create a row
         for qid in ids:
             # create new entries 
-            subject_entry = tk.Entry(self, font=REGULAR_FONT)
-            question_entry = tk.Entry(self, font=REGULAR_FONT)
-            answer_entry = tk.Entry(self, font=REGULAR_FONT)
+            subject_entry = ttk.Entry(self, font=REGULAR_FONT)
+            question_entry = ttk.Entry(self, font=REGULAR_FONT)
+            answer_entry = ttk.Entry(self, font=REGULAR_FONT)
             # add to corresponding dictonaries with problem ids as keys
             self.subjects[qid] = subject_entry
             self.questions[qid] = question_entry    
             self.answers[qid] = answer_entry
           
             # create new buttons
-            update_button = Button(self, text="Update", font=REGULAR_FONT)
-            delete_button = Button(self, text="Delete", font=REGULAR_FONT)
+            update_button = ttk.Button(self, text="Update")
+            delete_button = ttk.Button(self, text="Delete")
             # add to corresponding dictonaries with problem ids as keys        
             self.deletes[qid] = delete_button
             self.updates[qid] = update_button
@@ -165,19 +163,18 @@ class ProblemInterface(tk.Frame):
         delete a problem from the database and show a success popup
         '''
         # get new parameters from entry widgets in the dictionaries
-        new_subject = self.subject_entry.get()
-        new_question = self.question_entry.get()
-        new_answer = self.answer_entry.get()        
+        new_subject = self.entry_fields["Subject"] .get()
+        new_question = self.entry_fields["Question"].get()
+        new_answer = self.entry_fields["Answer"].get()        
         # add new problem to databse and save his id number
         qid = db.add_problem(new_subject, new_question, new_answer, conn)
         # show popup
         self.refresh()
         # clear entries
-        self.subject_entry.delete(0, 'end')
-        self.question_entry.delete(0, 'end')
-        self.answer_entry.delete(0, 'end')        
+        self.entry_fields["Subject"].set('')
+        self.entry_fields["Question"].set('')
+        self.entry_fields["Answer"].set('')      
         showinfo("Success", "problem #" + str(qid) + " has been added to database")
-        
 
     def refresh(self):
         for subject in list(self.subjects.items()):
