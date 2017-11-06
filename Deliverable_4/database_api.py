@@ -24,7 +24,6 @@ def get_problem_details(conn, qid):
     cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
  
     rows = cur.fetchall()
-    
     return rows
 
 def get_problems_by_subj(subj, conn):
@@ -321,6 +320,10 @@ def get_user_attempts(table_name, uid, conn):
     rows = cur.fetchall()
     
     return rows
+
+def get_user_first_attempt(aid, uid, conn):
+
+    return get_user_attempts("a"+str(aid), uid, conn)[0]
 
 def get_assignment_details(aid, conn):
     cur = conn.cursor()

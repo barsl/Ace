@@ -8,6 +8,8 @@ from assignments import *
 from user import *
 from problem import *
 from user_assignments import *
+from attempt import *
+
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -38,7 +40,8 @@ class AoS(tk.Tk):
         for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
                        "ProblemInterface":ProblemInterface, "UserHome":UserHome,
                        "UserInterface":UserInterface, "AddAssignment":AddAssignment
-                       ,"ViewUserAssignments":ViewUserAssignments}.items():
+                       ,"ViewUserAssignments":ViewUserAssignments,
+                       "Attempt":Attempt}.items():
             new_frame = frame[1](self.container, self)
             self.frames[frame[0]] = new_frame
             new_frame.grid(row=0, column=1, sticky="nsew")
@@ -161,7 +164,7 @@ class UserHome(GUISkeleton):
                                          controller.show_frame("LoginScreen"))
             new_button.pack()
             
-    def set_uid(self, uid):
+    def set_uid(self, uid=None, aid=None):
         self.uid = uid  
         self.init_window(self.cont)
 
