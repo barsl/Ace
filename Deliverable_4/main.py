@@ -166,7 +166,7 @@ class UserHome(GUISkeleton):
             new_button.pack()
 
     def set_uid(self, uid=None, aid=None):
-        del4_separated
+        # del4_separated
         self.uid = uid  
         self.init_window(self.cont)
 
