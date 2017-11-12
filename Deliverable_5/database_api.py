@@ -7,7 +7,7 @@ conn = sqlite3.connect('ace.db')
 c = conn.cursor()
 c.execute('''CREATE TABLE users
           (id INTEGER PRIMARY KEY, role text, name text,
-          email text, password text)''')
+          email text, password text, grade real, time int)''')
 
 c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
@@ -150,7 +150,7 @@ def get_question_details(conn, qid):
 
 """ Users Functions """
 
-def add_user(role, name, email, password, conn):
+def add_user(role, name, email, password, grade, time, conn):
     '''
     Adds a user to the database. Returns a message of success.
     '''
@@ -158,8 +158,8 @@ def add_user(role, name, email, password, conn):
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO users (role,name,email,password) VALUES ('" +
-              role + "','" + name + "','" + email + "','" + password + "')")
+    c.execute("INSERT INTO users (role,name,email,password,grade,time) VALUES ('" +
+              role + "','" + name + "','" + email + "','" + password + "','" + grade + "','" + time + "')") # TEMP?
 
     # Save (commit) the changes
     conn.commit()
@@ -253,6 +253,21 @@ def get_user_ids(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users")
+
+    rows = cur.fetchall()
+    ids = []
+    for row in rows:
+        ids.append(row[0])
+
+    return ids
+
+def get_user_by_grade(conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE role = 'student' ORDER BY grade DESC, time ASC")
 
     rows = cur.fetchall()
     ids = []
