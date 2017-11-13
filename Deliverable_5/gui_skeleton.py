@@ -56,4 +56,9 @@ class GUISkeleton(ttk.Frame):
             label = ttk.Label(location)
             label["text"] = txt
         label.pack()
+        
+    def set_uid(self, uid, aid=None, atid=None):
+        self.uid = uid
+        self.aid = aid
+        self.atid = atid    
 

@@ -286,7 +286,7 @@ def create_assignment_table(num, conn):
     c = conn.cursor()
 
     # create the table table query
-    query = ("CREATE TABLE a" + str(num) + "(uid int, questions text, progress text, "+
+    query = ("CREATE TABLE a" + str(num) + "(id INTEGER PRIMARY KEY, uid int, questions text, progress text, "+
              "grade text, submission_date text)")
     # execute querry
     c.execute(query)
@@ -316,8 +316,10 @@ def add_attempt(table_name, uid, problem_ids, progress, grade, submission_date, 
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade,submission_date)"+
+    com = ("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade,submission_date)"+
               "VALUES ('" + str(uid) + "','" + str(problem_ids) + "','" + str(progress) + "','" + str(grade) + "','" + str(submission_date) + "')")
+
+    c.execute(com)
 
     # Save (commit) the changes
     conn.commit()
@@ -328,15 +330,15 @@ def get_user_attempts(table_name, uid, conn):
     from the assignment with name table_name
     '''
     cur = conn.cursor()
-    cur.execute("SELECT * FROM " + str(table_name) + " WHERE uid=" + str(uid))
+    cur.execute("SELECT * FROM " + 'a'+str(table_name) + " WHERE uid=" + str(uid))
 
     rows = cur.fetchall()
 
     return rows
 
-def get_user_first_attempt(aid, uid, conn):
+def get_user_nth_attempt(aid, uid, n, conn):
 
-    return get_user_attempts("a"+str(aid), uid, conn)[0]
+    return get_user_attempts(str(aid), uid, conn)[n]
 
 def get_assignment_details(aid, conn):
     cur = conn.cursor()
@@ -347,6 +349,15 @@ def get_assignment_details(aid, conn):
 
     return rows[0]
 
+def update_assignment_submission_for_user_for_nth_attempt(aid, uid, n, submission, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET submission_date = '" + str(submission).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()  
 
 def update_assignment_progress_for_user(aid, uid, new_progress, conn):
 
@@ -356,6 +367,17 @@ def update_assignment_progress_for_user(aid, uid, new_progress, conn):
               "' WHERE uid = " + str(uid))
     conn.commit()
     
+def update_assignment_progress_for_user_for_nth_attempt(aid, uid, n, new_progress, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET progress = '" + str(new_progress).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()  
+        
+
 def get_assignment_progress_for_user(aid, uid, conn):
 
     cur = conn.cursor()
@@ -363,9 +385,50 @@ def get_assignment_progress_for_user(aid, uid, conn):
 
     rows = cur.fetchall()
     
-    rows = rows[-1][2].split(',')
+    rows = rows[-1][3].split(',')
     
     return rows
+
+def get_solution_set(problem_set ,conn):
+    cur = conn.cursor()
+    solution_set = []
+    problem_set = ast.literal_eval(problem_set)
+    for p in problem_set:
+        # get the solution stored for the problem with id p from the list of
+        # problem_set
+        s = get_problem_details(conn, p)[0][3]
+        # add that solution to solution_set
+        solution_set.append(s)
+    
+    #return solution_set
+    return solution_set
+        
+def update_attempt_grade_for_user(aid, uid, new_grade, conn):
+
+    c = conn.cursor()
+
+    c.execute("UPDATE " + 'a'+str(aid) + " SET grade = '" + str(new_grade).
+              split('.', 1)[0] +
+              "' WHERE uid = " + str(uid))
+    conn.commit()    
+    
+def update_attempt_grade_for_user_for_nth_attempt(aid, uid, n, new_grade, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET grade = '" + str(new_grade).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()    
+    
+def get_nth_attempt_id_for_user(aid, uid, n, conn):
+    # get all the attempts for the user id
+    attempts = get_user_attempts(aid, uid, conn)
+    # get the nth attempt
+    a = attempts[n-1]
+    # return it's id ([0])
+    return a[0]
 
 
 """Testing"""

@@ -49,7 +49,7 @@ class AoS(tk.Tk):
 
         self.show_frame("LoginScreen")
 
-    def show_frame(self, cont, uid=None, aid=None):
+    def show_frame(self, cont, uid=None, aid=None, atid=None):
         ''' function that determines which of the screens will be viewed by
         the user. This function uses tkraise, in order to bring the
         wanted screen to the front
@@ -59,8 +59,8 @@ class AoS(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-        if (uid):
-            frame.set_uid(uid, aid)
+        
+        frame.set_uid(uid, aid, atid)
 
 class LoginScreen(GUISkeleton):
     '''Creates a login screen, which will be the
@@ -172,7 +172,7 @@ class UserHome(GUISkeleton):
         self.create_buttons(controller)
 
 
-    def set_uid(self, uid=None, aid=None):
+    def set_uid(self, uid, aid=None, atid=None):
         # del4_separated
         self.uid = uid
 

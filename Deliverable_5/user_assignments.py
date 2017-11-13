@@ -65,8 +65,9 @@ class ViewUserAssignments(GUISkeleton):
         for qid in problem_ids:
             self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
     '''
-    def set_uid(self, uid=None, aid=None):
+    def set_uid(self, uid, aid=None, atid=None):
         self.uid = uid
+        self.atid = atid
         self.gen_rows()
 
     def gen_rows(self):
@@ -77,14 +78,17 @@ class ViewUserAssignments(GUISkeleton):
         # for each id create a row
         for aid in ids:
             # get the attempts for the user
-            attempts = db.get_user_attempts("a"+str(aid), self.uid, conn)
+            attempts = db.get_user_attempts(str(aid), self.uid, conn)
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
 
             # create new entries
             name_label = Label(self, font=REGULAR_FONT, text=dets[1])
             deadline_label = Label(self, font=REGULAR_FONT, text=dets[3])
-            grade_label = Label(self, font=REGULAR_FONT, text=attempts[0][3])
+            try :
+                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-2][4])
+            except IndexError:
+                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-1][4])
             # add to corresponding dictonaries with user ids as keys
             self.names[aid] = name_label
             self.deadlines[aid] = deadline_label
@@ -93,8 +97,8 @@ class ViewUserAssignments(GUISkeleton):
             # create new buttons
             past_attempt_button = self.create_button(self, "Past Attempts")
             new_attempt_button = self.create_button(self, "Current Attempt")
-            new_attempt_button.config(command=lambda j=aid: self.cont.show_frame("Attempt" ,self.uid, j))
-            past_attempt_button.config(command=lambda j=aid: self.cont.show_frame("ViewPastAttempt" ,self.uid, j))
+            new_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("Attempt" ,self.uid, j[0], j[1]))
+            past_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("ViewPastAttempt", self.uid, j[0], j[1]))
 
             # add to corresponding dictonaries with user ids as keys
             self.past_attempts[aid] = past_attempt_button
@@ -148,22 +152,24 @@ class ViewPastAttempt(GUISkeleton):
         #self.enable_buttons()
 
 
-    def set_uid(self, uid=None, aid=None):
+    def set_uid(self, uid, aid=None, atid=None):
         self.uid = uid
+        self.atid = atid
         self.gen_rows(uid, aid)
 
     def gen_rows(self, uid, aid):
 
-        all_attempts = db.get_user_attempts("a"+str(aid), uid, conn)
+        all_attempts = db.get_user_attempts(str(aid), uid, conn)
         # set iterator for grid rows
         i = 0
+        atid = 1
 
         # for each id create a row
         for attempts in all_attempts:
 
             # create new entries
-            submission_label = Label(self, font=REGULAR_FONT, text=attempts[4])
-            grade_label = Label(self, font=REGULAR_FONT, text=attempts[3])
+            submission_label = Label(self, font=REGULAR_FONT, text=attempts[5])
+            grade_label = Label(self, font=REGULAR_FONT, text=attempts[4])
 
             # add to corresponding dictonaries with user ids as keys
             self.submissions.append(submission_label)
@@ -172,7 +178,7 @@ class ViewPastAttempt(GUISkeleton):
             # create new buttons
             view_attempt_button = self.create_button(self, "View")
             view_attempt_button.config(
-                command = lambda : self.cont.show_frame("ViewAttempt" , uid, aid))
+                command = lambda j=atid: self.cont.show_frame("ViewAttempt" , uid, aid, j))
             self.buttons.append(view_attempt_button)
 
             # add to corresponding dictonaries with user ids as keys
@@ -182,8 +188,8 @@ class ViewPastAttempt(GUISkeleton):
             submission_label.grid(row=i+3, column=0)
             grade_label.grid(row=i+3, column=1)
             view_attempt_button.grid(row=i+3, column=2)
-
-
+            
+            atid += 1
             i += 1
 
     def refresh(self):
