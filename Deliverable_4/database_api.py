@@ -263,6 +263,17 @@ def get_user_ids(conn):
 
 
 ''' *************** Assignments ********************* '''
+def remove_assignment(aid, conn):
+    '''
+    Removes an assignment from the database. Returns a message of success.
+    '''
+    c = conn.cursor()
+    # Deletes a row of data
+    c.execute("DELETE FROM assignments WHERE id = " + str(aid))
+    c.execute("DELETE FROM a" + aid)
+    conn.commit()
+    return "Removed assignment " + str(aid) + " from database!"
+
 def add_assignment(name, formula, deadline, visible, conn):
     '''
     Adds an assignment to the database. Returns the id of the new assignment.

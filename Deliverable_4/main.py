@@ -4,6 +4,7 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
 # from PIL import ImageTk, Image
 from tkinter.messagebox import showinfo
 import database_api as db
+from ViewAssignments import *
 from gui_skeleton import *
 from assignments import *
 from user import *
@@ -21,6 +22,7 @@ HOME_FONT = ("Comic Sans", 26, "bold")
 class AoS(tk.Tk):
     '''Class that contains everything in the Application '''
     def __init__(self, *args, **kwargs):
+        self.user = ''
         tk.Tk.__init__(self, *args, **kwargs)
         # title of the software
         tk.Tk.wm_title(self, "Ace of Spades")
@@ -40,7 +42,8 @@ class AoS(tk.Tk):
                        "ProblemInterface":ProblemInterface, "UserHome":UserHome,
                        "UserInterface":UserInterface, "AddAssignment":AddAssignment
                        ,"ViewUserAssignments":ViewUserAssignments,
-                       "Attempt":Attempt}.items():
+                       "Attempt":Attempt,
+                       "ViewAssignments":ViewAssignments}.items():
             new_frame = frame[1](self.container, self)
             self.frames[frame[0]] = new_frame
             new_frame.grid(row=0, column=1, sticky="nsew")
@@ -125,6 +128,7 @@ class LoginScreen(GUISkeleton):
             user_details = db.get_user_details_by_email(conn, creds[0])
             # if the provided password matches the one stored
             if (creds[1] == user_details[0][4]):
+                controller.user = user_details[0][3]
                 # check if user or admin
                 # print(user_details)
                 if (user_details[0][1] == 'student'):
@@ -177,7 +181,7 @@ class HomeScreen(GUISkeleton):
     def __init__(self, parent, controller):
         GUISkeleton.__init__(self, parent)
         self.buttons = ["Add User", "Manage Question Bank","Create Assignment",
-                        "Logout"]
+                        "Logout", "View Assignments"]
         self.init_window(controller)
     
     def create_buttons(self, controller):
@@ -187,6 +191,8 @@ class HomeScreen(GUISkeleton):
             new_button = self.create_button(self, button)
             if button == "Add User":
                 new_button["command"] = lambda : controller.show_frame('UserInterface')
+            elif button == "View Assignments":
+                new_button["command"] = lambda : controller.show_frame('ViewAssignments')
             elif button == "Manage Question Bank":
                 new_button["command"] = lambda : controller.show_frame('ProblemInterface')
             elif button == "Create Assignment":
