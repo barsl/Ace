@@ -116,7 +116,7 @@ class Assignment():
     '''
     def __init__(self,aid):
         '''
-        aid is the assignment id of the assignment we want to create
+	aid is the assignment id of the assignment we want to create
         '''
         # get user details from database
         assignment = db.get_assignment_details(conn, aid)[0]

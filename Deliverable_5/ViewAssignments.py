@@ -53,7 +53,7 @@ class ViewAssignments(GUISkeleton):
         # list that will hold all the frames of the widgets created 
         self.frames = []
         
-    def create_tab(self, num=4):
+    def create_tab(self, num=8):
         '''returns a string that is equivalent to the tab character
         used for formatting purposes
         @param num-> The number of spaces you want the tab to be default is 4
@@ -268,7 +268,7 @@ class ViewAssignments(GUISkeleton):
             # get a list of the problems with the same subject
             rows = db.get_problems_by_subj(item[0], conn)
             # get a sample space of random rows with the right amount of problems
-            sample_rows = sample(rows, int(item[1]))
+            sample_rows = sample(rows, min(int(item[1]), 20))
             # add subj sample rows to problem_set
             problem_set += sample_rows
             
