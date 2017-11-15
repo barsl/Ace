@@ -44,7 +44,7 @@ class AoS(tk.Tk):
 		              "UserInterface":UserInterface, "AddAssignment":AddAssignment
 		              ,"ViewUserAssignments":ViewUserAssignments,
 		              "Attempt":Attempt,
-		              "ViewAssignments":ViewAssignments}.items(): #"ViewStudentGrades":ViewStudentGrades}.items():
+		              "ViewAssignments":ViewAssignments, "ViewStudentGrades":ViewStudentGrades}.items():
 			new_frame = frame[1](self.container, self)
 			self.frames[frame[0]] = new_frame
 			new_frame.grid(row=0, column=1, sticky="nsew")
