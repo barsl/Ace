@@ -45,8 +45,10 @@ class ViewStudentGrades(GUISkeleton):
 	                                       REGULAR_FONT, NICE_BLUE).grid(row=1, column=1,
 	                                                                   pady=10, padx=20)			
 		self.popupMenu.grid(row = 2, column =1)
-		self.tkvar.trace("w", self.on_change)
+		#self.tkvar.trace("w", self.on_change)
 	
+	'''
 	def on_change(self):
-		'''fuction called when a drop down option was selected'''
+		#fuction called when a drop down option was selected
 		print(self.tkvar.get())
+	'''
