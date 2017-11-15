@@ -83,7 +83,7 @@ class GUISkeleton(ttk.Frame):
         scrollbar.config(command=list_box.yview)
         scrollbar.pack(side="right", fill="y")
         # adds the listbox to a listbox dictionary with given key
-        self.list_box.append(list_box)        
+        self.list_box[key] = list_box        
         list_box.pack(side="left", fill="both")
         new_frame.grid(row=row, column=column)
     

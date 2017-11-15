@@ -66,5 +66,4 @@ class ViewStudentGrades(GUISkeleton):
 		print(self.drop_down_selection)	
 	
 	
-	def create_listbox(self) 
 	
