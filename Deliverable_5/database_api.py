@@ -347,6 +347,12 @@ def get_assignment_details(aid, conn):
 
     return rows[0]
 
+def get_users_ids_assigment(aid, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT uid FROM assignments WHERE 'a'" +str(aid))
+    users = cur.fetchall()
+    return rows
+
 def update_assignment_submission_for_user_for_nth_attempt(aid, uid, n, submission, conn):
 
     c = conn.cursor()
