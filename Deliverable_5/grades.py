@@ -54,7 +54,7 @@ class ViewStudentGrades(GUISkeleton):
 	
 	def on_change(self, eventObject):
 		self.drop_down_selection = self.dropdown.get()
-		self.create_frame(2, 0)
+		# self.create_frame(2, 0)
 		#divide the self.drop_down_selection string into "assignmtnt" "aid" and 
 		#then for each user in aid table do the loop and add to the list box
 		#for aid  in aids:
@@ -66,4 +66,5 @@ class ViewStudentGrades(GUISkeleton):
 		print(self.drop_down_selection)	
 	
 	
+	def create_listbox(self) 
 	
