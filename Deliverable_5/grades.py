@@ -54,17 +54,11 @@ class ViewStudentGrades(GUISkeleton):
 	
 	def on_change(self, eventObject):
 		self.drop_down_selection = self.dropdown.get()
+
 		self.create_frame(2, 0)
 		result = self.drop_down_selection.split() 
 		aid = int(result[1])
-		users = 
-		#then for each user in aid table do the loop and add to the list box
-	
-			#self.add_assign_to_lb(aid)
-			#get_nth_attempt_id_for_user(aid, uid, -1, conn) # returns nth attempt for user
-			# list that will hold all the frames of the widgets created 
-			#self.frames = []
-		
+
 		print(self.drop_down_selection)	
 	
 	

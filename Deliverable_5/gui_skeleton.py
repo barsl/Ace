@@ -12,6 +12,7 @@ class GUISkeleton(ttk.Frame):
     '''Skeleton for creating frames in Tkinter'''
     def __init__(self, parent):
         self.entry_fields = {}
+        self.list_box = {}
         ttk.Frame.__init__(self, parent)
         
     def create_label(self, location, text, font=None, foreground=None):
@@ -57,3 +58,32 @@ class GUISkeleton(ttk.Frame):
             label["text"] = txt
         label.pack()
 
+    def create_list_box(self, key, row, column, width=40, height=8):
+        '''method that creates a frame that has a listbox with vertical
+        scrollbar, it has default width and height parameters that
+        can be changed, it automatically places the listbox in the row
+        and column you want it placed in. The Master frame of the listbox
+        MUST use grid as the pack-manager
+        @param key -> key you want the listbox to have. The listbox will
+        automatically be added to a dictionary of listboxes, the key is used
+        to call it
+        @param row -> The row where you want the frame to be placed
+        @param column -> the column where you want the frame to be placed
+        @param width -> the width of the listbox by default is 40
+        @param height -> the height of the listbox by default is 8'''
+        # create a new frame
+        new_frame = ttk.Frame(self)
+        # create a new scrollbar
+        scrollbar = ttk.Scrollbar(new_frame, orient='vertical')
+        # create a listbox widget
+        list_box = tk.Listbox(new_frame,
+                              yscrollcommand=scrollbar.set,
+                              width=width, height=height)
+        #configure the scrollbar
+        scrollbar.config(command=list_box.yview)
+        scrollbar.pack(side="right", fill="y")
+        # adds the listbox to a listbox dictionary with given key
+        self.list_box[key] = list_box        
+        list_box.pack(side="left", fill="both")
+        new_frame.grid(row=row, column=column)
+    
