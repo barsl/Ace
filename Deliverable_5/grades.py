@@ -24,7 +24,7 @@ class ViewStudentGrades(GUISkeleton):
 		self.title = self.create_label(self, "View Student Grades",
 		                               TITLE_FONT, "Red").grid(row=0, column=1,
 		                                                       pady=10, padx=20)
-		self.create_dropdown();
+		self.create_dropdown()
 
 
 		
@@ -40,15 +40,19 @@ class ViewStudentGrades(GUISkeleton):
 			self.choices.append(assign_str)
 	
 	
-		self.popupMenu = ttk.OptionMenu(self, self.tkvar, self.choices[0],*self.choices)
+		#self.popupMenu = ttk.OptionMenu(self, self.tkvar, self.choices[0],*self.choices)
 		self.title = self.create_label(self, "Please select the Assignment to view Grades",
 	                                       REGULAR_FONT, NICE_BLUE).grid(row=1, column=1,
 	                                                                   pady=10, padx=20)			
-		self.popupMenu.grid(row = 2, column =1)
-		#self.tkvar.trace("w", self.on_change)
+		
+		self.dropdown = ttk.Combobox(self, textvariable=self.tkvar)
+		self.dropdown['values'] = self.choices
+		self.dropdown.bind('<<ComboboxSelected>>', self.on_change)
+		self.dropdown.grid(row = 2, column =1)
+		
 	
-	'''
-	def on_change(self):
-		#fuction called when a drop down option was selected
-		print(self.tkvar.get())
-	'''
+	
+	def on_change(self, eventObject):
+		self.drop_down_selection = self.dropdown.get()
+		print(self.drop_down_selection)	
+	
