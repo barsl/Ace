@@ -5,6 +5,7 @@ from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
 from gui_skeleton import *
+from ViewAssignments import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 14, "normal")
@@ -13,6 +14,7 @@ NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
 conn = sqlite3.connect('ace.db')
+
 
 class ViewStudentGrades(GUISkeleton):
 	'''class for an admin to view student grades'''
@@ -38,9 +40,7 @@ class ViewStudentGrades(GUISkeleton):
 			assignment = db.get_assignment_details(aid, conn)
 			assign_str = "Assignment " + str(assignment[0])
 			self.choices.append(assign_str)
-	
-	
-		#self.popupMenu = ttk.OptionMenu(self, self.tkvar, self.choices[0],*self.choices)
+
 		self.title = self.create_label(self, "Please select the Assignment to view Grades",
 	                                       REGULAR_FONT, NICE_BLUE).grid(row=1, column=1,
 	                                                                   pady=10, padx=20)			
@@ -54,5 +54,16 @@ class ViewStudentGrades(GUISkeleton):
 	
 	def on_change(self, eventObject):
 		self.drop_down_selection = self.dropdown.get()
+		self.create_frame(2, 0)
+		#divide the self.drop_down_selection string into "assignmtnt" "aid" and 
+		#then for each user in aid table do the loop and add to the list box
+		#for aid  in aids:
+			#self.add_assign_to_lb(aid)
+			#get_nth_attempt_id_for_user(aid, uid, -1, conn) # returns nth attempt for user
+			# list that will hold all the frames of the widgets created 
+			#self.frames = []
+		
 		print(self.drop_down_selection)	
+	
+	
 	

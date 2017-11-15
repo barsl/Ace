@@ -1,4 +1,5 @@
 import sqlite3
+import ast
 
 conn = sqlite3.connect('ace.db')
 
@@ -8,10 +9,8 @@ c = conn.cursor()
 c.execute('''CREATE TABLE users
           (id INTEGER PRIMARY KEY, role text, name text,
           email text, password text)''')
-
 c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
-
 c.execute('''CREATE TABLE assignments
           (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
 """
@@ -22,7 +21,7 @@ def get_problem_details(conn, qid):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE id=?", (qid,))
- 
+
     rows = cur.fetchall()
     return rows
 
@@ -33,9 +32,9 @@ def get_problems_by_subj(subj, conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE subject=?", (subj,))
- 
+
     rows = cur.fetchall()
-    
+
     return rows
 
 def get_problems_by_subj(subj, conn):
@@ -45,9 +44,9 @@ def get_problems_by_subj(subj, conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems WHERE subject=?", (subj,))
- 
+
     rows = cur.fetchall()
-    
+
     return rows
 
 def get_user_details_by_email(conn, email):
@@ -57,9 +56,9 @@ def get_user_details_by_email(conn, email):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE email=?", (email,))
- 
+
     rows = cur.fetchall()
-    
+
     return rows
 
 """ Problems Functions """
@@ -70,12 +69,12 @@ def get_problem_ids(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM problems")
- 
+
     rows = cur.fetchall()
     ids = []
     for row in rows:
         ids.append(row[0])
-    
+
     return ids
 
 def add_problem(subject, question, answer, conn):
@@ -163,7 +162,7 @@ def add_user(role, name, email, password, conn):
 
     # Save (commit) the changes
     conn.commit()
-    
+
     # return number of new user
     return get_user_details_by_email(conn, email)[0][0]
 
@@ -221,7 +220,7 @@ def update_user_password(uid, new_password, conn):
     conn.commit()
     return "Updated user " + str(uid) + "'s password to " + new_password + "!"
 
- 
+
 def get_user_details(conn, uid):
     """
     returns an array of arrays containing rows' values for each column
@@ -229,9 +228,9 @@ def get_user_details(conn, uid):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE id=?", (uid,))
- 
+
     rows = cur.fetchall()
-    
+
     return rows
 
 def get_user_details_by_email(conn, email):
@@ -241,9 +240,9 @@ def get_user_details_by_email(conn, email):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE email=?", (email,))
- 
+
     rows = cur.fetchall()
-    
+
     return rows
 
 def get_user_ids(conn):
@@ -253,27 +252,16 @@ def get_user_ids(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users")
- 
+
     rows = cur.fetchall()
     ids = []
     for row in rows:
         ids.append(row[0])
-    
+
     return ids
 
 
 ''' *************** Assignments ********************* '''
-def remove_assignment(aid, conn):
-    '''
-    Removes an assignment from the database. Returns a message of success.
-    '''
-    c = conn.cursor()
-    # Deletes a row of data
-    c.execute("DELETE FROM assignments WHERE id = " + str(aid))
-    c.execute("DELETE FROM a" + aid)
-    conn.commit()
-    return "Removed assignment " + str(aid) + " from database!"
-
 def add_assignment(name, formula, deadline, visible, conn):
     '''
     Adds an assignment to the database. Returns the id of the new assignment.
@@ -287,72 +275,170 @@ def add_assignment(name, formula, deadline, visible, conn):
 
     # Save (commit) the changes
     conn.commit()
-    
+
     # return the new assignment id
     return get_assignments_ids(conn)[-1]
-    
+
 def create_assignment_table(num, conn):
     # create a cursor to database conn
     c = conn.cursor()
-    
+
     # create the table table query
-    query = ("CREATE TABLE a" + str(num) + "(uid int, questions text, progress text, "+
-             "grade text)")
+    query = ("CREATE TABLE a" + str(num) + "(id INTEGER PRIMARY KEY, uid int, questions text, progress text, "+
+             "grade text, submission_date text)")
     # execute querry
     c.execute(query)
-    
+
     # Save (commit) the changes
-    conn.commit()    
-    
+    conn.commit()
+
 def get_assignments_ids(conn):
     cur = conn.cursor()
     cur.execute("SELECT * FROM assignments")
- 
+
     rows = cur.fetchall()
     ids = []
     for row in rows:
         ids.append(row[0])
-        
+
     return ids
 
-def add_attempt(table_name, uid, problem_ids, conn):
+def add_attempt(table_name, uid, problem_ids, progress, grade, submission_date, conn):
     '''
     Adds an assignment to the database. Returns the id of the new assignment.
     '''
     # need to take in table name and build querry properly
-    
-    
+
+
     # create a cursor to database conn
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade)"+
-              "VALUES ('" + str(uid) + "','" + str(problem_ids) + "','','')")
+    com = ("INSERT INTO " + str(table_name) + " (uid,questions,progress,grade,submission_date)"+
+              "VALUES ('" + str(uid) + "','" + str(problem_ids) + "','" + str(progress) + "','" + str(grade) + "','" + str(submission_date) + "')")
+
+    c.execute(com)
 
     # Save (commit) the changes
     conn.commit()
-    
+
 def get_user_attempts(table_name, uid, conn):
     '''
     return a list of user attempts entries for user with uid
     from the assignment with name table_name
     '''
     cur = conn.cursor()
-    cur.execute("SELECT * FROM " + str(table_name) + " WHERE uid=" + str(uid))
-    
+    cur.execute("SELECT * FROM " + 'a'+str(table_name) + " WHERE uid=" + str(uid))
+
     rows = cur.fetchall()
-    
+
     return rows
 
-def get_user_first_attempt(aid, uid, conn):
+def get_user_nth_attempt(aid, uid, n, conn):
 
-    return get_user_attempts("a"+str(aid), uid, conn)[0]
+    return get_user_attempts(str(aid), uid, conn)[n]
 
 def get_assignment_details(aid, conn):
     cur = conn.cursor()
     cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))
- 
+
     rows = cur.fetchall()
 
-        
+
     return rows[0]
+
+def update_assignment_submission_for_user_for_nth_attempt(aid, uid, n, submission, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET submission_date = '" + str(submission).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()  
+
+def update_assignment_progress_for_user(aid, uid, new_progress, conn):
+
+    c = conn.cursor()
+
+    c.execute("UPDATE " + 'a'+str(aid) + " SET progress = '" + new_progress +
+              "' WHERE uid = " + str(uid))
+    conn.commit()
+    
+def update_assignment_progress_for_user_for_nth_attempt(aid, uid, n, new_progress, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET progress = '" + str(new_progress).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()  
+        
+
+def get_assignment_progress_for_user(aid, uid, conn):
+
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + 'a'+str(aid) + " WHERE uid=" + str(uid))
+
+    rows = cur.fetchall()
+    
+    rows = rows[-1][3].split(',')
+    
+    return rows
+
+def get_solution_set(problem_set ,conn):
+    cur = conn.cursor()
+    solution_set = []
+    problem_set = ast.literal_eval(problem_set)
+    for p in problem_set:
+        # get the solution stored for the problem with id p from the list of
+        # problem_set
+        s = get_problem_details(conn, p)[0][3]
+        # add that solution to solution_set
+        solution_set.append(s)
+    
+    #return solution_set
+    return solution_set
+        
+def update_attempt_grade_for_user(aid, uid, new_grade, conn):
+
+    c = conn.cursor()
+
+    c.execute("UPDATE " + 'a'+str(aid) + " SET grade = '" + str(new_grade).
+              split('.', 1)[0] +
+              "' WHERE uid = " + str(uid))
+    conn.commit()    
+    
+def update_attempt_grade_for_user_for_nth_attempt(aid, uid, n, new_grade, conn):
+
+    c = conn.cursor()
+    # get id of the nth atempt
+    atid = get_nth_attempt_id_for_user(aid, uid, n, conn)
+    c.execute("UPDATE " + 'a'+str(aid) + " SET grade = '" + str(new_grade).
+              split('.', 1)[0] +
+              "' WHERE id = " + str(atid))
+    conn.commit()    
+    
+def get_nth_attempt_id_for_user(aid, uid, n, conn):
+    # get all the attempts for the user id
+    attempts = get_user_attempts(aid, uid, conn)
+    # get the nth attempt
+    a = attempts[n-1]
+    # return it's id ([0])
+    return a[0]
+
+
+"""Testing"""
+
+def remove_table(table_name, conn):
+    cur = conn.cursor()
+    cur.execute("DROP TABLE " + table_name)
+
+    conn.commit()
+
+def remove_assign(aid, conn):
+    cur = conn.cursor()
+    cur.execute("DELETE FROM assignments WHERE id=" + str(aid))
+
+    conn.commit()
