@@ -47,13 +47,14 @@ class ViewStudentGrades(GUISkeleton):
 		
 		self.dropdown = ttk.Combobox(self, textvariable=self.tkvar)
 		self.dropdown['values'] = self.choices
-		self.dropdown.bind('<<ComboboxSelected>>', self.on_change)
+		self.dropdown.bind('<<ComboboxSelected>>', self.create_listbox)
 		self.dropdown.grid(row = 2, column =1)
 		
 	
 	
-	def on_change(self, eventObject):
+	def create_listbox(self, eventObject):
 		self.drop_down_selection = self.dropdown.get()
+		#split the selection strng to get the 'aid' 
 		result = self.drop_down_selection.split() 
 		aid = int(result[1])
 		user_ids = db.get_users_ids_assignment(aid,conn)
@@ -61,26 +62,38 @@ class ViewStudentGrades(GUISkeleton):
 		# create a new scrollbar
 		scrollbar = ttk.Scrollbar(new_frame, orient='vertical')
 		# create a listbox widget
-		list_box = tk.Listbox(new_frame,yscrollcommand=scrollbar.set,
+		self.list_box = tk.Listbox(new_frame,yscrollcommand=scrollbar.set,
 			                      width=40, height=8)
 		#configure the scrollbar
-		scrollbar.config(command=list_box.yview)
+		scrollbar.config(command=self.list_box.yview)
 		scrollbar.pack(side="right", fill="y")
-		# adds the listbox to a listbox dictionary with given key
-		self.list_box["grades_listbox"] = list_box        
-		list_box.pack(side="left", fill="both")
+		# adds the listbox to a listbox dictionary with given key     
+		self.list_box.pack(side="left", fill="both")
 		new_frame.grid(row=4, column=1)				
 		for uid in user_ids:
-			user_attempt = db.get_nth_attempt_id_for_user(aid, uid, -1, conn)
-			list_box.insert(END, self.user_attempt)
+			# get all the attempts for the user id
+			attempts = db.get_user_attempts(aid, uid, conn)
+			# get the last attempt
+			last_a = attempts[-1]
+			user_result = self.update_grades_table(self, *last_a)
+			# return it
+			self.list_box.insert(END, user_result)	
 			
-			def get_users_ids_assignment(aid, conn):
-				cur = conn.cursor()
-				cur.execute("SELECT DISTINCT uid FROM " + 'a'+str(aid))
-				users = cur.fetchall()
-			
-				return users			
-			
-			
-	
-			
+		
+
+
+
+	def update_grades_table(self, row, uid, questions, progress, grade):
+		''' 
+		insert a new row to the assignments table with the details
+		'''
+		user_row = []
+		student_details = db.get_user_details(conn, uid)
+		name = student_details[0][2]
+		user_row.append(name)
+		user_row.append(uid)
+		if (grade == ''):
+			user_row.append("Grade Not Available")
+		else:
+			user_row.append(grade)
+		return user_row
