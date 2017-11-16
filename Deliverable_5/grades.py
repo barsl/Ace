@@ -21,17 +21,19 @@ class ViewStudentGrades(GUISkeleton):
 	def __init__(self, parent, controller):
 		'''initialises the window'''
 		GUISkeleton.__init__(self, parent)
+	
 
 		# create the title label
 		self.title = self.create_label(self, "View Student Grades",
 		                               TITLE_FONT, "Red").grid(row=0, column=1,
 		                                                       pady=10, padx=20)
+
 		self.create_dropdown()
+			
 
-
-		
 	def create_dropdown(self):
 		'''create  a drop down menu with the assignment options currently in database'''
+		self.counter = 0
 		self.tkvar = StringVar()
 		self.choices = []
 		# Dictionary with options
@@ -49,10 +51,10 @@ class ViewStudentGrades(GUISkeleton):
 		self.dropdown['values'] = self.choices
 		self.dropdown.bind('<<ComboboxSelected>>', self.create_listbox)
 		self.dropdown.grid(row = 2, column =1)
-		
-	
 	
 	def create_listbox(self, eventObject):
+		self.all_grades = 0
+		self.num_users = 0
 		self.drop_down_selection = self.dropdown.get()
 		#split the selection strng to get the 'aid' 
 		result = self.drop_down_selection.split() 
@@ -69,7 +71,7 @@ class ViewStudentGrades(GUISkeleton):
 		scrollbar.pack(side="right", fill="y")
 		# adds the listbox to a listbox dictionary with given key     
 		self.list_box.pack(side="left", fill="both")
-		new_frame.grid(row=4, column=1)				
+		new_frame.grid(row=4, column=1, padx=15)				
 		for uid in user_ids:
 			# get all the attempts for the user id
 			attempts = db.get_user_attempts(aid, uid, conn)
@@ -79,6 +81,7 @@ class ViewStudentGrades(GUISkeleton):
 			# return it
 			self.list_box.insert(END, user_result)	
 			
+		self.show_average()
 		
 	def update_grades_table(self, row, uid, questions, progress, grade):
 		''' 
@@ -92,5 +95,24 @@ class ViewStudentGrades(GUISkeleton):
 		if (grade == ''):
 			user_row.append("Grade Not Available")
 		else:
+			self.num_users = self.num_users + 1
+			self.all_grades = self.all_grades + int(grade)
 			user_row.append(grade)
 		return user_row
+	
+	
+	def average_grade(self):
+		print(self.all_grades)
+		if (self.all_grades == 0 and self.num_users == 0):
+			return "No Grades Available"
+		elif (self.num_users != 0 and self.all_grades == 0):
+			return "0"
+		else:
+			return str(int(self.all_grades/self.num_users))
+
+	
+	
+	def show_average(self):
+		self.grades = self.create_label(self, "Average Grade", APP_HIGHLIGHT_FONT).grid(row=4, column=3)
+		self.average = self.create_label(self, self.average_grade(), REGULAR_FONT).grid(row=4, column=4)
+		
