@@ -54,12 +54,33 @@ class ViewStudentGrades(GUISkeleton):
 	
 	def on_change(self, eventObject):
 		self.drop_down_selection = self.dropdown.get()
-
-		self.create_frame(2, 0)
 		result = self.drop_down_selection.split() 
 		aid = int(result[1])
-
-		print(self.drop_down_selection)	
+		user_ids = db.get_users_ids_assignment(aid,conn)
+		new_frame = ttk.Frame(self)
+		# create a new scrollbar
+		scrollbar = ttk.Scrollbar(new_frame, orient='vertical')
+		# create a listbox widget
+		list_box = tk.Listbox(new_frame,yscrollcommand=scrollbar.set,
+			                      width=40, height=8)
+		#configure the scrollbar
+		scrollbar.config(command=list_box.yview)
+		scrollbar.pack(side="right", fill="y")
+		# adds the listbox to a listbox dictionary with given key
+		self.list_box["grades_listbox"] = list_box        
+		list_box.pack(side="left", fill="both")
+		new_frame.grid(row=4, column=1)				
+		for uid in user_ids:
+			user_attempt = db.get_nth_attempt_id_for_user(aid, uid, -1, conn)
+			list_box.insert(END, self.user_attempt)
+			
+			def get_users_ids_assignment(aid, conn):
+				cur = conn.cursor()
+				cur.execute("SELECT DISTINCT uid FROM " + 'a'+str(aid))
+				users = cur.fetchall()
+			
+				return users			
+			
+			
 	
-	
-	
+			
