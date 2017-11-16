@@ -80,12 +80,9 @@ class ViewStudentGrades(GUISkeleton):
 			self.list_box.insert(END, user_result)	
 			
 		
-
-
-
 	def update_grades_table(self, row, uid, questions, progress, grade):
 		''' 
-		insert a new row to the assignments table with the details
+		insert a new row to the grades table with the details
 		'''
 		user_row = []
 		student_details = db.get_user_details(conn, uid)
