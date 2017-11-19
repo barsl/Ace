@@ -48,11 +48,6 @@ class ViewUserAssignments(GUISkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
-        # generate all the dynamically generated widget rows
-
-
-        # enable clicking functionality for all the buttons
-        #self.enable_buttons()
 
     '''
     def enable_buttons(self):
@@ -66,7 +61,7 @@ class ViewUserAssignments(GUISkeleton):
             self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
     '''
     def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid
+        self.uid = uid[0]
         self.atid = atid
         self.gen_rows()
 

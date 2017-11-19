@@ -11,7 +11,7 @@ NICE_BLUE = "#3399FF"
 class GUISkeleton(ttk.Frame):
     '''Skeleton for creating frames in Tkinter'''
     def __init__(self, parent):
-        self.entry_fields = {}
+        self.entry_fields = {} 
         ttk.Frame.__init__(self, parent)
         
     def create_label(self, location, text, font=None, foreground=None):

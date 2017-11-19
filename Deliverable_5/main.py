@@ -10,7 +10,7 @@ from user import *
 from problem import *
 from user_assignments import *
 from attempt import *
-from grades import *
+from all_grades import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -42,7 +42,7 @@ class AoS(tk.Tk):
                               "UserInterface":UserInterface, "AddAssignment":AddAssignment
                               ,"ViewUserAssignments":ViewUserAssignments,
                               "Attempt":Attempt, "ViewPastAttempt":ViewPastAttempt,
-                              "ViewAttempt":ViewAttempt, "ViewStudentGrades":ViewStudentGrades}.items():
+                              "ViewAttempt":ViewAttempt, "ViewStudentGrades":ViewStudentGrades, "FilterGrade":FilterGrade}.items():
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
                         new_frame.grid(row=0, column=1, sticky="nsew")
@@ -70,7 +70,7 @@ class LoginScreen(GUISkeleton):
                 self.entry_keys = ["Email", "Password"]
                 GUISkeleton.__init__(self, parent)
                 # img = "logo2.jpg"
-        #     self.add_pic_panel(img)
+                # self.add_pic_panel(img)
                 self.create_login_labels()
                 self.create_entry_fields(controller)
 
@@ -133,7 +133,7 @@ class LoginScreen(GUISkeleton):
                                         controller.show_frame('UserHome', user_details[0])
                                 # move to home screen
                                 elif (user_details[0][1] == 'admin'):
-                                        controller.show_frame('HomeScreen')
+                                        controller.show_frame('HomeScreen',user_details[0])
                                 else:
                                         showinfo("Fail", "User has no role")
                         else :
@@ -157,7 +157,7 @@ class UserHome(GUISkeleton):
                 for button in self.buttons:
                         new_button = self.create_button(self, button)
                         if button == "View Assignments":
-                                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid[0])
+                                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid)
                         elif (button == "Logout"):
                                 new_button["command"] = (lambda :
                                                          controller.show_frame("LoginScreen"))
@@ -182,7 +182,7 @@ class UserHome(GUISkeleton):
 class HomeScreen(GUISkeleton):
         ''' Homescreen that appears after the user logs in
         at the moment the homescreen is just a placeholder for some buttons'''
-        def __init__(self, parent, controller):
+        def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
                 self.buttons = ["Add User", "Manage Question Bank","Create Assignment",
                                 "Student Grades", "Logout"]
@@ -202,7 +202,7 @@ class HomeScreen(GUISkeleton):
                                                          controller.show_frame('AddAssignment'))
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
-                                                         controller.show_frame('ViewStudentGrades'))
+                                                         controller.show_frame("ViewStudentGrades", self.uid))
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
@@ -217,6 +217,12 @@ class HomeScreen(GUISkeleton):
                 homescreen_label.pack()
                 self.create_empty_label(2)
                 self.create_buttons(controller)
+                
+
+        def set_uid(self, uid, aid=None, atid=None):
+                # del4_separated
+                self.uid = uid
+      
 
 
 if __name__ == "__main__":
