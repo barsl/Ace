@@ -49,7 +49,6 @@ class ViewUserAssignments(GUISkeleton):
         back_button.grid(row=1, column=4)
 
 
-
     '''
     def enable_buttons(self):
         # get a list of all existing problem ids

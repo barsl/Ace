@@ -33,8 +33,6 @@ class User():
         self.name = user[2]
         self.email = user[3]
         self.password = user[4]
-        self.grade = user[5] # LEADERBOARD
-        self.time = user[6] # LEADERBOARD
         
     # getters and setters
     def get_uid(self):

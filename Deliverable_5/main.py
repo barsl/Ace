@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk, font,  Tk, Label, Button, Entry,\
      StringVar, DISABLED, NORMAL, END, W, E
 #from PIL import ImageTk, Image
-
 from tkinter.messagebox import showinfo
 import database_api as db
 from gui_skeleton import *
@@ -12,7 +11,6 @@ from problem import *
 from user_assignments import *
 from attempt import *
 from all_grades import *
-from leaderboard import * # LEADERBOARD
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -51,8 +49,7 @@ class AoS(tk.Tk):
                               "ViewAttempt":ViewAttempt,
                               "ViewStudentGrades":ViewStudentGrades,
                               "ViewAssignments":ViewAssignments,
-                              "FilterGrade":FilterGrade,
-                              "Leaderboard":Leaderboard}.items():
+                              "FilterGrade":FilterGrade}.items():
                         
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
@@ -86,13 +83,11 @@ class LoginScreen(GUISkeleton):
                 self.create_entry_fields(controller)
 
         ''' 
-
     def add_pic_panel(self, pic):
         img = ImageTk.PhotoImage(Image.open(pic))
         label = Label(self, image=img)
         label.img = img # to keep the reference for the image.
         label.pack(side="left") # <--- pack
-
     '''
         def create_login_labels(self):
                 '''creates the beginning labels'''
@@ -193,13 +188,14 @@ class UserHome(GUISkeleton):
                 self.uid = uid
 
 
+
 class HomeScreen(GUISkeleton):
         ''' Homescreen that appears after the user logs in
         at the moment the homescreen is just a placeholder for some buttons'''
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
                 self.buttons = ["Add User", "Manage Question Bank","View Assignments",
-                                "Student Grades","Leaderboard", "Logout"]
+                                "Student Grades", "Logout"]
                 self.init_window(controller)
 
         def create_buttons(self, controller):
@@ -217,9 +213,6 @@ class HomeScreen(GUISkeleton):
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
                                                          controller.show_frame("ViewStudentGrades", self.uid))
-                        elif button == "Leaderboard": # LEADERBOARD
-                                new_button["command"] = (lambda : controller.show_frame('Leaderboard'))
-                        
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
@@ -246,3 +239,4 @@ if __name__ == "__main__":
         conn = db.sqlite3.connect('ace.db')
         app = AoS()
         app.mainloop()
+
