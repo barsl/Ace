@@ -136,16 +136,16 @@ class LoginScreen(GUISkeleton):
                     controller.show_frame('HomeScreen')
                     return "directing to admin"
                 else:
-                    showinfo("Fail", "User has no role")
+                    # showinfo("Fail", "User has no role")
             else :
                 # otherwise pop msg to terminal
-                showinfo("Fail", "Wrong combo")
+                # showinfo("Fail", "Wrong combo")
                 return "bad combo"
             self.entry_fields["Email"].set('')
             self.entry_fields["Password"].set('')
         # print msg to terminal if email doesnt exist
         except IndexError:
-            showinfo("Fail", "This email address is not in the system")
+            # showinfo("Fail", "This email address is not in the system")
             return "email not in system"
 
 class UserHome(GUISkeleton):
