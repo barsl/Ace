@@ -47,6 +47,16 @@ class AddAssignment(GUISkeleton):
         self.name_entry = Entry(self)
         self.name_entry.grid(row=self.row_counter, column=1)
         self.row_counter += 1
+        
+        # <<<LEADERBOARD 
+        self.start_label = Label(self, text="Start:\n(dd/mm/yyyy)",
+                             font=REGULAR_FONT, foreground=NICE_BLUE)
+        self.start_label.grid(row=self.row_counter, column=0)
+        self.start_entry = Entry(self)
+        self.start_entry.grid(row=self.row_counter, column=1)
+        self.row_counter += 1        
+        # LEADERBOARD>>>
+
 
         self.deadline_label = Label(self, text="Deadline:\n(dd/mm/yyyy)",
                              font=REGULAR_FONT, foreground=NICE_BLUE)
@@ -144,11 +154,12 @@ class AddAssignment(GUISkeleton):
 
         self.formula = self.formula[:-1]
 
-    def update_assignments_table(self):
+
+    def update_assignments_table(self): # MODIFIED FOR LEADERBOARD: Added start
         '''
         insert a new row to the assignments table with the details
         '''
-        num = db.add_assignment(self.name_entry.get(), self.formula,
+        num = db.add_assignment(self.name_entry.get(), self.formula, self.start_entry.get(),
                           self.deadline_entry.get(), self.visible_entry.get(), conn)
         # return id of new assignment
         return num
