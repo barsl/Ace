@@ -10,6 +10,7 @@ from user import *
 from problem import *
 from user_assignments import *
 from attempt import *
+from leaderboard import * # LEADERBOARD
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -41,7 +42,7 @@ class AoS(tk.Tk):
                        "UserInterface":UserInterface, "AddAssignment":AddAssignment
                        ,"ViewUserAssignments":ViewUserAssignments,
                        "Attempt":Attempt, "ViewPastAttempt":ViewPastAttempt,
-                       "ViewAttempt":ViewAttempt}.items():
+                       "ViewAttempt":ViewAttempt, "Leaderboard":Leaderboard}.items():  # LEADERBOARD
             new_frame = frame[1](self.container, self)
             self.frames[frame[0]] = new_frame
             new_frame.grid(row=0, column=1, sticky="nsew")
@@ -184,7 +185,7 @@ class HomeScreen(GUISkeleton):
     def __init__(self, parent, controller):
         GUISkeleton.__init__(self, parent)
         self.buttons = ["Add User", "Manage Question Bank","Create Assignment",
-                        "Logout"]
+                        "Leaderboard", "Logout"] # LEADERBOARD
         self.init_window(controller)
 
     def create_buttons(self, controller):
@@ -202,6 +203,8 @@ class HomeScreen(GUISkeleton):
             elif button == "Logout":
                 new_button["command"] = (lambda :
                                          controller.show_frame('LoginScreen'))
+            elif button == "Leaderboard": # LEADERBOARD
+                new_button["command"] = (lambda : controller.show_frame('Leaderboard'))
             new_button.pack()
 
     def init_window(self, controller):

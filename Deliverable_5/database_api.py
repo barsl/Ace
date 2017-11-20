@@ -14,7 +14,7 @@ c.execute('''CREATE TABLE problems
           (id INTEGER PRIMARY KEY, subject text, question text, answer text)''')
 
 c.execute('''CREATE TABLE assignments
-          (id INTEGER PRIMARY KEY, name text, formula text, deadline text, visible int)''')
+          (id INTEGER PRIMARY KEY, name text, formula text, start text, deadline text, visible int)''') # LEADERBOARD
 """
 def get_problem_details(conn, qid):
     """
@@ -264,7 +264,7 @@ def get_user_ids(conn):
 
 
 ''' *************** Assignments ********************* '''
-def add_assignment(name, formula, deadline, visible, conn):
+def add_assignment(name, formula, start, deadline, visible, conn): # LEADERBOARD: ADDED start
     '''
     Adds an assignment to the database. Returns the id of the new assignment.
     '''
@@ -272,8 +272,8 @@ def add_assignment(name, formula, deadline, visible, conn):
     c = conn.cursor()
 
     # Insert a row of data
-    c.execute("INSERT INTO assignments (name,formula,deadline,visible) VALUES ('" +
-              name + "','" + formula + "','" + deadline + "','" + visible + "')")
+    c.execute("INSERT INTO assignments (name,formula,start,deadline,visible) VALUES ('" +
+              name + "','" + formula + "','" + start + "','" + deadline + "','" + visible + "')")
 
     # Save (commit) the changes
     conn.commit()
@@ -430,6 +430,55 @@ def get_nth_attempt_id_for_user(aid, uid, n, conn):
     # return it's id ([0])
     return a[0]
 
+''' Leaderboard functionality '''
+def get_user_by_grade(conn):
+    """
+    returns an array of arrays containing rows' values for each column
+    conn is the is the sqlite3 connection objects, uid is the user id
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE role = 'student' ORDER BY grade DESC, time ASC")
+
+    rows = cur.fetchall()
+    ids = []
+    for row in rows:
+        ids.append(row[0])
+
+    return ids
+
+def get_latest_user_attempts(table_name, uid, conn):
+    '''
+    return a list of user attempts entries for user with uid
+    from the assignment with name table_name
+    '''
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + 'a' + str(table_name) + " WHERE uid=" + str(uid) + " ORDER BY id DESC")
+
+    rows = cur.fetchall()
+
+    return rows
+
+def update_user_grade(uid, new_grade, conn):
+    '''
+    Updates a user's grade on the database. Returns a message of success.
+    '''
+    c = conn.cursor()
+    # Updates a subject
+    c.execute("UPDATE users SET grade = '" + str(new_grade) +
+              "' WHERE id = " + str(uid))
+    conn.commit()
+    return "Updated user " + str(uid) + "'s grade to " + str(new_grade) + "!"
+
+def update_user_time(uid, new_time, conn):
+    '''
+    Updates a user's time on the database. Returns a message of success.
+    '''
+    c = conn.cursor()
+    # Updates a subject
+    c.execute("UPDATE users SET time = '" + str(new_time) +
+              "' WHERE id = " + str(uid))
+    conn.commit()
+    return "Updated user " + str(uid) + "'s time to " + str(new_time) + "!"
 
 """Testing"""
 
