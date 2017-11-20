@@ -23,6 +23,7 @@ class ViewStudentGrades(GUISkeleton):
 		'''initialises the window'''
 		self.selected = False
 		self.filters = ['','']
+		self.contents = None
 		self.sort_opt = None
 		self.controller = controller			
 		GUISkeleton.__init__(self, parent)
@@ -43,7 +44,7 @@ class ViewStudentGrades(GUISkeleton):
 		back_button = self.create_button(new_frame, "Back")
 		back_button["command"] = lambda: controller.show_frame('HomeScreen')
 		back_button.pack(side="right", padx=10)
-		new_frame.grid(row=0, column=3, pady=20)
+		new_frame.grid(row=0, column=2, pady=20)
 
 	def create_assignments_dropdown(self):
 		'''Create  a drop down menu for the assignments 
@@ -74,11 +75,21 @@ class ViewStudentGrades(GUISkeleton):
 		sort_button = self.create_button(frame, "Sort")
 		filter_button["command"] = lambda : self.filter_options()
 		sort_button["command"] = lambda : self.sort_options()
+		# create a clear filters button
+		clear_button = self.create_button(frame, "Clear Filters")
+		clear_button["command"] = lambda : self.clear_filters()
 		# pack the buttosn into the frame
 		filter_button.pack(side="left", padx=10)
 		sort_button.pack(side="left")
+		clear_button.pack(side="left", padx=10)
 		frame.grid(row=1, column=1,padx=5, columnspan=2)	
 
+	def clear_filters(self):
+		'''clears the filters that have been set by the user
+		and then refreshes the list_box'''
+		self.filters = ['', '']
+		self.sort_opt = None
+		self.refresh()
 
 	def create_listbox(self, eventObject):
 		''' Create a listbox for the last 
@@ -98,6 +109,9 @@ class ViewStudentGrades(GUISkeleton):
 		self.create_list_box("results", 4, 2, span=3)
 		self.create_edit_grade(5, 3)
 		max_len = self.get_longest_username(user_ids)
+		lb = self.list_box["results"]
+		label_string = "Uid   Name   Grade  Attempts"
+		lb.insert(END, label_string)
 		for user in user_ids:
 			# get all the attempts for the user id
 			attempts = db.get_user_attempts(self.aid, user, conn)
@@ -105,11 +119,12 @@ class ViewStudentGrades(GUISkeleton):
 			                                       user, attempts,
 			                                       max_len)
 			# place it in the lists_box
-			self.list_box["results"].insert(END, user_result)
+			lb.insert(END, user_result)
 		self.average_labels(user_ids).grid(row=3, column=2,
 		                                   columnspan=3)
-			
-			
+		self.contents = lb.get(1, lb.size())
+		
+	
 	def filter_options(self):
 		'''opens up the filter menu to filter results
 		in the assignment'''
@@ -129,8 +144,20 @@ class ViewStudentGrades(GUISkeleton):
 		radio.grid(row=0, column=0, sticky="W")
 		dropdown.grid(row=1, column=0)
 		done.grid(row=1, column=3, padx=10)
+		self.widgets["filter_frame"] = frame
 		frame.grid(row=2, column=1, pady=15)
 	
+	def hide_options(self):
+		''' destroys frames that contain the buttons, sort and filter
+		options'''
+		# destroy frames containing the widgets
+		if ("filter_frame" in self.widgets):
+			filters = self.widgets["filter_frame"]
+			filters.destroy()
+		if ("sort_frame" in self.widgets):
+			sorts = self.widgets["sort_frame"]
+			sorts.destroy()	
+
 		
 	def filter_results(self):
 		'''filters the results in the listbox by filter options
@@ -151,25 +178,33 @@ class ViewStudentGrades(GUISkeleton):
 		else:
 			self.filters = ['', drop_option]
 			self.refresh()
+		self.hide_options()
+			
 			
 	def sort_options(self):
 		'''creates the buttons that are enabled when sort is pressed'''
 		frame = ttk.Frame(self)
-		sorts = ["Grades", "User Id", "Attempts"]
+		# options for the dropdown menu 
+		sorts = ["User Id", "Grades", "Attempts"]
 		dropdown = ttk.Combobox(frame)
 		dropdown['values'] = sorts
 		self.widgets["sorts"] = dropdown
+		# create a done button
 		done = self.create_button(frame, "Done")
-		done["command"] = (lambda : self.sort_results())		
+		done["command"] = (lambda : self.sort_results(sorts))
+		# pack everything into the frame
 		dropdown.pack(side="left", padx=10)
 		done.pack(side="left")
-		frame.grid(row=2, column=4)
+		self.widgets["sort_frame"] = frame
+		frame.grid(row=2, column=3, pady=10)
 		
-	def sort_results(self):
+		
+	def sort_results(self, sorts):
 		'''sets the sort option and calls refresh based on the sort
-		option selected'''
-		option = self.widgets["sorts"].get()
-		sorts = ["User Id", "Grades", "Attempts"]		
+		option selected
+		@param sorts-> list of options that sorts has
+		'''
+		option = self.widgets["sorts"].get()		
 		if (option == sorts[0]):
 			self.sort_opt = 0
 		elif (option == sorts[1]):
@@ -177,22 +212,21 @@ class ViewStudentGrades(GUISkeleton):
 		elif (option == sorts[2]):
 			self.sort_opt = 3
 		self.refresh()
+		self.hide_options()
+		
 		
 	def refresh(self):
 		'''refreshes the main list_box, based on filters
 		that are in self.filter, and sort options in self.sortopt
 		this can be used to clear the filters as well'''
-		filters = self.filters
-		filter_grade = filters[1].split()
+		# get the filter options and get the sort options
 		sort_opt = self.sort_opt
-		if (len(filter_grade) > 1 and filter_grade[-1] == "50%"):
-			if (filter_grade[-2] == "<"):
-				filter_grade[-1] = "-50%"
 		main_lb = self.list_box["results"]
-		# get all items from main list_box
-		all_items = main_lb.get(0, main_lb.size())
+		# get all items from main list_box this is stored already
+		# this way we don't have to change the contents of the existing box
+		all_items = self.contents
 		# delete everything currently in the main list_box
-		main_lb.delete(0, main_lb.size())
+		main_lb.delete(1, main_lb.size())
 		# filter the results and add them back to the listbox
 		items = []
 		for item in all_items:
@@ -203,31 +237,54 @@ class ViewStudentGrades(GUISkeleton):
 			self.sort_nested(sort_opt, items)
 		# filter out the ones we dont need
 		for item in items:
-			# check to see if the filter tuple is empty
-			ids = filters[0]
-			filtered_id = False
-			filtered_grade = False
-			if (ids != ''):
-				# check if the user id is in 
-				if (item[0] in ids):
-					# we want to check the other option
-					filtered_id = True
-			else:
-				filtered_id = True
-			if (filter_grade != []):
-				if (filter_grade[-1] == "-50%"):
-					# check if % is less than 50
-					filtered_grade = (int(item[2][:-1]) + 
-					            int(filter_grade[-1][:-1])) < 0
-				else:
-					filtered_grade = (int(item[2][:-1]) - 
-					            int(filter_grade[-1][:-1])) > 0
-			else:
-				filtered_grade = True
-			if (filtered_id and filtered_grade):
+			check_filter = self.check_filters(item)
+			if (check_filter == True):
+				# format the string
 				result = "{:>4}   {:<12}   {:>3}  {:>4}"
 				result = result.format(*item)
 				main_lb.insert(END, result)
+		
+				
+	def check_filters(self, item):
+		'''checks an item against filters to make sure that it is
+		valid.
+		@param item-> the item you want checked against the filters
+		this is a list of items pulled from the main list box
+		@return boolean
+		'''
+		filters = self.filters
+		filter_grade = filters[1].split()
+		# check to see if one of them is less than 50%
+		if (len(filter_grade) > 1 and filter_grade[-1] == "50%"):
+			if (filter_grade[-2] == "<"):
+				filter_grade[-1] = "-50%"	
+		# check the 
+		# check to see if the filter tuple is empty
+		ids = filters[0]
+		filtered_id = False
+		filtered_grade = False
+		if (ids != '' and ids != []):
+			# check if the user id is in 
+			if (item[0] in ids):
+				# we want to check the other option
+				filtered_id = True
+		else:
+			filtered_id = True
+		if (filter_grade != [] and filter_grade != ''):
+			
+			if (filter_grade[0] == "All"):
+				filtered_grade = True
+				
+			elif (filter_grade[-1] == "-50%"):
+				# check if % is less than 50
+				filtered_grade = (int(item[2][:-1]) + 
+				                  int(filter_grade[-1][:-1])) < 0
+			else:
+				filtered_grade = (int(item[2][:-1]) - 
+				                  int(filter_grade[-1][:-1])) > 0
+		else:	
+			filtered_grade = True	
+		return (filtered_grade and filtered_id)
 	
 	
 	def sort_nested(self, index, nlist):
@@ -343,26 +400,3 @@ class ViewStudentGrades(GUISkeleton):
 		num_attempts = len(attempts)
 		result = result.format(uid, username, grade, num_attempts)
 		return result
-
-"""
-	def average_grade(self):
-		''' Function returns string of the average grade of
-		all students who have completed the assignment
-		'''
-		if (self.all_grades == 0 and self.num_users == 0):
-			return "No Grades Available"
-		elif (self.num_users != 0 and self.all_grades == 0):
-			return "0"
-		else:
-			return str(int(self.all_grades/self.num_users))
-"""
-"""
-	def show_average(self):
-		''' Function that displays average labels for student grades on
-		the current display assignment
-		'''
-		self.header_label = self.create_label(self, "Student UID Grade", REGULAR_FONT)
-		self.header_label.grid(row=4, column=1, pady=10)
-		self.average = self.create_label(self, "Average Grade: " + self.average_grade(), APP_HIGHLIGHT_FONT)
-		self.average.grid(row=4, column=3)
-"""

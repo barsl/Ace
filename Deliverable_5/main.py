@@ -102,24 +102,26 @@ class LoginScreen(GUISkeleton):
         def create_entry_fields(self, controller):
                 ''' creates the entry fields for username and password'''
                 # create the username and password fields
+                i = 0
+                myframe = ttk.Frame(self)       
                 for field in self.entry_keys:
-                        myframe = ttk.Frame(self)
                         new_label = self.create_label(myframe, field, REGULAR_FONT)
-                        new_label.pack({"side": "left"}, padx=10)
+                        new_label.grid(row=i, column=0, padx=10, sticky="W")
                         enterbox = self.create_entry(myframe, field)
                         if field == "Password":
                                 # the show field of the password window makes sure that we only
                                 # show '*' when somebody types in the password
                                 enterbox["show"] = "*"
-                        enterbox.pack({"side": "left"})
-                        myframe.pack()
-                self.create_login(controller)
+                        enterbox.grid(row=i, column=1)
+                        i += 1
+                self.create_login(myframe, controller)
+                myframe.pack()
 
-        def create_login(self, controller):
+        def create_login(self, location, controller):
                 '''creates login button'''
-                button = self.create_button(self, "Login")
+                button = self.create_button(location, "Login")
                 button["command"] = lambda : self.verify_creds(controller)
-                button.pack(pady=20)
+                button.grid(row=3, column=1,pady=10, sticky="E")
 
         def verify_creds(self, controller):
                 ''' used to verify  login credentials from the entry boxes
