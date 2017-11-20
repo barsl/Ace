@@ -52,18 +52,7 @@ class ViewAssignments(GUISkeleton):
             self.add_assign_to_lb(aid)
         # list that will hold all the frames of the widgets created 
         self.frames = []
-        
-    def create_tab(self, num=8):
-        '''returns a string that is equivalent to the tab character
-        used for formatting purposes
-        @param num-> The number of spaces you want the tab to be default is 4
-        '''
-        res = ''
-        i = 0
-        while i < num:
-            res += ' '
-            i += 1
-        return res
+
     
     def subject_buttons_init(self, row, column):
         '''creates the buttons for the add subject box

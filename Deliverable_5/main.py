@@ -22,6 +22,7 @@ HOME_FONT = ("Comic Sans", 26, "bold")
 class AoS(tk.Tk):
         '''Class that contains everything in the Application '''
         def __init__(self, *args, **kwargs):
+                self.uid = ''
                 tk.Tk.__init__(self, *args, **kwargs)
                 # title of the software
                 tk.Tk.wm_title(self, "Ace of Spades")
@@ -37,12 +38,19 @@ class AoS(tk.Tk):
                 # the frame that is on the top is the one that is on the screen
                 # the dictionary will contain the different screens
                 self.frames = {}
-                for frame in {"LoginScreen":LoginScreen, "HomeScreen":HomeScreen,
-                              "ProblemInterface":ProblemInterface, "UserHome":UserHome,
-                              "UserInterface":UserInterface, "AddAssignment":AddAssignment
-                              ,"ViewUserAssignments":ViewUserAssignments,
-                              "Attempt":Attempt, "ViewPastAttempt":ViewPastAttempt,
-                              "ViewAttempt":ViewAttempt, "ViewStudentGrades":ViewStudentGrades, "FilterGrade":FilterGrade}.items():
+                for frame in {"LoginScreen":LoginScreen,
+                              "HomeScreen":HomeScreen,
+                              "ProblemInterface":ProblemInterface,
+                              "UserHome":UserHome,
+                              "UserInterface":UserInterface,
+                              "ViewUserAssignments":ViewUserAssignments,
+                              "Attempt":Attempt,
+                              "ViewPastAttempt":ViewPastAttempt,
+                              "ViewAttempt":ViewAttempt,
+                              "ViewStudentGrades":ViewStudentGrades,
+                              "ViewAssignments":ViewAssignments,
+                              "FilterGrade":FilterGrade}.items():
+                        
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
                         new_frame.grid(row=0, column=1, sticky="nsew")
@@ -184,7 +192,7 @@ class HomeScreen(GUISkeleton):
         at the moment the homescreen is just a placeholder for some buttons'''
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
-                self.buttons = ["Add User", "Manage Question Bank","Create Assignment",
+                self.buttons = ["Add User", "Manage Question Bank","View Assignments",
                                 "Student Grades", "Logout"]
                 self.init_window(controller)
 
@@ -197,9 +205,9 @@ class HomeScreen(GUISkeleton):
                                 new_button["command"] = lambda : controller.show_frame('UserInterface')
                         elif button == "Manage Question Bank":
                                 new_button["command"] = lambda : controller.show_frame('ProblemInterface')
-                        elif button == "Create Assignment":
+                        elif button == "View Assignments":
                                 new_button["command"] = (lambda :
-                                                         controller.show_frame('AddAssignment'))
+                                                         controller.show_frame('ViewAssignments'))
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
                                                          controller.show_frame("ViewStudentGrades", self.uid))
