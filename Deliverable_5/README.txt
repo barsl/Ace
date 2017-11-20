@@ -28,3 +28,29 @@ After login,
  view assignments, edit assignments, View grades
 As a student : you can submit, and save progress, view the leaderboards
 
+
+****************************************************
+
+	             TESTING
+
+****************************************************
+
+Ace of Spades comes with Automated Tests
+To Run the automated tests:
+
+	open folder named "testing"
+	execute each testfile using Python 3.x
+
+ 
+****************************************************
+
+                  KNOWN BUGS
+
+****************************************************
+
+- Assume that subject has to be in the database in order to create assignments
+	-> So problems with specific subjects have to be created before an assignment with that
+	   subject can be created
+
+- Leaderboard: Leaderboard is not functioning at this moment
+- When sorting or filtering without choosing an assignment, there may be an error
