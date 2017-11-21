@@ -12,6 +12,8 @@ from user_assignments import *
 from attempt import *
 from all_grades import *
 from ViewAssignments import *
+from leaderboard import * # LEADERBOARD
+
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -48,7 +50,7 @@ class AoS(tk.Tk):
                               "Attempt":Attempt,
                               "ViewPastAttempt":ViewPastAttempt,
                               "ViewAttempt":ViewAttempt,
-                        "ViewStudentGrades":ViewStudentGrades, "ViewAssignments": ViewAssignments}.items():                        
+                        "ViewStudentGrades":ViewStudentGrades, "ViewAssignments": ViewAssignments, "Leaderboard":Leaderboard}.items():                        
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
                         new_frame.grid(row=0, column=1, sticky="nsew")
@@ -181,10 +183,9 @@ class UserHome(GUISkeleton):
                 self.create_buttons(controller)
 
 
+
         def set_uid(self, uid, aid=None, atid=None):
                 self.uid = uid
-
-
 
 class HomeScreen(GUISkeleton):
         ''' Homescreen that appears after the user logs in
@@ -192,7 +193,7 @@ class HomeScreen(GUISkeleton):
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
                 self.buttons = ["Add User", "Manage Question Bank","View Assignments",
-                                "Student Grades", "Logout"]
+                                "Student Grades", "Leaderboard", "Logout"]
                 self.init_window(controller)
 
         def create_buttons(self, controller):
@@ -210,6 +211,10 @@ class HomeScreen(GUISkeleton):
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
                                                          controller.show_frame("ViewStudentGrades", self.uid))
+                                
+                        elif button == "Leaderboard": # LEADERBOARD
+                                new_button["command"] = (lambda : controller.show_frame('Leaderboard'))
+                    
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
@@ -230,7 +235,6 @@ class HomeScreen(GUISkeleton):
                 # del4_separated
                 self.uid = uid
       
-
 
 if __name__ == "__main__":
         conn = db.sqlite3.connect('ace.db')

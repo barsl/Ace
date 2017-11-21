@@ -30,7 +30,7 @@ class ViewAssignments(GUISkeleton):
         '''the names of the entry boxes these are stored as keys
         in the dictionary self.entry_fields which
         is inherited from GUISkeleton'''
-        self.entries = ["Assignment Name", "Due Date", "Visible", "Subject",
+        self.entries = ["Assignment Name", "Start Date","Due Date", "Visible", "Subject",
                         "Number of Questions"]
         GUISkeleton.__init__(self, parent)
         # create the title label
@@ -170,6 +170,7 @@ class ViewAssignments(GUISkeleton):
         # this does not include the subject and number fields, because
         # those are stored in the listbox
         name = self.entry_fields["Assignment Name"].get()
+        start = self.entry_fields["Start Date"].get()
         deadline = self.entry_fields["Due Date"].get()
         visible = self.entry_fields["Visible"].get()
         # we want to make sure that none of the fields are empty
@@ -188,7 +189,7 @@ class ViewAssignments(GUISkeleton):
                 formula += ","
             formula = formula[:-1]
             # update the database
-            num = self.update_assignments_table(name, formula, deadline, visible)
+            num = self.update_assignments_table(name, formula, start, deadline, visible)
             self.table_functions(num, formula)
             # check to make sure that the assignment is in the db
             aids = db.get_assignments_ids(conn)
@@ -221,11 +222,11 @@ class ViewAssignments(GUISkeleton):
         # add the assignment to the list box
         self.add_to_list(self.list_box, assign_string)
 
-    def update_assignments_table(self, name, formula, deadline, visible):
+    def update_assignments_table(self, name, formula, start, deadline, visible):
         ''' 
         insert a new row to the assignments table with the details
         '''
-        num = db.add_assignment(name, formula, deadline, visible, conn)
+        num = db.add_assignment(name, formula,start, deadline, visible, conn)
         # return id of new assignment
         return num
         

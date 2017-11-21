@@ -9,12 +9,21 @@ import ast
 from random import sample
 import time
 
+import re # LEADERBOARD
+import datetime # LEADERBOARD
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
 TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
+
+# Constants for converting time units to seconds
+YRSEC = 31556952
+MONSEC = 2629746
+DAYSEC = 86400
+HRSEC = 3600
+MINSEC = 60
 
 conn = sqlite3.connect('ace.db')
     
@@ -67,12 +76,13 @@ class Attempt(GUISkeleton):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         # set iterator for grid rows
+        # print(db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2])
         ids = ast.literal_eval(ids)
         # for each id create a row
         i = 0
         for qid in ids:
             # create new entries 
-            question_label = Label(self, font=REGULAR_FONT)
+            question_label = self.create_label(self, text="",font=REGULAR_FONT)
             answer_entry = Entry(self, font=REGULAR_FONT)
             self.labels.append(question_label)
             self.entries.append(answer_entry)
@@ -134,8 +144,10 @@ class Attempt(GUISkeleton):
     def update_progress(self):
         '''
         takes a list of answers, creates a string in format:'ans1,ans2,ans3,...'
-        and calles a database function to update the user's attempt row with the
+        and calls a database function to update the user's attempt row with the
         new progress
+        
+        Also adds completion time (in seconds) to user's records in database.
         '''
         answers = self.get_entries()
         progress = ""
@@ -217,6 +229,47 @@ class Attempt(GUISkeleton):
             self.aid, self.uid, len(
                 db.get_user_attempts(self.aid, self.uid, conn)), now, conn)
 
+       # LEADERBOARD
+        # Update user's time
+        user_attempts = db.get_user_attempts(self.aid, self.uid, conn)
+        assignment_start = db.get_assignment_details(self.aid, conn)[3]
+        
+        # Update user's overall grade and time from recalculating all latest
+        # submissions they made for all assignments
+        ##num_of_assignments = len(db.get_assignments_ids(conn))
+        all_assignments = db.get_assignments_ids(conn)
+        user_total_grade = 0
+        user_total_time = 0
+        
+        i = 1
+        for assignment in all_assignments:
+            ##print(db.get_latest_user_attempts(i, self.uid, conn)[1]) # Index problem with latest a#?
+            print("====================")
+            print("|||", db.get_latest_user_attempts(i, self.uid, conn)[0])
+            assignment_start = db.get_assignment_details(i, conn)[3]
+            print("CONDITIONAL", db.get_latest_user_attempts(i, self.uid, conn)[0][5])
+            print("CONDITIONAL", type(db.get_latest_user_attempts(i, self.uid, conn)[0][5]))
+            
+            # Ensure current user's attempt is not one that has 0 attempt.
+            if (db.get_latest_user_attempts(i, self.uid, conn)[0][5] != '0'):
+                # Ensure data from latest submission is retrieved
+                if (db.get_latest_user_attempts(i, self.uid, conn)[0][5] != ''):
+                    latest_id = 0
+                else:
+                    latest_id = 1
+                print("LATEST ID", latest_id)
+                curr_aid_time = self.start_to_end_sec(assignment_start, db.get_latest_user_attempts(i, self.uid, conn)[latest_id][5])
+                print("CURR_AID_TIME:", curr_aid_time)
+                user_total_grade += int(db.get_latest_user_attempts(i, self.uid, conn)[latest_id][4])
+                user_total_time += int(curr_aid_time)
+                i+=1
+
+        average_grade = user_total_grade/len(all_assignments)
+        
+        db.update_user_grade(self.uid, average_grade, conn)
+        db.update_user_time(self.uid, user_total_time, conn)
+
+
     def create_problem_set(self, formula):
         '''
         takes a formula "subj1:num1,subj2:num2..." , creates a unique set
@@ -240,6 +293,16 @@ class Attempt(GUISkeleton):
             problem_set += sample_rows
 
         return problem_set
+
+    def start_to_end_sec(self, start, now): # LEADERBOARD
+        da0, mon0, yr0 = start.split("/")
+        curr_time = re.split(':|\n|/', str(now)) # "%d/%m/%Y\n%H:%M:%S"
+        da1, mon1, yr1, hr1, min1, sec1 = curr_time[0], curr_time[1], curr_time[2], curr_time[3], curr_time[4], curr_time[5]
+        start_sec = int(yr0) * YRSEC + int(mon0) * 2629746 + int(da0)
+        end_sec = int(yr1) * YRSEC + int(mon1) * 2629746 + int(da1) * DAYSEC + int(hr1) * HRSEC + int(min1) * MINSEC + int(float(sec1))
+        net_sec = end_sec - start_sec
+        return net_sec
+
     
 class ViewAttempt(GUISkeleton):
     '''

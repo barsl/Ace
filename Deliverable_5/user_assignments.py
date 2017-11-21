@@ -48,13 +48,12 @@ class ViewUserAssignments(GUISkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
-        
     def set_uid(self, uid, aid=None, atid=None):
         if (type(uid) == int):
             self.uid = uid
         else:
             self.uid = uid[0]
-            
+
         self.atid = atid
         self.gen_rows()
 
@@ -70,12 +69,14 @@ class ViewUserAssignments(GUISkeleton):
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
             # create new entries
+            
             name_label = self.create_label(self, text=dets[1], font=REGULAR_FONT)
-            deadline_label = self.create_label(self, text=dets[3], font=REGULAR_FONT)
+            deadline_label = self.create_label(self, text=dets[4], font=REGULAR_FONT)
             try :
                 grade_label = self.create_label(self, text=attempts[-2][4], font=REGULAR_FONT)
             except IndexError:
                 grade_label = self.create_label(self, text=attempts[-1][4], font=REGULAR_FONT)
+
             # add to corresponding dictonaries with user ids as keys
             self.names[aid] = name_label
             self.deadlines[aid] = deadline_label
@@ -140,21 +141,26 @@ class ViewPastAttempt(GUISkeleton):
 
 
     def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid
+        self.uid = uid[0]
         self.atid = atid
-        self.gen_rows(uid, aid)
+        self.gen_rows(self.uid, aid)
 
     def gen_rows(self, uid, aid):
-
+        print(uid)
+        print(aid)
+        
         all_attempts = db.get_user_attempts(str(aid), uid, conn)
+        print(all_attempts)
         # set iterator for grid rows
         i = 0
         atid = 1
 
         # for each id create a row
         for attempts in all_attempts:
+            print(attempts)
 
             # create new entries
+
             submission_label = self.create_label(self, text=attempts[5], font=REGULAR_FONT)
             grade_label = self.create_label(self, text=attempts[4], font=REGULAR_FONT)
 

@@ -9,6 +9,7 @@ REGULAR_FONT = ("Helvetica", 12, "normal")
 NICE_BLUE = "#3399FF"
 
 class GUISkeleton(ttk.Frame):
+	
 	'''Skeleton for creating frames in Tkinter'''
 	def __init__(self, parent):
 		self.entry_fields = {}
