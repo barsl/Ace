@@ -102,6 +102,7 @@ class ViewStudentGrades(GUISkeleton):
 		aid = drop_results.split()[1] 
 		self.aid = int(aid)
 		user_ids = db.get_users_ids_assignment(self.aid,conn)
+		print(user_ids)
 		self.create_list_box("results", 4, 2, span=3)
 		self.create_edit_grade(5, 3)
 		max_len = self.get_longest_username(user_ids)
@@ -113,6 +114,7 @@ class ViewStudentGrades(GUISkeleton):
 		for user in user_ids:
 			# get all the attempts for the user id
 			attempts = db.get_user_attempts(self.aid, user, conn)
+			print(attempts)
 			user_result = self.update_grades_table(self.uids[user],
 			                                user, attempts,
 			                                max_len)
