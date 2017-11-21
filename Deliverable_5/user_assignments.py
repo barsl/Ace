@@ -66,7 +66,11 @@ class ViewUserAssignments(GUISkeleton):
             self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
     '''
     def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid
+        if (type(uid) == int):
+            self.uid = uid
+        else:
+            self.uid = uid[0]
+            
         self.atid = atid
         self.gen_rows()
 

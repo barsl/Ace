@@ -5,6 +5,7 @@ from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
 from gui_skeleton import *
+from random import sample
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")

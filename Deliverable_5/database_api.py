@@ -345,9 +345,18 @@ def get_assignment_details(aid, conn):
     cur.execute("SELECT * FROM assignments WHERE id=" + str(aid))
 
     rows = cur.fetchall()
-
-
     return rows[0]
+
+
+def get_users_ids_assignment(aid, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT uid FROM " + "a"+str(aid))
+    users = cur.fetchall()
+    user_ids = []
+    for user in users:
+        user_ids.append(user[0])
+    return user_ids	
+
 
 def update_assignment_submission_for_user_for_nth_attempt(aid, uid, n, submission, conn):
 
@@ -430,14 +439,6 @@ def get_nth_attempt_id_for_user(aid, uid, n, conn):
     # return it's id ([0])
     return a[0]
 
-def get_users_ids_assignment(aid, conn):
-    cur = conn.cursor()
-    cur.execute("SELECT DISTINCT uid FROM " + "a"+str(aid))
-    users = cur.fetchall()
-    user_ids = []
-    for user in users:
-        user_ids.append(user[0])
-    return user_ids		
 
 """Testing"""
 

@@ -5,7 +5,7 @@ from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
 from gui_skeleton import *
-from ViewAssignments import *
+#from ViewAssignments import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 14, "normal")
@@ -95,9 +95,6 @@ class ViewStudentGrades(GUISkeleton):
 		attempt of each user for selected assignment
 		@param eventObject, dropdown menu item selected
 		
-		NOTE: WHEN TESTING A1 AND A10 ARE ONLY TABLES WITH DATA IN DB
-		NOTE2: HOW-TO-TAB-THE-FREAKING-LISTBOX-ENTRY!!!! 
-		       ITS TOO CLOSE TO EACH OTHER "kex 2 5- vs "Kez    2    50"
 		
 		'''
 		drop_results = self.dropdown.get()
@@ -109,16 +106,19 @@ class ViewStudentGrades(GUISkeleton):
 		self.create_edit_grade(5, 3)
 		max_len = self.get_longest_username(user_ids)
 		lb = self.list_box["results"]
-		label_string = "Uid   Name   Grade  Attempts"
+		#label_string = "Uid   Name   Grade  Attempts"
+		label_string = "{:>4}   {:<7}   {:>7}  {:>4}"
+		label_string = label_string.format("Uid", "Name", "Grade", "Attempts")
 		lb.insert(END, label_string)
 		for user in user_ids:
 			# get all the attempts for the user id
 			attempts = db.get_user_attempts(self.aid, user, conn)
 			user_result = self.update_grades_table(self.uids[user],
-			                                       user, attempts,
-			                                       max_len)
+			                                user, attempts,
+			                                max_len)
 			# place it in the lists_box
 			lb.insert(END, user_result)
+			
 		self.average_labels(user_ids).grid(row=3, column=2,
 		                                   columnspan=3)
 		self.contents = lb.get(1, lb.size())
@@ -361,11 +361,12 @@ class ViewStudentGrades(GUISkeleton):
 		for uid in uids:
 			# get the user_info
 			user_info = db.get_user_details(conn, uid)
-			name = user_info[0][2]
-			# want to call this later without accessing the db
-			self.uids[uid] = name
-			if (len(name) > max_len):
-				max_len = len(name)
+			if (len(user_info) != 0):
+				name = user_info[0][2]
+				# want to call this later without accessing the db
+				self.uids[uid] = name
+				if (len(name) > max_len):
+					max_len = len(name)
 		return max_len
 			
 			
@@ -377,19 +378,20 @@ class ViewStudentGrades(GUISkeleton):
 		@param attempts -> Attempts tuple
 		the attempts are stored in a tuple, where each element of the 
 		tuple is in this format:
-		(id, correct answers, student answers, 100)
+		(id, uid, correct answers, student answers, grade)
 		for example
-		(4, [10,6], [10,6], 100)
+		(id, uid, 4, [10,6], [10,6], 100)
 		is the tuple with student id 4, answers 10, 6
 		student answers 10, 6 resulting in grade 100%
 		@param max_len -> the length of the maximum name...
 		used for formatting
 		'''
-		result = "{:>4}   {:<12}   {:>3}%   {:>4}"
-		grade = attempts[-1][-1]
+		tab = self.create_tab()
+		result = "{:>4}   {:<7}   {:>7}%   {:>4}"
+		grade = attempts[-1][-2]
 		#check for empty grades
 		if (grade == ''):
-			result += "Grade Not Available" + tab
+			grade = "-"
 		else:
 			# if user has completed assignment then 
 			# upgrade num_users and all_grades for the avg calculation

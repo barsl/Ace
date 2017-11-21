@@ -67,7 +67,6 @@ class Attempt(GUISkeleton):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         # set iterator for grid rows
-        # print(db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2])
         ids = ast.literal_eval(ids)
         # for each id create a row
         i = 0
