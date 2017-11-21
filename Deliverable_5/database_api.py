@@ -430,6 +430,14 @@ def get_nth_attempt_id_for_user(aid, uid, n, conn):
     # return it's id ([0])
     return a[0]
 
+def get_users_ids_assignment(aid, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT uid FROM " + "a"+str(aid))
+    users = cur.fetchall()
+    user_ids = []
+    for user in users:
+        user_ids.append(user[0])
+    return user_ids		
 
 """Testing"""
 

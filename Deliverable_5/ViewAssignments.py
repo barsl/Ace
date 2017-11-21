@@ -5,8 +5,6 @@ from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
 from gui_skeleton import *
-from random import sample
-
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -54,7 +52,18 @@ class ViewAssignments(GUISkeleton):
             self.add_assign_to_lb(aid)
         # list that will hold all the frames of the widgets created 
         self.frames = []
-
+        
+    def create_tab(self, num=4):
+        '''returns a string that is equivalent to the tab character
+        used for formatting purposes
+        @param num-> The number of spaces you want the tab to be default is 4
+        '''
+        res = ''
+        i = 0
+        while i < num:
+            res += ' '
+            i += 1
+        return res
     
     def subject_buttons_init(self, row, column):
         '''creates the buttons for the add subject box
