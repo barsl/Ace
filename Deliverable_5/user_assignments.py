@@ -48,23 +48,7 @@ class ViewUserAssignments(GUISkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
-        # generate all the dynamically generated widget rows
-
-
-        # enable clicking functionality for all the buttons
-        #self.enable_buttons()
-
-    '''
-    def enable_buttons(self):
-        # get a list of all existing problem ids
-        assignment_ids = db.get_assignment_ids(conn)
-        # configure clicking function for all the delete buttons
-        for aid in assignment_ids:
-            self.past_attempts[aid].config(command=lambda j=qid: self.del_problem(j))
-        # configure clicking function for all the update buttons
-        for qid in problem_ids:
-            self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
-    '''
+        
     def set_uid(self, uid, aid=None, atid=None):
         if (type(uid) == int):
             self.uid = uid
@@ -85,14 +69,13 @@ class ViewUserAssignments(GUISkeleton):
             attempts = db.get_user_attempts(str(aid), self.uid, conn)
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
-
             # create new entries
-            name_label = Label(self, font=REGULAR_FONT, text=dets[1])
-            deadline_label = Label(self, font=REGULAR_FONT, text=dets[3])
+            name_label = self.create_label(self, text=dets[1], font=REGULAR_FONT)
+            deadline_label = self.create_label(self, text=dets[3], font=REGULAR_FONT)
             try :
-                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-2][4])
+                grade_label = self.create_label(self, text=attempts[-2][4], font=REGULAR_FONT)
             except IndexError:
-                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-1][4])
+                grade_label = self.create_label(self, text=attempts[-1][4], font=REGULAR_FONT)
             # add to corresponding dictonaries with user ids as keys
             self.names[aid] = name_label
             self.deadlines[aid] = deadline_label
@@ -172,8 +155,8 @@ class ViewPastAttempt(GUISkeleton):
         for attempts in all_attempts:
 
             # create new entries
-            submission_label = Label(self, font=REGULAR_FONT, text=attempts[5])
-            grade_label = Label(self, font=REGULAR_FONT, text=attempts[4])
+            submission_label = self.create_label(self, text=attempts[5], font=REGULAR_FONT)
+            grade_label = self.create_label(self, text=attempts[4], font=REGULAR_FONT)
 
             # add to corresponding dictonaries with user ids as keys
             self.submissions.append(submission_label)

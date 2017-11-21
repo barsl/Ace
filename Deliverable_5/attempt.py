@@ -58,8 +58,8 @@ class Attempt(GUISkeleton):
         
         self.gen_rows()
            
-        Label(self, text="Problem", font=REGULAR_FONT).grid(row=1,column=0, pady=10)
-        Label(self, text="Solution", font=REGULAR_FONT).grid(row=1,column=1, pady=10)
+        self.create_label(self, text="Problem", font=REGULAR_FONT).grid(row=1,column=0, pady=10)
+        self.create_label(self, text="Solution", font=REGULAR_FONT).grid(row=1,column=1, pady=10)
         
        
         
@@ -279,8 +279,8 @@ class ViewAttempt(GUISkeleton):
         self.existing_progress = self.existing_progress.split(",")
         self.gen_rows()
            
-        Label(self, text="Problem", font=REGULAR_FONT).grid(row=1,column=0, pady=10)
-        Label(self, text="Solution", font=REGULAR_FONT).grid(row=1,column=1, pady=10)
+        self.create_label(self, text="Problem", font=REGULAR_FONT).grid(row=1,column=0, pady=10)
+        self.create_label(self, text="Solution", font=REGULAR_FONT).grid(row=1,column=1, pady=10)
         
        
         
@@ -293,8 +293,8 @@ class ViewAttempt(GUISkeleton):
         i = 0
         for qid in ids:
             # create new entries 
-            question_label = Label(self, font=REGULAR_FONT)
-            answer_label = Label(self, font=REGULAR_FONT)
+            question_label = self.create_label(self, font=REGULAR_FONT)
+            answer_label = self.create_label(self, font=REGULAR_FONT)
             self.labels.append(question_label)
             self.entries.append(answer_label)
             # add to corresponding dictonaries with problem ids as keys

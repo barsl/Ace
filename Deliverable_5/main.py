@@ -11,6 +11,7 @@ from problem import *
 from user_assignments import *
 from attempt import *
 from all_grades import *
+from ViewAssignments import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -47,7 +48,7 @@ class AoS(tk.Tk):
                               "Attempt":Attempt,
                               "ViewPastAttempt":ViewPastAttempt,
                               "ViewAttempt":ViewAttempt,
-                        "ViewStudentGrades":ViewStudentGrades}.items():                        
+                        "ViewStudentGrades":ViewStudentGrades, "ViewAssignments": ViewAssignments}.items():                        
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
                         new_frame.grid(row=0, column=1, sticky="nsew")

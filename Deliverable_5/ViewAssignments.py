@@ -9,7 +9,7 @@ from random import sample
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
-TITLE_FONT = ("Helvetica", 14, "normal")
+TITLE_FONT = ("Helvetica", 16, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
@@ -35,7 +35,7 @@ class ViewAssignments(GUISkeleton):
         GUISkeleton.__init__(self, parent)
         # create the title label
         self.title = self.create_label(self, "View Assignments",
-                                       TITLE_FONT).grid(row=0, column=1,
+                                       TITLE_FONT, "red").grid(row=0, column=1,
                                                         pady=10, padx=20)
         
         # we will fill this in with the listbox after
@@ -43,7 +43,7 @@ class ViewAssignments(GUISkeleton):
         self.list_box = None
         # the functions to initialise the buttons and the widgets
         # the numbers are the row and the column to place the widgets in
-        title = self.create_label(self, "Assignments", TITLE_FONT)
+        title = self.create_label(self, "Assignments", APP_HIGHLIGHT_FONT)
         title.grid(row=1, column=0)
         self.create_frame(2, 0)
         self.init_buttons(3, 0)
@@ -116,7 +116,7 @@ class ViewAssignments(GUISkeleton):
         @param column -> the column you want to place the frame in'''
         if self.add_pressed == False:
             # create the title label
-            title = self.create_label(self,"Add Assignment", TITLE_FONT)
+            title = self.create_label(self,"Add Assignment", APP_HIGHLIGHT_FONT)
             # we need to append it because we want to delete this later
             self.titles.append(title)
             title.grid(row=1, column=1)
@@ -249,7 +249,7 @@ class ViewAssignments(GUISkeleton):
             for quest in quests:
                 prob_ids.append(quest[0])   
             # create the user attempt entry
-            db.add_attempt("a"+str(num), uid, prob_ids, conn)
+            db.add_attempt("a"+str(num), uid, prob_ids, "","","", conn)
         
     def create_problem_set(self, formula):
         '''
@@ -323,7 +323,7 @@ class ViewAssignments(GUISkeleton):
         self.subj_pressed = False
         self.controller.show_frame("HomeScreen")        
         
-    def create_frame(self, row, column, width=40, height=8):
+    def create_frame(self, row, column, width=50, height=8):
         '''method that creates the frame where the assignments are going
         to be listed
         @param row -> The row where you want the frame to be placed
@@ -342,9 +342,9 @@ class ViewAssignments(GUISkeleton):
         scrollbar.config(command=list_box.yview)
         scrollbar.pack(side="right", fill="y")
         # set the self parameter to the listbox
-        self.list_box = list_box        
+        self.list_box = list_box 
         list_box.pack(side="left", fill="both")
-        new_frame.grid(row=row, column=column)
+        new_frame.grid(row=row, column=column, pady=15)
 
         
     def add_to_list(self, box, assignment):
