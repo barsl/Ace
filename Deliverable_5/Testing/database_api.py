@@ -430,7 +430,6 @@ def get_nth_attempt_id_for_user(aid, uid, n, conn):
     # return it's id ([0])
     return a[0]
 
-
 """Testing"""
 
 def remove_table(table_name, conn):
@@ -444,3 +443,10 @@ def remove_assign(aid, conn):
     cur.execute("DELETE FROM assignments WHERE id=" + str(aid))
 
     conn.commit()
+
+
+def num_of_rows(table_name, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * from " + str(table_name))
+    res = cur.fetchall()
+    return len(res)
