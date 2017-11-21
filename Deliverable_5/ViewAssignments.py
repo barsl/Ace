@@ -352,4 +352,4 @@ class ViewAssignments(GUISkeleton):
         which represents the name of the assignment. e.g. Assignment 1'''
         box.insert(END, assignment)
         
-        
+

@@ -3,7 +3,7 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
-from gui_skeleton import *
+from user_skeleton import *
 from problem import *
 import ast
 from random import sample
@@ -19,14 +19,14 @@ HOME_FONT = ("Comic Sans", 26, "bold")
 conn = sqlite3.connect('ace.db')
     
 
-class Attempt(GUISkeleton):
+class Attempt(UserSkeleton):
     '''
     Objects of this type are used to genereate the GUI for the problem Database
     Management screen
     '''
     def __init__(self, parent, controller, uid=None, aid=None):
-        GUISkeleton.__init__(self, parent)
-        self.cont = controller
+        UserSkeleton.__init__(self, parent)
+        self.controller = controller
         self.labels = ["Subject", "Question", "Answer"]
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
@@ -63,7 +63,7 @@ class Attempt(GUISkeleton):
         
        
         
-    def gen_rows(self):
+    def gen_rows(self, uid=None, aid=None, atid=None):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         # set iterator for grid rows
@@ -117,7 +117,7 @@ class Attempt(GUISkeleton):
         self.submit_button.destroy()
         self.entries=[]
         self.labels=[]
-        self.cont.show_frame('ViewUserAssignments', self.uid)
+        self.pass_ids('ViewUserAssignments', self.uid)
         
         
     def get_entries(self):
@@ -241,14 +241,14 @@ class Attempt(GUISkeleton):
 
         return problem_set
     
-class ViewAttempt(GUISkeleton):
+class ViewAttempt(UserSkeleton):
     '''
     Objects of this type are used to genereate the GUI for the problem Database
     Management screen
     '''
     def __init__(self, parent, controller, uid=None, aid=None):
-        GUISkeleton.__init__(self, parent)
-        self.cont = controller
+        UserSkeleton.__init__(self, parent)
+        self.controller = controller
         self.labels = ["Subject", "Question", "Answer"]
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
@@ -284,7 +284,7 @@ class ViewAttempt(GUISkeleton):
         
        
         
-    def gen_rows(self):
+    def gen_rows(self, uid=None, aid=None, atid=None):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, (self.atid-1), conn)[2]
         # set iterator for grid rows
@@ -293,8 +293,8 @@ class ViewAttempt(GUISkeleton):
         i = 0
         for qid in ids:
             # create new entries 
-            question_label = self.create_label(self, font=REGULAR_FONT)
-            answer_label = self.create_label(self, font=REGULAR_FONT)
+            question_label = self.create_label(self, '', font=REGULAR_FONT)
+            answer_label = self.create_label(self, '', font=REGULAR_FONT)
             self.labels.append(question_label)
             self.entries.append(answer_label)
             # add to corresponding dictonaries with problem ids as keys
@@ -324,6 +324,6 @@ class ViewAttempt(GUISkeleton):
             j.destroy()
         self.entries=[]
         self.labels=[]
-        self.cont.show_frame('ViewUserAssignments', self.uid)
+        self.pass_ids('ViewUserAssignments', self.uid)
         
    

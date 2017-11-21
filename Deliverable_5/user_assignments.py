@@ -16,7 +16,7 @@ TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
-class ViewUserAssignments(GUISkeleton):
+class ViewUserAssignments(UserSkeleton):
     '''
     Objects of this type are used to generate the GUI for the user to see all Assignments screen
     '''
@@ -35,7 +35,7 @@ class ViewUserAssignments(GUISkeleton):
         # the buttons
         self.past_attempts = {}
         self.new_attempts = {}
-        self.cont = controller
+        self.controller = controller
 
         i = 0
         for label in self.labels:
@@ -48,17 +48,8 @@ class ViewUserAssignments(GUISkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
-        
-    def set_uid(self, uid, aid=None, atid=None):
-        if (type(uid) == int):
-            self.uid = uid
-        else:
-            self.uid = uid[0]
-            
-        self.atid = atid
-        self.gen_rows()
 
-    def gen_rows(self):
+    def gen_rows(self, uid=None, aid=None, atid=None):
         ids = db.get_assignments_ids(conn)
         # set iterator for grid rows
         i = 0
@@ -84,8 +75,8 @@ class ViewUserAssignments(GUISkeleton):
             # create new buttons
             past_attempt_button = self.create_button(self, "Past Attempts")
             new_attempt_button = self.create_button(self, "Current Attempt")
-            new_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("Attempt" ,self.uid, j[0], j[1]))
-            past_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("ViewPastAttempt", self.uid, j[0], j[1]))
+            new_attempt_button.config(command=lambda j=aid: self.pass_ids("Attempt" ,self.uid, j))
+            past_attempt_button.config(command=lambda j=aid : self.pass_ids("ViewPastAttempt", self.uid, j))
 
             # add to corresponding dictonaries with user ids as keys
             self.past_attempts[aid] = past_attempt_button
@@ -101,7 +92,7 @@ class ViewUserAssignments(GUISkeleton):
             i += 1
 
 
-class ViewPastAttempt(GUISkeleton):
+class ViewPastAttempt(UserSkeleton):
     def __init__(self, parent, controller, uid=None, aid=None):
         GUISkeleton.__init__(self, parent)
         self.labels = ["Date of Submission", "Grade", "View Attempt"]
@@ -123,28 +114,20 @@ class ViewPastAttempt(GUISkeleton):
 
         # the buttons
         self.view_attempts = {}
-        self.cont = controller
+        self.controller = controller
 
         i = 0
         for label in self.labels:
             new_label = self.create_label(self, label, REGULAR_FONT,
                                           NICE_BLUE).grid(row=2, column=i)
             i+=1
-
-
         # generate all the dynamically generated widget rows
 
 
         # enable clicking functionality for all the buttons
         #self.enable_buttons()
 
-
-    def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid
-        self.atid = atid
-        self.gen_rows(uid, aid)
-
-    def gen_rows(self, uid, aid):
+    def gen_rows(self, uid=None, aid=None, atid=None):
 
         all_attempts = db.get_user_attempts(str(aid), uid, conn)
         # set iterator for grid rows
@@ -165,7 +148,7 @@ class ViewPastAttempt(GUISkeleton):
             # create new buttons
             view_attempt_button = self.create_button(self, "View")
             view_attempt_button.config(
-                command = lambda j=atid: self.cont.show_frame("ViewAttempt" , uid, aid, j))
+                command = lambda j=atid: self.pass_ids("ViewAttempt" , uid, aid, j))
             self.buttons.append(view_attempt_button)
 
             # add to corresponding dictonaries with user ids as keys
@@ -186,7 +169,7 @@ class ViewPastAttempt(GUISkeleton):
             j.destroy()
         for k in self.buttons:
             k.destroy()
-        self.cont.show_frame('ViewUserAssignments', self.uid)
+        self.pass_ids('ViewUserAssignments', self.uid)
 
 
 

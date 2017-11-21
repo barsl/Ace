@@ -94,8 +94,6 @@ class ViewStudentGrades(GUISkeleton):
 		''' Create a listbox for the last 
 		attempt of each user for selected assignment
 		@param eventObject, dropdown menu item selected
-		
-		
 		'''
 		drop_results = self.dropdown.get()
 		#split the selection strng to get the 'aid' 

@@ -4,6 +4,7 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
 #from PIL import ImageTk, Image
 from tkinter.messagebox import showinfo
 import database_api as db
+from user_skeleton import *
 from gui_skeleton import *
 from assignments import *
 from user import *
@@ -23,7 +24,7 @@ HOME_FONT = ("Comic Sans", 26, "bold")
 class AoS(tk.Tk):
         '''Class that contains everything in the Application '''
         def __init__(self, *args, **kwargs):
-                self.uid = ''
+                self.uid = 0
                 tk.Tk.__init__(self, *args, **kwargs)
                 # title of the software
                 tk.Tk.wm_title(self, "Ace of Spades")
@@ -56,7 +57,7 @@ class AoS(tk.Tk):
 
                 self.show_frame("LoginScreen")
 
-        def show_frame(self, cont, uid=None, aid=None, atid=None):
+        def show_frame(self, cont):
                 ''' function that determines which of the screens will be viewed by
                 the user. This function uses tkraise, in order to bring the
                 wanted screen to the front
@@ -65,9 +66,7 @@ class AoS(tk.Tk):
                 # get the frame from the dictionary
                 frame = self.frames[cont]
                 frame.tkraise()
-
-
-                frame.set_uid(uid, aid, atid)
+                
 
 class LoginScreen(GUISkeleton):
         '''Creates a login screen, which will be the
@@ -80,13 +79,7 @@ class LoginScreen(GUISkeleton):
                 self.create_login_labels()
                 self.create_entry_fields(controller)
 
-        ''' 
-    def add_pic_panel(self, pic):
-        img = ImageTk.PhotoImage(Image.open(pic))
-        label = Label(self, image=img)
-        label.img = img # to keep the reference for the image.
-        label.pack(side="left") # <--- pack
-    '''
+
         def create_login_labels(self):
                 '''creates the beginning labels'''
                 # login text
@@ -138,10 +131,11 @@ class LoginScreen(GUISkeleton):
                                 # check if user or admin
                                 # print(user_details)
                                 if (user_details[0][1] == 'student'):
-                                        controller.show_frame('UserHome', user_details[0])
+                                        controller.show_frame('UserHome')
+                                        controller.uid = user_details[0][0]
                                 # move to home screen
                                 elif (user_details[0][1] == 'admin'):
-                                        controller.show_frame('HomeScreen',user_details[0])
+                                        controller.show_frame('HomeScreen')
                                 else:
                                         showinfo("Fail", "User has no role")
                         else :
@@ -153,19 +147,19 @@ class LoginScreen(GUISkeleton):
                 except IndexError:
                         showinfo("Fail", "This email address is not in the system")
 
-class UserHome(GUISkeleton):
+class UserHome(UserSkeleton):
         '''HomeScreen that appears if login person is user'''
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
                 self.buttons = ["View Assignments", "Logout"]
                 self.init_window(controller)
-                self.cont = controller
+                self.controller = controller
 
         def create_buttons(self, controller):
                 for button in self.buttons:
                         new_button = self.create_button(self, button)
                         if button == "View Assignments":
-                                new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid)
+                                new_button["command"] = lambda : self.pass_ids("ViewUserAssignments", self.controller.uid)
                         elif (button == "Logout"):
                                 new_button["command"] = (lambda :
                                                          controller.show_frame("LoginScreen"))
@@ -179,10 +173,6 @@ class UserHome(GUISkeleton):
                 homescreen_label.pack()
                 self.create_empty_label(2)
                 self.create_buttons(controller)
-
-
-        def set_uid(self, uid, aid=None, atid=None):
-                self.uid = uid
 
 
 
@@ -209,7 +199,7 @@ class HomeScreen(GUISkeleton):
                                                          controller.show_frame('ViewAssignments'))
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
-                                                         controller.show_frame("ViewStudentGrades", self.uid))
+                                                         controller.show_frame("ViewStudentGrades"))
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
