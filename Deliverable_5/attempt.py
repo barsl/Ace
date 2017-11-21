@@ -98,8 +98,7 @@ class Attempt(GUISkeleton):
             i += 1
             
         # create submit and save progress buttons
-        self.update_progress_button = ttk.Button(
-            text="Save", command= lambda : self.update_progress())
+        self.update_progress_button = ttk.Button(text="Save", command= lambda : self.update_progress())
         self.update_progress_button.pack()
         
         self.submit_button = ttk.Button(

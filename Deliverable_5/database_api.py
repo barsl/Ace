@@ -305,7 +305,7 @@ def get_assignments_ids(conn):
 
 	return ids
 
-def add_attempt(table_name, uid, problem_ids, progress, grade, submission_date, conn):
+def add_attempt(table_name, uid, problem_ids, conn, progress=None,grade=None, submission_date=None):
 	'''
 	Adds an assignment to the database. Returns the id of the new assignment.
 	'''
@@ -331,7 +331,6 @@ def get_user_attempts(table_name, uid, conn):
 	'''
 	cur = conn.cursor()
 	cur.execute("SELECT * FROM " + "a"+str(table_name) + " WHERE uid=" + str(uid))
-
 	rows = cur.fetchall()
 	return rows
 

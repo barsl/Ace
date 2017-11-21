@@ -5,6 +5,8 @@ from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
 from gui_skeleton import *
+from random import sample
+
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
@@ -257,7 +259,7 @@ class ViewAssignments(GUISkeleton):
             # get a list of the problems with the same subject
             rows = db.get_problems_by_subj(item[0], conn)
             # get a sample space of random rows with the right amount of problems
-            sample_rows = sample(rows, min(int(item[1]), 20))
+            sample_rows = sample(rows, int(item[1]))
             # add subj sample rows to problem_set
             problem_set += sample_rows
             
