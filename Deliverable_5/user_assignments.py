@@ -141,7 +141,7 @@ class ViewPastAttempt(GUISkeleton):
 
 
     def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid[0]
+        self.uid = uid
         self.atid = atid
         self.gen_rows(self.uid, aid)
 
