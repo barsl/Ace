@@ -8,6 +8,7 @@ from problem import *
 import ast
 from random import sample
 import time
+import sqlite3
 
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")

@@ -136,10 +136,11 @@ class LoginScreen(GUISkeleton):
                     controller.show_frame('HomeScreen')
                     return "directing to admin"
                 else:
-                    showinfo("Fail", "User has no role")
-            else :
+                    pass
+                    # showinfo("Fail", "User has no role")
+            else:
                 # otherwise pop msg to terminal
-                showinfo("Fail", "Wrong combo")
+                # showinfo("Fail", "Wrong combo")
                 return "bad combo"
             self.entry_fields["Email"].set('')
             self.entry_fields["Password"].set('')
