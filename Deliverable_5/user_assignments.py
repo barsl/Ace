@@ -7,7 +7,7 @@ import sqlite3
 from user import *
 from main import *
 from random import sample
-from gui_skeleton import *
+
 conn = sqlite3.connect('ace.db')
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
@@ -48,6 +48,11 @@ class ViewUserAssignments(GUISkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
+        # generate all the dynamically generated widget rows
+
+
+        # enable clicking functionality for all the buttons
+        #self.enable_buttons()
 
     '''
     def enable_buttons(self):
@@ -61,7 +66,7 @@ class ViewUserAssignments(GUISkeleton):
             self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
     '''
     def set_uid(self, uid, aid=None, atid=None):
-        self.uid = uid[0]
+        self.uid = uid
         self.atid = atid
         self.gen_rows()
 
@@ -76,13 +81,14 @@ class ViewUserAssignments(GUISkeleton):
             attempts = db.get_user_attempts(str(aid), self.uid, conn)
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
+
             # create new entries
-            name_label = self.create_label(self, text=dets[1], font=REGULAR_FONT)
-            deadline_label = self.create_label(self,text=dets[3], font=REGULAR_FONT)
+            name_label = Label(self, font=REGULAR_FONT, text=dets[1])
+            deadline_label = Label(self, font=REGULAR_FONT, text=dets[3])
             try :
-                grade_label = self.create_label(self, text=attempts[-2][3], font=REGULAR_FONT)
+                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-2][4])
             except IndexError:
-                grade_label = self.create_label(self, text="Not Graded", font=REGULAR_FONT)
+                grade_label = Label(self, font=REGULAR_FONT, text=attempts[-1][4])
             # add to corresponding dictonaries with user ids as keys
             self.names[aid] = name_label
             self.deadlines[aid] = deadline_label

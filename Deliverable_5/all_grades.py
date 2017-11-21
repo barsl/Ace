@@ -6,7 +6,6 @@ import database_api as db
 from assignments import *
 from gui_skeleton import *
 from ViewAssignments import *
-from filtergrades import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 14, "normal")

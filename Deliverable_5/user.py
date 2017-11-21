@@ -155,7 +155,14 @@ class UserInterface(GUISkeleton):
         new_role = self.roles[button].get()
         new_name = self.names[button].get()
         new_email = self.emails[button].get()
-        # update the database with new entries
+        
+        # if any of the entries is blank, return a msg
+        if ((new_role == '') or (new_name == '') or (new_email == '')) :
+            return "blank entry"
+        # if role is invalid return a msg
+        if ((new_role != 'student') and (new_role != 'admin')) :
+            return "invalid role"
+        # otherwise update the database with new entries
         db.update_user_role(button, new_role, conn)
         db.update_user_name(button, new_name, conn)
         db.update_user_email(button, new_email, conn)
@@ -172,18 +179,27 @@ class UserInterface(GUISkeleton):
         # get new parameters from entry widgets in the dictionaries
         new_role = self.entry_fields["Role"].get()
         new_name = self.entry_fields["Name"].get()
-        new_email = self.entry_fields["Email"].get()        
+        new_email = self.entry_fields["Email"].get()    
+        # check if any of the entries is blank
+        if ((new_role == '') or (new_name == '') or (new_email == '')) :
+            self.clear_entries()
+            return "blank entry"
+        # if role is invalid return a msg
+        if ((new_role != 'student') and (new_role != 'admin')) :
+            self.clear_entries()
+            return "invalid role"        
         # add new user to databse and save his id number
         uid = db.add_user(new_role, new_name, new_email, "", conn)
         # show popup
         self.refresh()
         # clear entries
-        self.entry_fields["Role"].set('')
-        self.entry_fields["Name"].set('')
-        self.entry_fields["Email"].set('')        
+        self.clear_entries()
         showinfo("Success", "User #" + str(uid ) + " has been added to database")
         
-
+    def clear_entries(self):
+        self.entry_fields["Role"].set('')
+        self.entry_fields["Name"].set('')
+        self.entry_fields["Email"].set('')          
     def refresh(self):
         for role in list(self.roles.items()):
             role[1].destroy()
@@ -195,6 +211,11 @@ class UserInterface(GUISkeleton):
             update[1].destroy()
         for delete in list(self.deletes.items()):
             delete[1].destroy()
+        self.roles = {}
+        self.names = {}
+        self.emails = {}
+        self.updates = {}
+        self.deletes = {}        
         self.gen_rows()
         self.enable_buttons()
         

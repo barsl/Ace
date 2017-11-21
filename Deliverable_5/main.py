@@ -48,8 +48,7 @@ class AoS(tk.Tk):
                               "ViewPastAttempt":ViewPastAttempt,
                               "ViewAttempt":ViewAttempt,
                               "ViewStudentGrades":ViewStudentGrades,
-                              "ViewAssignments":ViewAssignments,
-                              "FilterGrade":FilterGrade}.items():
+                              "ViewAssignments":ViewAssignments}.items():
                         
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
@@ -146,9 +145,9 @@ class LoginScreen(GUISkeleton):
                                         controller.show_frame('HomeScreen',user_details[0])
                                 else:
                                         showinfo("Fail", "User has no role")
-                        else :
-                                # otherwise pop msg to terminal
+                        else:   # otherwise pop msg to terminal
                                 showinfo("Fail", "Wrong combo")
+                                
                         self.entry_fields["Email"].set('')
                         self.entry_fields["Password"].set('')
                 # print msg to terminal if email doesnt exist
