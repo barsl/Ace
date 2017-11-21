@@ -19,32 +19,33 @@ class TestViewUserAssignments(unittest.TestCase):
 
     # Tests if correct assignment details returned
     def test_view_assign_details(self):
-        test = db.get_assignment_details(conn, row+1)
+        test = db.get_assignment_details(row+1, conn)
         self.assertEqual(test, (row+1, "a5", "subj1: 1+60", "2017/15/08", 0))
 
     # Tests return type of assignment name
     def test_view_assign_name_type(self):
-        test = db.get_assignment_details(conn, row+1)
+        test = db.get_assignment_details(row+1, conn)
         self.assertEqual(type(test[1]), str)
 
     # Tests return type of assignment formula
     def test_view_assign_formula_type(self):
-        test = db.get_assignment_details(conn, row+1)
+        test = db.get_assignment_details(row+1, conn)
         self.assertEqual(type(test[2]), str)
 
     # Tests return type of assignment deadline
     def test_view_assign_deadline_type(self):
-        test = db.get_assignment_details(conn, row+1)
+        test = db.get_assignment_details(row+1, conn)
         self.assertEqual(type(test[3]), str)
 
     # Tests return type of assignment visibility
     def test_view_assign_visibility_type(self):
-        test = db.get_assignment_details(conn, row+1)
+        test = db.get_assignment_details(row+1, conn)
         self.assertEqual(type(test[4]), int)
 
     # Tests if non-existant assignment can be viewed
     def test_view_non_existant_assign(self):
-        self.assertRaises(sqlite3.OperationalError, lambda:db.get_assignment_details(conn, "hello"))
+        self.assertRaises(sqlite3.OperationalError, lambda:db.get_assignment_details("hello",
+                                                                                     conn))
 
     # Cleans up by removing the assignment after every test case
     def tearDown(self):
