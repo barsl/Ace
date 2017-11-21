@@ -40,7 +40,10 @@ To Run the automated tests:
 
 	open folder named "testing"
 	execute each testfile using Python 3.x
-
+		test_user.py
+		test_login.py
+		unittest_problem.py
+		unittest_user_assignments.py
  
 ****************************************************
 
