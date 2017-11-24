@@ -131,7 +131,7 @@ class TestUser(unittest.TestCase):
         aos.frames["UserInterface"].roles[3].insert(0, 'student')
         
         # kill the program
-        aos.destroy()
+        #aos.destroy()
         
     def test_delete_user(self):
         pass
@@ -141,4 +141,4 @@ class TestUser(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(exit= False)
+    unittest.main()

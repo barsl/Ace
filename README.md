@@ -21,7 +21,7 @@ This folder contains 2 types of files:
 	 (id=2, role=student, password=2)
 
 Place all files in the same folder
-Run main.py using python3 with library Tkinter installed
+Run main.py using python3
 Use credentials: 1, 1 in the login fields or 2, 2 to login as student or admin respectively
 After login,
  as an admin: you can add new users, add problems, remove problems and edit problems,
@@ -40,11 +40,10 @@ To Run the automated tests:
 
 	open folder named "testing"
 	execute each testfile using Python 3.x
-		test_user.py
 		test_login.py
-		unittest_problem.py
-		unittest_user_assignments.py
- 
+		test_user.py
+		unittest___.py
+		unittest___.py
 ****************************************************
 
                   KNOWN BUGS
