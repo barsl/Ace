@@ -28,13 +28,16 @@ class Attempt(UserSkeleton):
         UserSkeleton.__init__(self, parent)
         self.controller = controller
         self.labels = ["Subject", "Question", "Answer"]
-        # dictionaries to contain the widgets and associate widget to
+        # dictionaries/lists to contain the widgets and associate widget to
         # correspondin problem id
         self.entries = []
         self.labels = []
         self.hint_buttons = {}
         self.hints_labels = {}
+        #store questions student needs to complete
         self.problem_ids = []
+        #counter for number of hints student is allowed to use
+        self.hints_left = 3
         back_button = self.create_button(self, "Back")
         back_button["command"] = lambda: self.refresh()
         back_button.grid(row=0, column=3)
@@ -51,6 +54,10 @@ class Attempt(UserSkeleton):
         title = self.create_label(self, "A"+str(aid)+" Attempt",
                                   TITLE_FONT,
                                   "Red").grid(row=0, column=1, pady=10)
+        
+        hints = self.create_label(self, "You have "+str(self.hints_left)+" hints",
+                                  TITLE_FONT,
+                                  "Red").grid(row=0, column=3, pady=10)
          
          # get the existing progress for the user for the assignment
         self.existing_progress = db.get_assignment_progress_for_user(
@@ -97,7 +104,6 @@ class Attempt(UserSkeleton):
             # set each label with the corresponding value from the problem object
             question_label.config(text=db.get_problem_details(conn, qid)[0][2])
                               
-       
             # set each entry with the corresponding value from list of existing progress
             try:
                 answer_entry.insert(0, self.existing_progress[i])
@@ -125,8 +131,12 @@ class Attempt(UserSkeleton):
         '''
         Set the label text to the hint for that question
         '''
-        problem = Problem(qid)
-        self.hints_labels[qid]["text"] = problem.get_hint()
+        if (self.hints_left <= 0):
+            showinfo("Sorry", "No hints left!")
+        else:
+            problem = Problem(qid)
+            self.hints_labels[qid]["text"] = problem.get_hint()
+            self.hints_left -= 1
             
     def refresh(self):
         '''
@@ -216,7 +226,7 @@ class Attempt(UserSkeleton):
         self.update_submission_time()
         
         db.add_attempt('a'+str(self.aid), self.uid, new_problem_set, '', '', '', conn)
-        
+        self.hints_left = 3
         self.refresh()
         
 
