@@ -32,16 +32,15 @@ class Attempt(UserSkeleton):
         # correspondin problem id
         self.entries = []
         self.labels = []
-        
-        
-
+        self.hint_buttons = {}
+        self.hints_labels = {}
+        self.problem_ids = []
         back_button = self.create_button(self, "Back")
         back_button["command"] = lambda: self.refresh()
         back_button.grid(row=0, column=3)
         
         
-        # enable clicking functionality for all the buttons
-        # self.enable_buttons()
+
         
     def set_uid(self, uid, aid=None, atid=None):
         self.uid = uid
@@ -56,8 +55,12 @@ class Attempt(UserSkeleton):
          # get the existing progress for the user for the assignment
         self.existing_progress = db.get_assignment_progress_for_user(
             self.aid, self.uid, conn)
-        
+
+        # generate all the dynamically generated widget rows
         self.gen_rows()
+    
+        # enable clicking functionality for all the buttons
+        self.enable_buttons()            
            
         self.create_label(self, text="Problem", font=REGULAR_FONT).grid(row=1,column=0, pady=10)
         self.create_label(self, text="Solution", font=REGULAR_FONT).grid(row=1,column=1, pady=10)
@@ -73,26 +76,28 @@ class Attempt(UserSkeleton):
         i = 0
         for qid in ids:
             # create new entries 
+            self.problem_ids.append(qid)
+            hint_button = self.create_button(self, "Hint!")
             question_label = self.create_label(self, "", REGULAR_FONT)
             answer_entry = Entry(self, font=REGULAR_FONT)
-            hint_label = self.create_label(self, "", REGULAR_FONT)
+            hint_label = self.create_label(self, "", REGULAR_FONT, NICE_BLUE)
             self.labels.append(question_label)
             self.labels.append(hint_label)
             self.entries.append(answer_entry)
-            # add to corresponding dictonaries with problem ids as keys
-            # self.subjects[qid] = subject_entry
-            # self.questions[qid] = question_entry
-            # self.answers[qid] = answer_entry
-          
+            self.hint_buttons[qid] = hint_button
+            self.hints_labels[qid] = hint_label
+
             # set everything nicely on the grid using an iterator i
             question_label.grid(row=i+3, column=0)
             answer_entry.grid(row=i+3, column=1)
-            hint_label.grid(row=i+3, column=2)
-            
+            hint_button.grid(row=i+3, column=2)
+            hint_label.grid(row=i+3, column=3)
+           
+     
             # set each label with the corresponding value from the problem object
             question_label.config(text=db.get_problem_details(conn, qid)[0][2])
-            hint_label.config(text=db.get_problem_details(conn, qid)[0][4])
-
+                              
+       
             # set each entry with the corresponding value from list of existing progress
             try:
                 answer_entry.insert(0, self.existing_progress[i])
@@ -109,20 +114,41 @@ class Attempt(UserSkeleton):
         self.submit_button = ttk.Button(
             text="Submit", command= lambda : self.submit_progress())
         self.submit_button.pack()
-                
         
-        
+    def enable_buttons(self):
+      
+        # configure clicking function for all the delete buttons
+        for qid in self.problem_ids:
+            self.hint_buttons[qid].config(command=lambda j=qid: self.show_hint(j))
+
+    def show_hint(self, qid):
+        '''
+        Set the label text to the hint for that question
+        '''
+        problem = Problem(qid)
+        self.hints_labels[qid]["text"] = problem.get_hint()
             
     def refresh(self):
+        '''
+        Delete all widgets on screen, reset all data structures
+        '''
         for i in self.entries:
             i.destroy()
         for j in self.labels:
-            j.destroy()
+            j.destroy()    
+        for button in list(self.hint_buttons.items()):
+            button[1].destroy()    
+        for label in list(self.hints_labels.items()):
+            button[1].destroy()
         self.update_progress_button.destroy()
         self.submit_button.destroy()
         self.entries=[]
         self.labels=[]
+        self.hint_buttons = {}
+        self.hints_labels = {}
+        self.problem_ids = []
         self.pass_ids('ViewUserAssignments', self.uid)
+  
         
         
     def get_entries(self):
