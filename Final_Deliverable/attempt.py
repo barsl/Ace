@@ -54,10 +54,6 @@ class Attempt(UserSkeleton):
         title = self.create_label(self, "A"+str(aid)+" Attempt",
                                   TITLE_FONT,
                                   "Red").grid(row=0, column=1, pady=10)
-        
-        hints = self.create_label(self, "You have "+str(self.hints_left)+" hints",
-                                  TITLE_FONT,
-                                  "Red").grid(row=0, column=3, pady=10)
          
          # get the existing progress for the user for the assignment
         self.existing_progress = db.get_assignment_progress_for_user(
@@ -75,12 +71,16 @@ class Attempt(UserSkeleton):
        
         
     def gen_rows(self, uid=None, aid=None, atid=None):
+        
+        title_hints = self.create_label(self, "You have "+str(self.hints_left)+" hints",
+                                      APP_HIGHLIGHT_FONT)
+        self.labels.append(title_hints)
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         # set iterator for grid rows
         ids = ast.literal_eval(ids)
         # for each id create a row
-        i = 0
+        i = 1
         for qid in ids:
             # create new entries 
             self.problem_ids.append(qid)
@@ -99,8 +99,7 @@ class Attempt(UserSkeleton):
             answer_entry.grid(row=i+3, column=1)
             hint_button.grid(row=i+3, column=2)
             hint_label.grid(row=i+3, column=3)
-           
-     
+            
             # set each label with the corresponding value from the problem object
             question_label.config(text=db.get_problem_details(conn, qid)[0][2])
                               
@@ -112,6 +111,7 @@ class Attempt(UserSkeleton):
             
             i += 1
             
+        title_hints.grid(row=0, column=2, pady=10)    
         # create submit and save progress buttons
         self.update_progress_button = ttk.Button(
             text="Save", command= lambda : self.update_progress())
@@ -299,7 +299,7 @@ class ViewAttempt(UserSkeleton):
 
         back_button = self.create_button(self, "Back")
         back_button["command"] = lambda: self.refresh()
-        back_button.grid(row=0, column=3)
+        back_button.grid(row=0, column=1)
         
         
         # enable clicking functionality for all the buttons
