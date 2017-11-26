@@ -108,6 +108,7 @@ class Attempt(UserSkeleton):
                 answer_entry.insert(0, self.existing_progress[i])
             except IndexError:
                 print("no progress yet")
+                    
             
             i += 1
             
@@ -257,6 +258,7 @@ class Attempt(UserSkeleton):
         db.update_assignment_submission_for_user_for_nth_attempt(
             self.aid, self.uid, len(
                 db.get_user_attempts(self.aid, self.uid, conn)), now, conn)
+        
 
     def create_problem_set(self, formula):
         '''
