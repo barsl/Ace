@@ -59,7 +59,7 @@ class GUISkeleton(ttk.Frame):
 			label["text"] = txt
 		label.pack()
 
-	def create_list_box(self, key, row, column, width=40, height=8, span=0):
+	def create_list_box(self, key, row, column, width=40, height=8, span=1):
 		'''method that creates a frame that has a listbox with vertical
 		scrollbar, it has default width and height parameters that
 		can be changed, it automatically places the listbox in the row

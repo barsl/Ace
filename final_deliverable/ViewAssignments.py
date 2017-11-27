@@ -282,7 +282,6 @@ class ViewAssignments(GUISkeleton):
         # creates a list of the currently clicked assignment
         assignment_string = lb.get('anchor').split(tab)
         # anchor will delete the currently selected item
-        print(assignment_string)
         # check to make sure that there is something selected
         if (len(assignment_string) != 1): 
             # remove assignment from database by AID

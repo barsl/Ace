@@ -146,19 +146,15 @@ class ViewPastAttempt(GUISkeleton):
         self.gen_rows(self.uid, aid)
 
     def gen_rows(self, uid, aid):
-        print(uid)
-        print(aid)
-        
+  
         all_attempts = db.get_user_attempts(str(aid), uid, conn)
-        print(all_attempts)
         # set iterator for grid rows
         i = 0
         atid = 1
 
         # for each id create a row
         for attempts in all_attempts:
-            print(attempts)
-
+   
             # create new entries
 
             submission_label = self.create_label(self, text=attempts[5], font=REGULAR_FONT)

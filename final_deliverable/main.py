@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, font,  Tk, Label, Button, Entry,\
      StringVar, DISABLED, NORMAL, END, W, E
-#from PIL import ImageTk, Image
+from PIL import ImageTk, Image
 from tkinter.messagebox import showinfo
 import database_api as db
 from gui_skeleton import *
@@ -31,7 +31,6 @@ class AoS(tk.Tk):
                 tk.Tk.wm_title(self, "Ace of Spades")
                 tk.Tk.wm_minsize(self, width=350, height=350)
                 self.container = tk.Frame(self)
-
                 self.container.pack(side="top", fill="both", expand = True)
 
                 # configuration for the grid (0 is the min row or column)
@@ -77,25 +76,21 @@ class LoginScreen(GUISkeleton):
         def __init__(self, parent, controller):
                 self.entry_keys = ["Email", "Password"]
                 GUISkeleton.__init__(self, parent)
-                # img = "logo2.jpg"
-                # self.add_pic_panel(img)
+                img = "logo1.jpg"
+                self.add_pic_panel(img)
                 self.create_login_labels()
                 self.create_entry_fields(controller)
-
-        ''' 
-    def add_pic_panel(self, pic):
-        img = ImageTk.PhotoImage(Image.open(pic))
-        label = Label(self, image=img)
-        label.img = img # to keep the reference for the image.
-        label.pack(side="left") # <--- pack
-    '''
+        
+        def add_pic_panel(self, pic):
+                img = ImageTk.PhotoImage(Image.open(pic))
+                label = Label(self, image=img, bg="blue")
+                label.img = img # to keep the reference for the image.
+                label.pack(side="left", padx=15) 
         def create_login_labels(self):
                 '''creates the beginning labels'''
                 # login text
                 login_label = self.create_label(self, "Welcome to Ace! Please Log In: ",
                                                 HOME_FONT, "Blue")
-                #empty label for format
-                # tk.Label(self, text="\n\n\n\n").pack()
                 self.create_empty_label(5)
                 login_label.pack(side="top", padx=10)
 
@@ -138,7 +133,6 @@ class LoginScreen(GUISkeleton):
                         # if the provided password matches the one stored
                         if (creds[1] == user_details[0][4]):
                                 # check if user or admin
-                                # print(user_details)
                                 if (user_details[0][1] == 'student'):
                                         controller.show_frame('UserHome', user_details[0])
                                 # move to home screen
@@ -151,7 +145,7 @@ class LoginScreen(GUISkeleton):
                                 showinfo("Fail", "Wrong combo")
                         self.entry_fields["Email"].set('')
                         self.entry_fields["Password"].set('')
-                # print msg to terminal if email doesnt exist
+                # show error if email doesnt exist
                 except IndexError:
                         showinfo("Fail", "This email address is not in the system")
 
@@ -162,22 +156,33 @@ class UserHome(GUISkeleton):
                 self.buttons = ["View Assignments", "Logout"]
                 self.init_window(controller)
                 self.cont = controller
+                
+        def add_pic_panel(self, pic):
+                img = ImageTk.PhotoImage(Image.open(pic))
+                label = Label(self, image=img, bg="black")
+                label.img = img # to keep the reference for the image.
+                label.pack(side="right", padx=80)         
 
         def create_buttons(self, controller):
+                frame3 = ttk.Frame(self)
+                i = 1
                 for button in self.buttons:
-                        new_button = self.create_button(self, button)
+                        new_button = self.create_button(frame3, button)
                         if button == "View Assignments":
                                 new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid)
                         elif (button == "Logout"):
                                 new_button["command"] = (lambda :
                                                          controller.show_frame("LoginScreen"))
-                        new_button.pack()
-
+                        new_button.grid(row=i, column=1, padx=10, pady=2, sticky="NSEW")
+                        i+=1    
+                frame3.pack()
 
         def init_window(self, controller):
                 '''initialises the window'''
                 homescreen_label = self.create_label(self, "Home", HOME_FONT, "blue")
                 self.create_empty_label(1)
+                img = "student.jpg"
+                self.add_pic_panel(img)                
                 homescreen_label.pack()
                 self.create_empty_label(2)
                 self.create_buttons(controller)
@@ -192,16 +197,24 @@ class HomeScreen(GUISkeleton):
         at the moment the homescreen is just a placeholder for some buttons'''
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
-                self.buttons = ["Add User", "Manage Question Bank","View Assignments",
+                self.buttons = ["Manage Users", "Manage Question Bank","View Assignments",
                                 "Student Grades", "Leaderboard", "Logout"]
                 self.init_window(controller)
-
+                       
+        def add_pic_panel(self, pic):
+                img = ImageTk.PhotoImage(Image.open(pic))
+                label = Label(self, image=img, bg="black")
+                label.img = img # to keep the reference for the image.
+                label.pack(side="right", padx=80) 
+                
         def create_buttons(self, controller):
+                button_frame = ttk.Frame(self)
                 ''' creates logout button'''
                 # button will go to login screen
+                i = 1
                 for button in self.buttons:
-                        new_button = self.create_button(self, button)
-                        if button == "Add User":
+                        new_button = self.create_button(button_frame, button)
+                        if button == "Manage Users":
                                 new_button["command"] = lambda : controller.show_frame('UserInterface')
                         elif button == "Manage Question Bank":
                                 new_button["command"] = lambda : controller.show_frame('ProblemInterface')
@@ -218,16 +231,20 @@ class HomeScreen(GUISkeleton):
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
-                        new_button.pack()
+                                
+                        new_button.grid(row=i, column=1, padx=10, pady=2, sticky="NSEW")
+                        i+=1 
+                button_frame.pack()
 
         def init_window(self, controller):
                 ''' initialises the homescreen and its elements'''
                 homescreen_label = self.create_label(self, "Home", HOME_FONT, "blue")
                 # just to get the formatting correct
-                # empty_label = ttk.Label(self, text="\n").pack()
+                img = "admin2.jpg"
+                self.add_pic_panel(img)
                 self.create_empty_label(1)
                 homescreen_label.pack()
-                self.create_empty_label(2)
+                self.create_empty_label(1)
                 self.create_buttons(controller)
                 
 

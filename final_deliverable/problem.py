@@ -8,7 +8,7 @@ from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
-TITLE_FONT = ("Helvetica", 14, "normal")
+TITLE_FONT = ("Helvetica", 16, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
@@ -31,19 +31,19 @@ class Problem():
         self.question = problem[2]
         self.answer = problem[3]
         self.hint = problem[4]
-
+        
     # getters and setters
     def get_qid(self):
         return self.qid
     def get_subject(self):
-        return self.subject
+        return self.subject      
     def get_question(self):
         return self.question
     def get_answer(self):
         return self.answer
     def get_hint(self):
         return self.hint
-
+    
 
 class ProblemInterface(GUISkeleton):
     '''
@@ -53,181 +53,181 @@ class ProblemInterface(GUISkeleton):
     def __init__(self, parent, controller):
         GUISkeleton.__init__(self, parent)
         self.cont = controller
-        self.labels = ["Subject", "Question", "Answer", "Hint"]
+        self.labels = ["Subject", "Question", "Answer"]
         # label at top of the frame
         title = self.create_label(self, "Problem Database Management\n",
                                   TITLE_FONT,
-                                  "Red").grid(row=0, column=1, pady=10)
+                                  "Red").grid(row=0, column=0, pady=10, padx=10)
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
-        self.subjects = {}
-        self.questions = {}
-        self.answers = {}
-        self.hints = {}
-
-        # the buttons
-        self.updates = {}
-        self.deletes = {}
-
+        
+        back_button = self.create_button(self, "Back")
+        # set button method to add_problem
+        back_button["command"] = lambda: controller.show_frame('HomeScreen')
+        back_button.grid(row=0, column=3)
+        self.init_window()
+        # generate all the dynamically generated widget rows
+        #self.gen_rows()
+        
+        # enable clicking functionality for all the buttons
+       # self.enable_buttons()
+       
+    def init_window(self):
+        '''intialises the GUI window'''
+        self.create_list_box("problems", 2, 1)
+        self.create_entries(2,0)
+        self.problem_db_buttons()
+        self.init_problems_in_lb()
+        
+        
+    def create_entries(self, row, column):
+        '''creates the entry boxes where the problem is going to add problems into'''
+        # create a new_frame
+        frame = ttk.Frame(self)
+        # create an entry for each 
         # the 3 static lables that are always there
         i = 0
         for label in self.labels:
-            new_label = self.create_label(self, label, REGULAR_FONT,
-                                          NICE_BLUE).grid(row=1, column=i)
+            new_label = self.create_label(frame, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=i, column=0,
+                                                          padx=10)
             # create first row of entries for add_problem function
             # set everything nicely on the grid
-            new_entry = self.create_entry(self, label,
-                                          REGULAR_FONT).grid(row=2, column=i)
+            # create first row of entries for add_problem function
+            # set everything nicely on the grid            
+            new_entry = self.create_entry(frame, label,
+                                          REGULAR_FONT).grid(row=i, column=1)
             i += 1
-        # create add problem button
-        add_problem_button = self.create_button(self, "Add problem")
-        add_problem_button.grid(row=2, column=4)
-        back_button = self.create_button(self, "Back")
-        # set button method to add_problem
-        add_problem_button.config(command=lambda : self.add_problem())
-        back_button["command"] = lambda: controller.show_frame('HomeScreen')
-        back_button.grid(row=0, column=3)
-
-        # generate all the dynamically generated widget rows
-        self.gen_rows()
-
-        # enable clicking functionality for all the buttons
-        self.enable_buttons()
-
-
-
-    def gen_rows(self):
-        # get a list of all the problem ids in the database
+            # add the buttons to the frame
+        add_button = self.create_button(frame, "Add")
+        add_button["command"] = lambda : self.add_problem()
+        add_button.grid(row=i, column=1, sticky="E")
+        update_button = self.create_button(frame, "Update")
+        update_button["command"] = lambda : self.up_problem()
+        update_button.grid(row=i, column=1, sticky="W")
+        frame.grid(row=row, column=column, padx=10)        
+    
+            
+    def problem_db_buttons(self):
+        '''create the buttons to interact with the database'''
+        # create a button
+        delete_button = self.create_button(self, "Delete")
+        delete_button["command"] = lambda : self.del_problem()
+        delete_button.grid(row=3, column=1, stick="E")
+        
+        
+    def init_problems_in_lb(self):
+        '''initialises the problems and puts them in the list box'''
+        lb = self.list_box["problems"]
+        # create a label_string
+        label_string = "qid    subject    question    answer"
+        lb.insert(END, label_string)
+        # get all the problem ids
         ids = db.get_problem_ids(conn)
-        # set iterator for grid rows
-        i = 0
-        # for each id create a row
         for qid in ids:
-            # create new entries
-            subject_entry = ttk.Entry(self, font=REGULAR_FONT)
-            question_entry = ttk.Entry(self, font=REGULAR_FONT)
-            answer_entry = ttk.Entry(self, font=REGULAR_FONT)
-            hint_entry = ttk.Entry(self, font=REGULAR_FONT)
-            # add to corresponding dictonaries with problem ids as keys
-            self.subjects[qid] = subject_entry
-            self.questions[qid] = question_entry
-            self.answers[qid] = answer_entry
-            self.hints[qid] = hint_entry
-
-            # create new buttons
-            update_button = ttk.Button(self, text="Update")
-            delete_button = ttk.Button(self, text="Delete")
-            # add to corresponding dictonaries with problem ids as keys
-            self.deletes[qid] = delete_button
-            self.updates[qid] = update_button
-
-            # set everything nicely on the grid using an iterator i
-            subject_entry.grid(row=i+3, column=0)
-            question_entry.grid(row=i+3, column=1)
-            answer_entry.grid(row=i+3, column=2)
-            hint_entry.grid(row=i+3, column=3)
-            update_button.grid(row=i+3, column=4)
-            delete_button.grid(row=i+3, column=5)
-            i += 1
-
-            # create new problem object to contain problem info
-            problem = Problem(qid)
-            # set each entry with the corresponding value from the problem object
-            subject_entry.insert(0, problem.get_subject())
-            question_entry.insert(0, problem.get_question())
-            answer_entry.insert(0, problem.get_answer())
-            hint_entry.insert(0, problem.get_hint())
-
-
-    def del_problem(self, button):
+            problem_string = self.string_qid(qid)
+            lb.insert(END, problem_string)
+    
+    
+    def string_qid(self, qid):
+        '''creates a string to add to list box based on the uid'''
+        problem_string = "{:<3}    {:<7}    {:<10}    {:<15}"
+        # get the problem from the id
+        problem = Problem(qid)
+        # create a string to hold the result of the problem
+        problem_string = problem_string.format(qid, problem.get_subject(), 
+                           problem.get_question(), problem.get_answer())
+        # place the string inside the list_box
+        return problem_string    
+        
+ 
+    def del_problem(self):
         '''
         delete a problem from the database and show a success popup
         '''
-        # remove problem from databse
-        db.remove_problem(button, conn)
-
-        self.refresh()
-
-        # show popup
-        showinfo("Success", "Problem #" + str(button) + " has been deleted.")
-
-    def up_problem(self, button):
+        lb = self.list_box["problems"]
+        # get the index of the selected item
+        selection = lb.curselection()
+        if (selection != ()):
+            # get the item at the index
+            problem = lb.get(selection[0]).split()
+            # remove problem from database
+            db.remove_problem(problem[0], conn)
+            # remove from the list box
+            lb.delete(selection[0])
+            # show popup
+            showinfo("Success", "problem #" + 
+                     str(problem[0]) + " has been deleted")
+    
+    
+    def up_problem(self):
         '''
-        delete a problem details in the database and show a success popup
-        '''
-        # get new parameters from entry widgets in the dictionaries
-        new_subject = self.subjects[button].get()
-        new_question = self.questions[button].get()
-        new_answer = self.answers[button].get()
-        new_hint = self.hints[button].get()
-        # update the database with new entries
-        db.update_problem_subject(button, new_subject, conn)
-        db.update_problem_question(button, new_question, conn)
-        db.update_problem_answer(button, new_answer, conn)
-        db.update_problem_hint(button,new_answer,conn)
+        updates a problem details in the database and show a success popup
+        '''        
+        lb = self.list_box["problems"]
+        selection = lb.curselection()
+        
+        # check to make sure that we have something selected
+        if (selection != ()):
+            # get new parameters from entry widgets in the dictionaries
+            new_subject = self.entry_fields[self.labels[0]].get()
+            new_question = self.entry_fields[self.labels[1]].get()
+            new_answer = self.entry_fields[self.labels[2]].get()
+            
+            verified = self.verify_problem_input(new_subject, new_question,
+                                                 new_answer)
+            if (verified):
+                qid = lb.get(selection[0]).split()
+                # update the database with new entries
+                db.update_problem_subject(qid[0], new_subject, conn)
+                db.update_problem_question(qid[0], new_question, conn)
+                db.update_problem_answer(qid[0], new_answer, conn)
+                # create a string representation to put in the listbox
+                problem_string = self.string_qid(qid[0])
+                # clear entry boxes
+                self.clear_entries()
+                # delete from listbox and readd at same index
+                lb.delete(selection[0])
+                lb.insert(selection[0], problem_string)
+                # show popup
+                showinfo("Success", "problem #" + str(qid[0]) + " has been updated")
 
-        self.refresh()
 
-        # show popup
-        showinfo("Success", "Problem #" + str(button) + " has been updated.")
-
+    def verify_problem_input(self, subject, question, answer):
+        '''verifies whether a problem is a valid problem'''
+        result = True
+        # if any of the entries is blank, return a msg
+        if ((subject == '') or (question == '') or (answer == '')) :
+            result = False
+        return result
+    
+    def clear_entries(self):
+        ''' clears the entry fields that have the information'''
+        self.entry_fields[self.labels[0]].set('')
+        self.entry_fields[self.labels[1]].set('')
+        self.entry_fields[self.labels[2]].set('')  
+    
+    
     def add_problem(self):
         '''
-        delete a problem from the database and show a success popup
+        add a problem from the database and show a success popup
         '''
-        execute_flag = True
-
+        lb = self.list_box["problems"]  
         # get new parameters from entry widgets in the dictionaries
-        new_subject = self.entry_fields["Subject"].get()
-        new_question = self.entry_fields["Question"].get()
-        new_answer = self.entry_fields["Answer"].get()
-        new_hint = self.entry_fields["Hint"].get()
-        if (new_subject == ""):
-            showinfo("Fail", "Please fill in a subject!")
-            execute_flag = False
-        elif (new_question == ""):
-            showinfo("Fail", "Please fill in a question!")
-            execute_flag = False
-        elif (new_answer == ""):
-            showinfo("Fail", "Please fill in an answer!")
-            execute_flag = False
-
-        if (execute_flag):
-
+        new_subject = self.entry_fields[self.labels[0]].get()
+        new_question = self.entry_fields[self.labels[1]].get()
+        new_answer = self.entry_fields[self.labels[2]].get() 
+        verified = self.verify_problem_input(new_subject, new_question,
+                                             new_answer)
+        if (verified):
             # add new problem to databse and save his id number
-            db.add_problem(new_subject, new_question, new_answer, new_hint, conn)
-            new_row = db.num_of_rows("problems", conn)
+            qid = db.add_problem(new_subject, new_question, new_answer, conn)
+            # create a string representation to put in the listbox
+            problem_string = self.string_qid(qid)
+            # clear entry boxes
+            self.clear_entries()
+            # add problem to list box
+            lb.insert(END, problem_string)
             # show popup
-            self.refresh()
-            # clear entries
-            self.entry_fields["Subject"].set('')
-            self.entry_fields["Question"].set('')
-            self.entry_fields["Answer"].set('')
-            self.entry_fields["Hint"].set('')
-            showinfo("Success", "Problem #" + str(new_row) + " has been added to database.")
-
-    def refresh(self):
-        for subject in list(self.subjects.items()):
-            subject[1].destroy()
-        for question in list(self.questions.items()):
-            question[1].destroy()
-        for answer in list(self.answers.items()):
-            answer[1].destroy()
-        for hint in list(self.hints.items()):
-                hint[1].destroy()
-        for update in list(self.updates.items()):
-            update[1].destroy()
-        for delete in list(self.deletes.items()):
-            delete[1].destroy()
-        self.gen_rows()
-        self.enable_buttons()
-
-    def enable_buttons(self):
-        # get a list of all existing problem ids
-        problem_ids = db.get_problem_ids(conn)
-        # configure clicking function for all the delete buttons
-        for qid in problem_ids:
-            self.deletes[qid].config(command=lambda j=qid: self.del_problem(j))
-        # configure clicking function for all the update buttons
-        for qid in problem_ids:
-            self.updates[qid].config(command=lambda j=qid: self.up_problem(j))
+            showinfo("Success", "problem #" +
+                     str(qid) + " has been added to database")

@@ -8,7 +8,7 @@ from gui_skeleton import *
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
-TITLE_FONT = ("Helvetica", 14, "normal")
+TITLE_FONT = ("Helvetica", 16, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
@@ -60,173 +60,168 @@ class UserInterface(GUISkeleton):
         # label at top of the frame
         new_label = self.create_label(self, "User Database Management\n",
                                       TITLE_FONT,
-                                      "Red").grid(row=0, column=1,pady=10) 
-        # dictionaries to contain the widgets and associate widget to
-        # corresponding user id
-        self.roles = {}
-        self.names = {}
-        self.emails = {}
-        self.updates = {}
-        self.deletes = {}
+                                      "Red").grid(row=0, column=0,pady=10, padx=10) 
+       
+        # create back button 
+        back_button = self.create_button(self, "Back")
+        back_button["command"] = lambda : controller.show_frame('HomeScreen')
+        back_button.grid(row=0, column=2)
+        self.init_window()
         
+        
+    def init_window(self):
+        '''initialises the window of the screen'''
+        self.create_list_box("users", 2, 1)
+        self.create_entries(2, 0)
+        self.user_db_buttons()
+        self.init_users_in_lb()
+        
+        
+    def user_db_buttons(self):
+        '''create the buttons to interact with the database'''
+        # create a button
+        delete_button = self.create_button(self, "Delete")
+        delete_button["command"] = lambda : self.del_user()
+        delete_button.grid(row=3, column=1, stick="E")
+        
+        
+    def init_users_in_lb(self):
+        '''initialises the users and puts them in the list box'''
+        lb = self.list_box["users"]
+        # create a label_string
+        label_string = "uid    role    name    email"
+        lb.insert(END, label_string)
+        # get all the user ids
+        ids = db.get_user_ids(conn)
+        for uid in ids:
+            user_string = self.string_uid(uid)
+            lb.insert(END, user_string)
+    
+    
+    def string_uid(self, uid):
+        '''creates a string to add to list box based on the uid'''
+        user_string = "{:<3}    {:<7}    {:<10}    {:<15}"
+        # get the user from the id
+        user = User(uid)
+        # create a string to hold the result of the user
+        user_string = user_string.format(uid, user.get_role(), 
+                           user.get_name(), user.get_email())
+        # place the string inside the list_box
+        return user_string
+        
+        
+    def create_entries(self, row, column):
+        '''creates the entry boxes where the user is going to add users into'''
+        # create a new_frame
+        frame = ttk.Frame(self)
+        # create an entry for each 
         # the 3 static lables that are always there
         i = 0
         for label in self.labels:
-            new_label = self.create_label(self, label, REGULAR_FONT,
-                                          NICE_BLUE).grid(row=1, column=i)
+            new_label = self.create_label(frame, label, REGULAR_FONT,
+                                          NICE_BLUE).grid(row=i, column=0,
+                                                          padx=10)
             # create first row of entries for add_problem function
             # set everything nicely on the grid
             # create first row of entries for add_user function
             # set everything nicely on the grid            
-            new_entry = self.create_entry(self, label,
-                                          REGULAR_FONT).grid(row=2, column=i)
-            i += 1         
-        # create add user button
-        add_user_button = self.create_button(self, "Add User")
-        # set button method to add_user  
-        add_user_button["command"] = lambda : self.add_user()        
-        add_user_button.grid(row=2, column=3)
-        back_button = self.create_button(self, "Back")
-        back_button["command"] = lambda : controller.show_frame('HomeScreen')
-        back_button.grid(row=0, column=3)
-        # generate all the dynamically generaterd widget rows
-        self.gen_rows()
-        
-        # enable clicking functionality for all the buttons
-        self.enable_buttons()
-        
-          
-        
-    def gen_rows(self):
-        # get a list of all the user ids in the database
-        ids = db.get_user_ids(conn)
-        # set iterator for grid rows
-        i = 0
-        # for each id create a row
-        for uid in ids:
-            # create new entries 
-            role_entry = ttk.Entry(self, font=REGULAR_FONT)
-            name_entry = ttk.Entry(self, font=REGULAR_FONT)
-            email_entry = ttk.Entry(self, font=REGULAR_FONT)
-            # add to corresponding dictonaries with user ids as keys
-            self.roles[uid] = role_entry
-            self.names[uid] = name_entry    
-            self.emails[uid] = email_entry
-          
-            # create new buttons
-            update_button = self.create_button(self, "Update")
-            delete_button = self.create_button(self, "Delete")
-            # add to corresponding dictonaries with user ids as keys        
-            self.deletes[uid] = delete_button
-            self.updates[uid] = update_button
-            
-            # set everything nicely on the grid using an iterator i
-            role_entry.grid(row=i+3, column=0)
-            name_entry.grid(row=i+3, column=1)
-            email_entry.grid(row=i+3, column=2)
-            update_button.grid(row=i+3, column=3)
-            delete_button.grid(row=i+3, column=4)
+            new_entry = self.create_entry(frame, label,
+                                          REGULAR_FONT).grid(row=i, column=1)
             i += 1
-            
-            # create new user object to contain user info
-            user = User(uid)
-            # set each entry with the corresponding value from the user object
-            role_entry.insert(0, user.get_role())
-            name_entry.insert(0, user.get_name())
-            email_entry.insert(0, user.get_email())
-            
+        add_button = self.create_button(frame, "Add")
+        add_button["command"] = lambda : self.add_user()
+        add_button.grid(row=i, column=1, sticky="E")
+        update_button = self.create_button(frame, "Update")
+        update_button["command"] = lambda : self.up_user()
+        update_button.grid(row=i, column=1, sticky="W")
+        frame.grid(row=row, column=column, padx=10)
         
-            
-    def del_user(self, button):
+
+    def del_user(self):
         '''
         delete a user from the database and show a success popup
         '''
-        # remove user from databse
-        db.remove_user(button, conn)
-        
-        self.refresh()
-        
-        # show popup
-        showinfo("Success", "User #" + str(button) + " has been deleted")
+        lb = self.list_box["users"]
+        selection = lb.curselection()
+        if (selection != ()):
+            # get the item for the current index
+            selection = lb.get(selection[0]).split()
+            # remove user from databse
+            db.remove_user(selection[0], conn)
+            lb.delete(selection[0])
+            # show popup
+            showinfo("Success", "User #" + str(selection[0]) + " has been deleted")
     
-    def up_user(self, button):
+    
+    def up_user(self):
         '''
-        delete a user details in the database and show a success popup
+        updates a user selected details in the database and show a success popup
         '''        
-        # get new parameters from entry widgets in the dictionaries
-        new_role = self.roles[button].get()
-        new_name = self.names[button].get()
-        new_email = self.emails[button].get()
+        # get the list box
+        lb = self.list_box["users"]
+        selection = lb.curselection()
         
+        if (selection != ()):
+            # get new parameters from entry widgets in the dictionaries
+            new_role = self.entry_fields[self.labels[0]].get()
+            new_name = self.entry_fields[self.labels[1]].get()
+            new_email = self.entry_fields[self.labels[2]].get()
+        
+            verified = self.verify_user_input(new_role, new_name, new_email)
+            
+            if (verified):
+                uid = lb.get(selection[0]).split()
+                # otherwise update the database with new entries
+                db.update_user_role(uid[0], new_role, conn)
+                db.update_user_name(uid[0], new_name, conn)
+                db.update_user_email(uid[0], new_email, conn)
+                # get a string representation
+                user_string = self.string_uid(uid[0])
+                # clear the entry fields
+                self.clear_entries()
+                # update the list box
+                lb.delete(selection[0])
+                lb.insert(selection[0], user_string)
+                # show popup
+                showinfo("Success", "User #" + str(uid[0]) + " has been updated")
+    
+    
+    def verify_user_input(self, role, name, email):
+        '''verifies whether a user is a valid user'''
+        result = True
         # if any of the entries is blank, return a msg
-        if ((new_role == '') or (new_name == '') or (new_email == '')) :
-            return "blank entry"
+        if ((role == '') or (name == '') or (email == '')) :
+            result = False
         # if role is invalid return a msg
-        if ((new_role != 'student') and (new_role != 'admin')) :
-            return "invalid role"
-        # otherwise update the database with new entries
-        db.update_user_role(button, new_role, conn)
-        db.update_user_name(button, new_name, conn)
-        db.update_user_email(button, new_email, conn)
-        
-        self.refresh()
-        
-        # show popup
-        showinfo("Success", "User #" + str(button) + " has been updated")
-        
+        if ((role != 'student') and (role != 'admin')) :
+            result = False
+        return result
+    
+    
     def add_user(self):
         '''
         delete a user from the database and show a success popup
         '''
-        # get new parameters from entry widgets in the dictionaries
-        new_role = self.entry_fields["Role"].get()
-        new_name = self.entry_fields["Name"].get()
-        new_email = self.entry_fields["Email"].get()    
+       # get new parameters from entry widgets in the dictionaries
+        new_role = self.entry_fields[self.labels[0]].get()
+        new_name = self.entry_fields[self.labels[1]].get()
+        new_email = self.entry_fields[self.labels[2]].get()
         # check if any of the entries is blank
-        if ((new_role == '') or (new_name == '') or (new_email == '')) :
-            self.clear_entries()
-            return "blank entry"
-        # if role is invalid return a msg
-        if ((new_role != 'student') and (new_role != 'admin')) :
-            self.clear_entries()
-            return "invalid role"        
+        verified = self.verify_user_input(new_role, new_name, new_email)
         # add new user to databse and save his id number
-        uid = db.add_user(new_role, new_name, new_email, "", conn)
-        # show popup
-        self.refresh()
-        # clear entries
-        self.clear_entries()
-        showinfo("Success", "User #" + str(uid ) + " has been added to database")
+        if (verified):
+            uid = db.add_user(new_role, new_name, new_email, "", conn)
+            user_string = self.string_uid(uid)   
+            # clear entries
+            self.clear_entries()
+            lb = self.list_box["users"]
+            lb.insert(END, user_string)
+            # show popup
+            showinfo("Success", "User #" + str(uid ) + " has been added to database")
+        
         
     def clear_entries(self):
+        ''' clears the entry fields that have the information'''
         self.entry_fields["Role"].set('')
         self.entry_fields["Name"].set('')
-        self.entry_fields["Email"].set('')          
-    def refresh(self):
-        for role in list(self.roles.items()):
-            role[1].destroy()
-        for name in list(self.names.items()):
-            name[1].destroy()
-        for email in list(self.emails.items()):
-            email[1].destroy()
-        for update in list(self.updates.items()):
-            update[1].destroy()
-        for delete in list(self.deletes.items()):
-            delete[1].destroy()
-        self.roles = {}
-        self.names = {}
-        self.emails = {}
-        self.updates = {}
-        self.deletes = {}        
-        self.gen_rows()
-        self.enable_buttons()
-        
-    def enable_buttons(self):
-        # get a list of all existing user ids
-        user_ids = db.get_user_ids(conn)        
-        # configure clicking function for all the delete buttons
-        for uid in user_ids:
-            self.deletes[uid].config(command=lambda j=uid: self.del_user(j))
-        # configure clicking function for all the update buttons
-        for uid in user_ids:
-            self.updates[uid].config(command=lambda j=uid: self.up_user(j))
+        self.entry_fields["Email"].set('') 

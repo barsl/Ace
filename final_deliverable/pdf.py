@@ -80,7 +80,6 @@ class CreatePDF():
 
             self.content += problem + r'\newline\newline' + r'\begin{tikzpicture}' + r'\draw (0,0) -- (17,0) -- (17,3) -- (0,3) -- (0,0);' +r'\end{tikzpicture}' + r'\newline\newline\newline\newline'
 
-        #print(self.content)
         self.substitue_values()
 
 

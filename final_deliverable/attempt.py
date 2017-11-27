@@ -9,12 +9,12 @@ import ast
 from random import sample
 from pdf import *
 import time
-
+'''
 import matplotlib #LATEX
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 matplotlib.use('TkAgg')
-
+'''
 import re # LEADERBOARD
 import datetime # LEADERBOARD
 
@@ -142,7 +142,7 @@ class Attempt(UserSkeleton):
                 print("no progress yet")
                 
             # NEW (latex feature) create the canvas with the latex problem
-            self.latex_row(db.get_problem_details(conn, qid)[0][2])            
+            #self.latex_row(db.get_problem_details(conn, qid)[0][2])            
 
             self.i += 1
 
