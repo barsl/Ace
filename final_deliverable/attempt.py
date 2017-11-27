@@ -10,6 +10,11 @@ from random import sample
 from pdf import *
 import time
 
+import matplotlib #LATEX
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+matplotlib.use('TkAgg')
+
 import re # LEADERBOARD
 import datetime # LEADERBOARD
 
@@ -107,7 +112,7 @@ class Attempt(UserSkeleton):
         # set iterator for grid rows
         ids = ast.literal_eval(ids)
         # for each id create a row
-        i = 1
+        self.i = 1
         for qid in ids:
             # create new entries
             self.problem_ids.append(qid)
@@ -122,10 +127,10 @@ class Attempt(UserSkeleton):
             self.hints_labels[qid] = hint_label
 
             # set everything nicely on the grid using an iterator i
-            question_label.grid(row=i+3, column=0)
-            answer_entry.grid(row=i+3, column=1)
-            hint_button.grid(row=i+3, column=2)
-            hint_label.grid(row=i+3, column=3)
+            question_label.grid(row=self.i+3, column=0)
+            answer_entry.grid(row=self.i+3, column=1)
+            hint_button.grid(row=self.i+3, column=2)
+            hint_label.grid(row=self.i+3, column=3)
 
             # set each label with the corresponding value from the problem object
             question_label.config(text=db.get_problem_details(conn, qid)[0][2])
@@ -135,9 +140,11 @@ class Attempt(UserSkeleton):
                 answer_entry.insert(0, self.existing_progress[i])
             except IndexError:
                 print("no progress yet")
+                
+            # NEW (latex feature) create the canvas with the latex problem
+            self.latex_row(db.get_problem_details(conn, qid)[0][2])            
 
-
-            i += 1
+            self.i += 1
 
         title_hints.grid(row=0, column=2, pady=10)
         # create submit and save progress buttons
@@ -153,6 +160,25 @@ class Attempt(UserSkeleton):
             text="Convert to PDF", command= lambda : self.conv.addOnLatex())
         self.pdf_button.pack()
         
+    # NEW (latex feature) create the canvas with the latex problem
+    def latex_row(self, txt=""):
+        label = Label(self)
+        label.grid(row=self.i+3, column=0) 
+
+        fig = matplotlib.figure.Figure(figsize=(6, 2), dpi=50)
+        ax = fig.add_subplot(111)
+
+        canvas = FigureCanvasTkAgg(fig, master=label)
+        canvas.get_tk_widget().grid(row=self.i+3, column=0) 
+        canvas._tkcanvas.grid(row=self.i+3, column=0) 
+
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False) 
+
+        ax.clear()
+        ax.text(0.2, 0.6, txt, fontsize = 20)  
+        canvas.draw()    
+    
     
     def refresh(self):
         '''
