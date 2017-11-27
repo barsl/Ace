@@ -34,16 +34,24 @@ class ViewAssignments(GUISkeleton):
                         "Number of Questions"]
         GUISkeleton.__init__(self, parent)
         # create the title label
-        self.title = self.create_label(self, "View Assignments",
-                                       TITLE_FONT, "red").grid(row=0, column=1,
-                                                        pady=10, padx=20)
+      
+        '''initiate the buttons on the screen'''
+        new_frame = ttk.Frame(self)
+        #back button
+        self.create_label(new_frame, "View Assignments",
+                                      TITLE_FONT, "Red").pack(side="left", padx=40)	
+        back_button = self.create_button(new_frame, "Back")
+        back_button["command"] = lambda: controller.show_frame('HomeScreen')
+        back_button.pack(side="right", padx=10)
+        new_frame.grid(row=0, column=0, pady=20, sticky="E")
+        
         
         # we will fill this in with the listbox after
         self.subject_box = None
         self.list_box = None
         # the functions to initialise the buttons and the widgets
         # the numbers are the row and the column to place the widgets in
-        title = self.create_label(self, "Assignments", APP_HIGHLIGHT_FONT)
+        title = self.create_label(self, "Assignments", APP_HIGHLIGHT_FONT, NICE_BLUE)
         title.grid(row=1, column=0)
         self.create_frame(2, 0)
         self.init_buttons(3, 0)
@@ -116,7 +124,7 @@ class ViewAssignments(GUISkeleton):
         @param column -> the column you want to place the frame in'''
         if self.add_pressed == False:
             # create the title label
-            title = self.create_label(self,"Add Assignment", APP_HIGHLIGHT_FONT)
+            title = self.create_label(self,"Add Assignment", APP_HIGHLIGHT_FONT, NICE_BLUE)
             # we need to append it because we want to delete this later
             self.titles.append(title)
             title.grid(row=1, column=1)

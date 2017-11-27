@@ -153,7 +153,7 @@ class UserHome(GUISkeleton):
         '''HomeScreen that appears if login person is user'''
         def __init__(self, parent, controller, uid=None):
                 GUISkeleton.__init__(self, parent)
-                self.buttons = ["View Assignments", "Logout"]
+                self.buttons = ["View Assignments", "Leaderboard", "Logout"]
                 self.init_window(controller)
                 self.cont = controller
                 
@@ -170,6 +170,10 @@ class UserHome(GUISkeleton):
                         new_button = self.create_button(frame3, button)
                         if button == "View Assignments":
                                 new_button["command"] = lambda : controller.show_frame("ViewUserAssignments", self.uid)
+
+                        elif button == "Leaderboard": # LEADERBOARD
+                                new_button["command"] = (lambda : self.leaderboard_refresh(controller))    
+                                
                         elif (button == "Logout"):
                                 new_button["command"] = (lambda :
                                                          controller.show_frame("LoginScreen"))
@@ -191,6 +195,13 @@ class UserHome(GUISkeleton):
 
         def set_uid(self, uid, aid=None, atid=None):
                 self.uid = uid
+                
+
+        def leaderboard_refresh(self, controller):
+                controller.show_frame('Leaderboard', self.uid)
+                controller.frames['Leaderboard'].refresh()
+                controller.frames['Leaderboard'].set_back("UserHome")
+                
 
 class HomeScreen(GUISkeleton):
         ''' Homescreen that appears after the user logs in
@@ -226,7 +237,7 @@ class HomeScreen(GUISkeleton):
                                                          controller.show_frame("ViewStudentGrades", self.uid))
                                 
                         elif button == "Leaderboard": # LEADERBOARD
-                                new_button["command"] = (lambda : controller.show_frame('Leaderboard'))
+                                new_button["command"] = (lambda : self.leaderboard_refresh(controller))                
                     
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
@@ -251,6 +262,12 @@ class HomeScreen(GUISkeleton):
         def set_uid(self, uid, aid=None, atid=None):
                 # del4_separated
                 self.uid = uid
+        
+
+        def leaderboard_refresh(self, controller):
+                controller.show_frame('Leaderboard')
+                controller.frames['Leaderboard'].refresh()
+                controller.frames['Leaderboard'].set_back("HomeScreen")        
       
 
 if __name__ == "__main__":
