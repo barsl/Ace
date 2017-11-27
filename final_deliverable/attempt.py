@@ -3,7 +3,7 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
                     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
-from user_skeleton import *
+from gui_skeleton import *
 from problem import *
 import ast
 from random import sample
@@ -28,14 +28,14 @@ MINSEC = 60
 conn = sqlite3.connect('ace.db')
     
 
-class Attempt(UserSkeleton):
+class Attempt(GUISkeleton):
     '''
     Objects of this type are used to genereate the GUI for the problem Database
     Management screen
     '''
     def __init__(self, parent, controller, uid=None, aid=None):
-        UserSkeleton.__init__(self, parent)
-        self.controller = controller
+        GUISkeleton.__init__(self, parent)
+        self.cont = controller
         self.labels = ["Subject", "Question", "Answer"]
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
@@ -72,7 +72,7 @@ class Attempt(UserSkeleton):
         
        
         
-    def gen_rows(self, uid=None, aid=None, atid=None):
+    def gen_rows(self):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         # set iterator for grid rows
@@ -127,7 +127,7 @@ class Attempt(UserSkeleton):
         self.submit_button.destroy()
         self.entries=[]
         self.labels=[]
-        self.pass_ids('ViewUserAssignments', self.uid)
+        self.cont.show_frame('ViewUserAssignments', self.uid)
         
         
     def get_entries(self):
@@ -304,14 +304,14 @@ class Attempt(UserSkeleton):
         return net_sec
 
     
-class ViewAttempt(UserSkeleton):
+class ViewAttempt(GUISkeleton):
     '''
     Objects of this type are used to genereate the GUI for the problem Database
     Management screen
     '''
     def __init__(self, parent, controller, uid=None, aid=None):
-        UserSkeleton.__init__(self, parent)
-        self.controller = controller
+        GUISkeleton.__init__(self, parent)
+        self.cont = controller
         self.labels = ["Subject", "Question", "Answer"]
         # dictionaries to contain the widgets and associate widget to
         # correspondin problem id
@@ -347,7 +347,7 @@ class ViewAttempt(UserSkeleton):
         
        
         
-    def gen_rows(self, uid=None, aid=None, atid=None):
+    def gen_rows(self):
         # get a list of all the problem ids for the user for that assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, (self.atid-1), conn)[2]
         # set iterator for grid rows
@@ -356,8 +356,8 @@ class ViewAttempt(UserSkeleton):
         i = 0
         for qid in ids:
             # create new entries 
-            question_label = self.create_label(self, '', font=REGULAR_FONT)
-            answer_label = self.create_label(self, '', font=REGULAR_FONT)
+            question_label = self.create_label(self, font=REGULAR_FONT)
+            answer_label = self.create_label(self, font=REGULAR_FONT)
             self.labels.append(question_label)
             self.entries.append(answer_label)
             # add to corresponding dictonaries with problem ids as keys
@@ -387,6 +387,6 @@ class ViewAttempt(UserSkeleton):
             j.destroy()
         self.entries=[]
         self.labels=[]
-        self.pass_ids('ViewUserAssignments', self.uid)
+        self.cont.show_frame('ViewUserAssignments', self.uid)
         
    

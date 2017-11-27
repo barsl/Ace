@@ -16,7 +16,7 @@ TITLE_FONT = ("Helvetica", 14, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
-class ViewUserAssignments(UserSkeleton):
+class ViewUserAssignments(GUISkeleton):
     '''
     Objects of this type are used to generate the GUI for the user to see all Assignments screen
     '''
@@ -35,7 +35,7 @@ class ViewUserAssignments(UserSkeleton):
         # the buttons
         self.past_attempts = {}
         self.new_attempts = {}
-        self.controller = controller
+        self.cont = controller
 
         i = 0
         for label in self.labels:
@@ -48,8 +48,16 @@ class ViewUserAssignments(UserSkeleton):
         back_button["command"] = lambda: controller.show_frame('UserHome')
         back_button.grid(row=1, column=4)
 
+    def set_uid(self, uid, aid=None, atid=None):
+        if (type(uid) == int):
+            self.uid = uid
+        else:
+            self.uid = uid[0]
 
-    def gen_rows(self, uid=None, aid=None, atid=None):
+        self.atid = atid
+        self.gen_rows()
+
+    def gen_rows(self):
         ids = db.get_assignments_ids(conn)
         # set iterator for grid rows
         i = 0
@@ -61,12 +69,14 @@ class ViewUserAssignments(UserSkeleton):
             # get the assignment details
             dets = db.get_assignment_details(aid, conn)
             # create new entries
+            
             name_label = self.create_label(self, text=dets[1], font=REGULAR_FONT)
-            deadline_label = self.create_label(self, text=dets[3], font=REGULAR_FONT)
+            deadline_label = self.create_label(self, text=dets[4], font=REGULAR_FONT)
             try :
                 grade_label = self.create_label(self, text=attempts[-2][4], font=REGULAR_FONT)
             except IndexError:
                 grade_label = self.create_label(self, text=attempts[-1][4], font=REGULAR_FONT)
+
             # add to corresponding dictonaries with user ids as keys
             self.names[aid] = name_label
             self.deadlines[aid] = deadline_label
@@ -75,8 +85,8 @@ class ViewUserAssignments(UserSkeleton):
             # create new buttons
             past_attempt_button = self.create_button(self, "Past Attempts")
             new_attempt_button = self.create_button(self, "Current Attempt")
-            new_attempt_button.config(command=lambda j=aid: self.pass_ids("Attempt" ,self.uid, j))
-            past_attempt_button.config(command=lambda j=aid : self.pass_ids("ViewPastAttempt", self.uid, j))
+            new_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("Attempt" ,self.uid, j[0], j[1]))
+            past_attempt_button.config(command=lambda j=[aid, self.atid]: self.cont.show_frame("ViewPastAttempt", self.uid, j[0], j[1]))
 
             # add to corresponding dictonaries with user ids as keys
             self.past_attempts[aid] = past_attempt_button
@@ -92,7 +102,7 @@ class ViewUserAssignments(UserSkeleton):
             i += 1
 
 
-class ViewPastAttempt(UserSkeleton):
+class ViewPastAttempt(GUISkeleton):
     def __init__(self, parent, controller, uid=None, aid=None):
         GUISkeleton.__init__(self, parent)
         self.labels = ["Date of Submission", "Grade", "View Attempt"]
@@ -114,30 +124,43 @@ class ViewPastAttempt(UserSkeleton):
 
         # the buttons
         self.view_attempts = {}
-        self.controller = controller
+        self.cont = controller
 
         i = 0
         for label in self.labels:
             new_label = self.create_label(self, label, REGULAR_FONT,
                                           NICE_BLUE).grid(row=2, column=i)
             i+=1
+
+
         # generate all the dynamically generated widget rows
 
 
         # enable clicking functionality for all the buttons
         #self.enable_buttons()
 
-    def gen_rows(self, uid=None, aid=None, atid=None):
 
+    def set_uid(self, uid, aid=None, atid=None):
+        self.uid = uid[0]
+        self.atid = atid
+        self.gen_rows(self.uid, aid)
+
+    def gen_rows(self, uid, aid):
+        print(uid)
+        print(aid)
+        
         all_attempts = db.get_user_attempts(str(aid), uid, conn)
+        print(all_attempts)
         # set iterator for grid rows
         i = 0
         atid = 1
 
         # for each id create a row
         for attempts in all_attempts:
+            print(attempts)
 
             # create new entries
+
             submission_label = self.create_label(self, text=attempts[5], font=REGULAR_FONT)
             grade_label = self.create_label(self, text=attempts[4], font=REGULAR_FONT)
 
@@ -148,7 +171,7 @@ class ViewPastAttempt(UserSkeleton):
             # create new buttons
             view_attempt_button = self.create_button(self, "View")
             view_attempt_button.config(
-                command = lambda j=atid: self.pass_ids("ViewAttempt" , uid, aid, j))
+                command = lambda j=atid: self.cont.show_frame("ViewAttempt" , uid, aid, j))
             self.buttons.append(view_attempt_button)
 
             # add to corresponding dictonaries with user ids as keys
@@ -169,7 +192,7 @@ class ViewPastAttempt(UserSkeleton):
             j.destroy()
         for k in self.buttons:
             k.destroy()
-        self.pass_ids('ViewUserAssignments', self.uid)
+        self.cont.show_frame('ViewUserAssignments', self.uid)
 
 
 

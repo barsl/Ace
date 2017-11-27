@@ -16,7 +16,6 @@ class GUISkeleton(ttk.Frame):
 		self.list_box = {}
 		ttk.Frame.__init__(self, parent)
 
-
 	def create_label(self, location, text, font=None, foreground=None):
 		'''creates a label the programmer will be able to assign
 		this to a variable, edit the parameters, and pack to their liking'''
@@ -28,7 +27,6 @@ class GUISkeleton(ttk.Frame):
 			label["foreground"] = foreground
 		return label
 
-
 	def create_entry(self, location, key, font=None):
 		''' Returns an entry box that the programmer is able to pack'''
 		# create an entrybox
@@ -39,7 +37,6 @@ class GUISkeleton(ttk.Frame):
 		self.entry_fields[key] = StringVar()
 		new_entry["textvariable"] = self.entry_fields[key]
 		return new_entry
-
 
 	def create_button(self, location, text):
 		''' creates a button with the wanted text that the programmer
@@ -62,8 +59,7 @@ class GUISkeleton(ttk.Frame):
 			label["text"] = txt
 		label.pack()
 
-
-	def create_list_box(self, key, row, column, width=40, height=8, span=0):
+	def create_list_box(self, key, row, column, width=40, height=8, span=1):
 		'''method that creates a frame that has a listbox with vertical
 		scrollbar, it has default width and height parameters that
 		can be changed, it automatically places the listbox in the row
@@ -125,7 +121,6 @@ class GUISkeleton(ttk.Frame):
 		self.list_box[key] = list_box        
 		list_box.pack(side="left", fill="both")
 		return new_frame
-
 		
 	def create_tab(self, num=4):
 		'''returns a string that is equivalent to the tab character
@@ -139,7 +134,10 @@ class GUISkeleton(ttk.Frame):
 			res += ' '
 			i += 1
 		return res	
-
 	    
-
+	def set_uid(self, uid, aid=None, atid=None):
+		'''sets the UID for the current user'''
+		self.uid = uid
+		self.aid = aid
+		self.atid = atid
 	

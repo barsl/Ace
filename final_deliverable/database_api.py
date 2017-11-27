@@ -79,6 +79,7 @@ def get_problem_ids(conn):
 
     return ids
 
+
 def add_problem(subject, question, answer, conn):
     '''
     Adds a problem to the database. Returns a message of success.
@@ -92,7 +93,7 @@ def add_problem(subject, question, answer, conn):
 
     # Save (commit) the changes
     conn.commit()
-    return "Added problem of subject " + subject + " to database!"
+    return get_problem_ids(conn)[-1]
 
 def remove_problem(qid, conn):
     '''
