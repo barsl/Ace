@@ -127,7 +127,7 @@ class Attempt(UserSkeleton):
             self.hints_labels[qid] = hint_label
 
             # set everything nicely on the grid using an iterator i
-            question_label.grid(row=self.i+3, column=0)
+            # question_label.grid(row=self.i+3, column=0)
             answer_entry.grid(row=self.i+3, column=1)
             hint_button.grid(row=self.i+3, column=2)
             hint_label.grid(row=self.i+3, column=3)
@@ -137,7 +137,7 @@ class Attempt(UserSkeleton):
 
             # set each entry with the corresponding value from list of existing progress
             try:
-                answer_entry.insert(0, self.existing_progress[i])
+                answer_entry.insert(0, self.existing_progress[self.i])
             except IndexError:
                 print("no progress yet")
                 

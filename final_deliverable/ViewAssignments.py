@@ -225,7 +225,7 @@ class ViewAssignments(GUISkeleton):
         ''' 
         insert a new row to the assignments table with the details
         '''
-        num = db.add_assignment(name, formula, deadline, visible, conn)
+        num = db.add_assignment(name, formula, "", deadline, visible, conn)
         # return id of new assignment
         return num
         
