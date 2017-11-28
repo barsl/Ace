@@ -35,7 +35,7 @@ class ViewAssignments(GUISkeleton):
                         "Number of Questions"]
         GUISkeleton.__init__(self, parent)
         # create the title label
-      
+        self.mframe = ttk.Frame(self)
         '''initiate the buttons on the screen'''
         new_frame = ttk.Frame(self)
         #back button
@@ -52,8 +52,9 @@ class ViewAssignments(GUISkeleton):
         self.list_box = None
         # the functions to initialise the buttons and the widgets
         # the numbers are the row and the column to place the widgets in
-        self.create_frame(2, 0)
-        self.init_buttons(3, 0)
+        self.create_frame(self.mframe, 1, 0)
+        self.init_buttons(self.mframe, 2, 0)
+        self.mframe.grid(row=1, column=0, columnspan=3)
         # add the assignments currently in the database to the list
         aids = db.get_assignments_ids(conn) # this returns a list
         for aid in aids:
@@ -73,12 +74,12 @@ class ViewAssignments(GUISkeleton):
             i += 1
         return res
     
-    def subject_buttons_init(self, row, column):
+    def subject_buttons_init(self, location, row, column):
         '''creates the buttons for the add subject box
         @param row-> The row to place the buttons in
         @param column -> the column to place the buttons in'''
         # create a new frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(location)
         for button in self.subject_buttons:
             # create a new button
             new_button = self.create_button(frame, button)
@@ -93,16 +94,17 @@ class ViewAssignments(GUISkeleton):
         frame.grid(row=row, column=column)
         self.frames.append(frame)
     
-    def add_subject_list(self, row, column, width=20, height=8):
+    def add_subject_list(self, location, row, column, width=20, height=8):
         '''creates a listbox to display the subjects for adding an assignment
         the parameters adjust the dimensions of the frame
+        @param location-> Location of the frame
         @param row-> the row to place the widget in
         @param column-> the column to place the widget in
         @param width-> the width of the widget by default is 20
         @param height -> the height of the widget by default is 8
         '''
         # create a new frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(location)
         # config the scrollbar
         scrollbar = ttk.Scrollbar(frame, orient='vertical')
         # create listbox widget
@@ -117,26 +119,26 @@ class ViewAssignments(GUISkeleton):
         frame.grid(row=row, column=column)
         self.frames.append(frame)
 
-    def add_assignment(self, row, column):
+    def add_assignment(self, location, row, column):
         '''creates the frame for adding assignments to the system
         @param row-> The row you want to place the frame in the grid
         @param column -> the column you want to place the frame in'''
         if self.add_pressed == False:
             # create the title label
-            title = self.create_label(self,"Add Assignment", APP_HIGHLIGHT_FONT, NICE_BLUE)
+            title = self.create_label(self.mframe,"Add Assignment", APP_HIGHLIGHT_FONT, NICE_BLUE)
             # we need to append it because we want to delete this later
             self.titles.append(title)
-            title.grid(row=1, column=1)
+            title.grid(row=0, column=1)
             # create a new frame
             # this is the main frame that will house all the other frames
-            main_frame = ttk.Frame(self)
+            mframe = ttk.Frame(location)
             rw = 0
             col = 0
             for entry in self.entries:
                 # create a new label and place it in the frame
-                label = self.create_label(main_frame, entry)
+                label = self.create_label(mframe, entry)
                 # create a new entry
-                new_enterbox = self.create_entry(main_frame, entry)
+                new_enterbox = self.create_entry(mframe, entry)
                 if (entry == "Due Date" or entry == "Start Date"):
                     # set the default text in the entry box
                     new_enterbox.insert(0, "dd/mm/yyyy")
@@ -145,11 +147,11 @@ class ViewAssignments(GUISkeleton):
                 new_enterbox.grid(row=rw, column=col+1)
                 rw += 1 
             # create the add button that will be in the bottom of the grid
-            new_button = self.create_button(main_frame, "Add Subject")
+            new_button = self.create_button(self.mframe, "Add Subject")
             new_button["command"] = lambda : self.add_subject()
-            new_button.grid(row=rw, column=col+1)
-            main_frame.grid(row=row, column=column)
-            self.frames.append(main_frame)
+            new_button.grid(row=2, column=1, sticky = "NSEW", padx=10)
+            mframe.grid(row=row, column=column, padx=10)
+            self.frames.append(mframe)
             self.add_pressed = True
         
     def add_subject(self):
@@ -157,13 +159,13 @@ class ViewAssignments(GUISkeleton):
         in the box on the side'''
         if self.subj_pressed == False:
             # create the title
-            title = self.create_label(self, "Subjects", TITLE_FONT)
+            title = self.create_label(self.mframe, "Subjects", TITLE_FONT)
             self.titles.append(title)
-            title.grid(row=1, column=2)
+            title.grid(row=0, column=2)
             # create the box
-            self.add_subject_list(2, 2)
+            self.add_subject_list(self.mframe, 1, 2)
             # create the buttons
-            self.subject_buttons_init(3, 2)
+            self.subject_buttons_init(self.mframe, 2, 2)
             self.subj_pressed = True
         # get the values from the subject and number of question enterboxes
         subject = self.entry_fields["Subject"].get()
@@ -324,10 +326,10 @@ class ViewAssignments(GUISkeleton):
             lb.delete('anchor')
         
     
-    def init_buttons(self, row, column):
+    def init_buttons(self,location, row, column):
         '''initialises the buttons in a loop'''
         # create a new frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(location)
         # column counter for each item in the loop
         # col = 0
         for button in self.buttons:
@@ -336,7 +338,8 @@ class ViewAssignments(GUISkeleton):
             # intialise the buttons
             if button == "Add New":
                 lb = self.list_box
-                new_button["command"] = lambda : self.add_assignment(2, 1)
+                new_button["command"] = (lambda :
+                                         self.add_assignment(self.mframe, 1, 1))
             elif button == "Delete":
                 new_button["command"] = lambda :self.delete_assignment()
             elif button == "Back":
@@ -356,7 +359,7 @@ class ViewAssignments(GUISkeleton):
         self.subj_pressed = False
         self.controller.show_frame("HomeScreen")        
         
-    def create_frame(self, row, column, width=50, height=8):
+    def create_frame(self, location, row, column, width=50, height=8):
         '''method that creates the frame where the assignments are going
         to be listed
         @param row -> The row where you want the frame to be placed
@@ -364,7 +367,7 @@ class ViewAssignments(GUISkeleton):
         @param width -> the width of the listbox by default is 40
         @param height -> the height of the listbox by default is 8'''
         # create a new frame
-        new_frame = ttk.Frame(self)
+        new_frame = ttk.Frame(location)
         # create a new scrollbar
         scrollbar = ttk.Scrollbar(new_frame, orient='vertical')
         # create a listbox widget
