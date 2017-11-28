@@ -336,7 +336,7 @@ class Attempt(UserSkeleton):
 
         average_grade = user_total_grade/len(all_assignments)
 
-        db.update_user_grade(self.uid, average_grade, conn)
+        db.update_user_grade(self.uid, round(average_grade, 2), conn)
         db.update_user_time(self.uid, user_total_time, conn)
 
 
