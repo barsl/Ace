@@ -120,7 +120,7 @@ class Attempt(UserSkeleton):
             self.problem_ids.append(qid)
             hint_button = self.create_button(self, "Hint!")
             #question_label = self.create_label(self, "", REGULAR_FONT)
-            answer_entry = self.create_entry(self, REGULAR_FONT)
+            answer_entry = ttk.Entry(self, font=REGULAR_FONT)
             hint_label = self.create_label(self, "", REGULAR_FONT, NICE_BLUE)
             self.labels.append(hint_label)
             self.entries.append(answer_entry)
