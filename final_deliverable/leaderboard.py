@@ -45,10 +45,18 @@ class Leaderboard(GUISkeleton):
         self.cont = controller
 
         self.labels = ["Rank", "UID", "Grade", "Time (Day - H:M:S)"]
-        # label at top of the frame
-        new_label = self.create_label(self, "Leaderboard\n",
-                                      TITLE_FONT,
-                                      "Red").grid(row=0, column=1,pady=10)
+        
+        '''initiate the buttons on the screen'''
+        new_frame = ttk.Frame(self)
+        #screen title
+        self.create_label(new_frame, "Leaderboard",
+                              TITLE_FONT, "Red").pack(side="left", padx=40)	
+        #back button
+        back_button = self.create_button(new_frame, "Back")
+        back_button["command"] = lambda : controller.show_frame(self.x)
+        back_button.pack(side="right", padx=10)
+        new_frame.grid(row=0, column=0, pady=20, sticky="E", columnspan=3)
+        
         # dictionaries to contain the widgets and associate widget to
         # corresponding user id
         self.names = {}
@@ -67,11 +75,7 @@ class Leaderboard(GUISkeleton):
             # set everything nicely on the grid
             i += 1
 
-        # Determine the current user's type and navigate back to the proper
-        # main menu
-        back_button = self.create_button(self, "Back")
-        back_button["command"] = lambda : controller.show_frame(self.x)
-        back_button.grid(row=0, column=3)
+
 
         # generate all the dynamically generaterd widget rows
         self.gen_rows()
