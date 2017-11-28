@@ -275,6 +275,6 @@ if __name__ == "__main__":
 	app = AoS()
 	style = ttk.Style()
 	style.configure('TFrame', background='#182F52')
-	style.configure('TLabel' , background='#182F52')
+	style.configure('TLabel' , background='#182F52', foreground='white')
 	app.mainloop()
 
