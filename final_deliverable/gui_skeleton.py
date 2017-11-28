@@ -24,7 +24,7 @@ class GUISkeleton(ttk.Frame):
 		if (font != None):
 			label["font"] = font
 		if (foreground != None):
-			label["foreground"] = foreground
+			label["foreground"] = "white"
 		return label
 
 	def create_entry(self, location, key, font=None):
@@ -57,6 +57,7 @@ class GUISkeleton(ttk.Frame):
 			txt += "\n"
 			label = ttk.Label(location)
 			label["text"] = txt
+			label["foreground"] = "white"
 		label.pack()
 
 	def create_list_box(self, key, row, column, width=40, height=8, span=1):
