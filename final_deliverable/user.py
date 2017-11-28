@@ -58,15 +58,19 @@ class UserInterface(GUISkeleton):
         self.cont = controller
         self.labels = ["Role", "Name", "Email"]
         # label at top of the frame
-        new_label = self.create_label(self, "User Database Management\n",
-                                      TITLE_FONT,
-                                      "Red").grid(row=0, column=0,pady=10, padx=10) 
-       
-        # create back button 
-        back_button = self.create_button(self, "Back")
-        back_button["command"] = lambda : controller.show_frame('HomeScreen')
-        back_button.grid(row=0, column=2)
+ 
+        '''initiate the buttons on the screen'''
+        new_frame = ttk.Frame(self)
+        #back button
+        self.create_label(new_frame, "View Users",
+                          TITLE_FONT, "Red").pack(side="left", padx=40)	
+        back_button = self.create_button(new_frame, "Back")
+        back_button["command"] = lambda: controller.show_frame('HomeScreen')
+        back_button.pack(side="right", padx=10)
+        new_frame.grid(row=0, column=0, pady=20, sticky="E")
+
         self.init_window()
+        
         
         
     def init_window(self):
@@ -126,17 +130,17 @@ class UserInterface(GUISkeleton):
             # create first row of entries for add_user function
             # set everything nicely on the grid            
             new_entry = self.create_entry(frame, label,
-                                          REGULAR_FONT).grid(row=i, column=1)
+                                          REGULAR_FONT).grid(row=i, column=1,columnspan=2, sticky="NSEW")
             i += 1
         add_button = self.create_button(frame, "Add")
         add_button["command"] = lambda : self.add_user()
-        add_button.grid(row=i, column=1, sticky="E")
+        add_button.grid(row=i, column=1, sticky="NSEW")
         update_button = self.create_button(frame, "Update")
         update_button["command"] = lambda : self.up_user()
-        update_button.grid(row=i, column=1, sticky="W")
+        update_button.grid(row=i, column=2, sticky="NSEW")
         frame.grid(row=row, column=column, padx=10)
-        
-
+             
+    
     def del_user(self):
         '''
         delete a user from the database and show a success popup

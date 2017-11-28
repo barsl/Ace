@@ -4,6 +4,7 @@ import subprocess
 import sqlite3
 import database_api as db
 import ast
+from tkinter.messagebox import showinfo
 
 conn = sqlite3.connect('ace.db')
 
@@ -67,7 +68,6 @@ class CreatePDF():
         '''This method takes problems from the database and attaches them
         to the latex expression.
         '''
-
         # Fetch the user attempts for assignment
         ids = db.get_user_nth_attempt(self.aid, self.uid, -1, conn)[2]
         ids = ast.literal_eval(ids)
@@ -105,5 +105,4 @@ class CreatePDF():
         os.unlink('assign' + str(self.aid) + '.log')
         os.unlink('assign' + str(self.aid) + '.aux')
 
-
-
+        showinfo("Downloaded", "The assignment has downloaded to your computer")

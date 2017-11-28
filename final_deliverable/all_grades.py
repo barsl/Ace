@@ -132,8 +132,8 @@ class ViewStudentGrades(GUISkeleton):
 		# create the radio button
 		radio = ttk.Radiobutton(frame, text="Student")
 		radio["command"] = lambda : self.create_student_box(frame)
-		grades = ["All", "0%", " < 50%", " > 50%", " > 70%",
-		          " > 80%", " > 90%", "100%"]
+		grades = ["All", "0", " < 50", " > 50", " > 70",
+		          " > 80", " > 90", "100"]
 		# create a dropdown menu
 		dropdown = ttk.Combobox(frame)
 		dropdown['values'] = grades
@@ -207,9 +207,9 @@ class ViewStudentGrades(GUISkeleton):
 		if (option == sorts[0]):
 			self.sort_opt = 0
 		elif (option == sorts[1]):
-			self.sort_opt = 1
+			self.sort_opt = 2
 		elif (option == sorts[2]):
-			self.sort_opt = 2	
+			self.sort_opt = 3	
 		self.refresh()
 		self.hide_options()
 		
@@ -253,10 +253,10 @@ class ViewStudentGrades(GUISkeleton):
 		'''
 		filters = self.filters
 		filter_grade = filters[1].split()
-		# check to see if one of them is less than 50%
-		if (len(filter_grade) > 1 and filter_grade[-1] == "50%"):
+		# check to see if one of them is less than 50
+		if (len(filter_grade) > 1 and filter_grade[-1] == "50"):
 			if (filter_grade[-2] == "<"):
-				filter_grade[-1] = "-50%"	
+				filter_grade[-1] = "-50"	
 		# check the 
 		# check to see if the filter tuple is empty
 		ids = filters[0]
@@ -274,13 +274,13 @@ class ViewStudentGrades(GUISkeleton):
 			if (filter_grade[0] == "All"):
 				filtered_grade = True
 				
-			elif (filter_grade[-1] == "-50%"):
-				# check if % is less than 50
-				filtered_grade = (int(item[2][:-1]) + 
-				                  int(filter_grade[-1][:-1])) < 0
+			elif (filter_grade[-1] == "-50"):
+				# check if  is less than 50
+				filtered_grade = (int(item[2]) + 
+				                  int(filter_grade[-1])) < 0
 			else:
-				filtered_grade = (int(item[2][:-1]) - 
-				                  int(filter_grade[-1][:-1])) > 0
+				filtered_grade = (int(item[2]) - 
+				                  int(filter_grade[-1])) > 0
 		else:	
 			filtered_grade = True	
 		return (filtered_grade and filtered_id)
@@ -294,7 +294,7 @@ class ViewStudentGrades(GUISkeleton):
 			current = nlist[i]
 			pos = i
 			
-			while(pos > 0 and nlist[pos - 1][index] > current[index]):
+			while(pos > 0 and int(nlist[pos - 1][index]) < int(current[index])):
 				nlist[pos] = nlist[pos - 1]
 				pos = pos - 1
 			nlist[pos] = current
@@ -322,12 +322,12 @@ class ViewStudentGrades(GUISkeleton):
 		frame = ttk.Frame(self)
 		# set the strings if we have data
 		if (len(uids) > 0):
-			completion_string = ("Student Completion: {}%".format( 
+			completion_string = ("Student Completion: {}".format( 
 			                     round(self.num_users/len(uids) * 100)))
 		else:
 			completion_string = ''
 		if (self.all_grades > 0):
-			average_string = ("Student Average: {}%".format(
+			average_string = ("Student Average: {}".format(
 			                  round((self.all_grades/self.num_users))))
 		else:
 			average_string = "No grades available"
@@ -382,16 +382,16 @@ class ViewStudentGrades(GUISkeleton):
 		for example
 		(id, uid, 4, [10,6], [10,6], 100)
 		is the tuple with student id 4, answers 10, 6
-		student answers 10, 6 resulting in grade 100%
+		student answers 10, 6 resulting in grade 100
 		@param max_len -> the length of the maximum name...
 		used for formatting
 		'''
 		tab = self.create_tab()
-		result = "{:>4}   {:<7}   {:>7}%   {:>4}"
+		result = "{:>4}   {:<7}   {:>7}   {:>4}"
 		grade = attempts[-1][-2]
 		#check for empty grades
 		if (grade == ''):
-			grade = "-"
+			grade = "0"
 		else:
 			# if user has completed assignment then 
 			# upgrade num_users and all_grades for the avg calculation
