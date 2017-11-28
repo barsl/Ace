@@ -53,7 +53,7 @@ class Leaderboard(GUISkeleton):
                               TITLE_FONT, "Red").pack(side="left", padx=40)	
         #back button
         back_button = self.create_button(new_frame, "Back")
-        back_button["command"] = lambda : controller.show_frame(self.x)
+        back_button["command"] = lambda : controller.show_frame(self.x, self.uid)
         back_button.pack(side="right", padx=10)
         new_frame.grid(row=0, column=0, pady=20, sticky="E", columnspan=3)
         
