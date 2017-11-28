@@ -149,7 +149,7 @@ class ViewAssignments(GUISkeleton):
             # create the add button that will be in the bottom of the grid
             new_button = self.create_button(self.mframe, "Add Subject")
             new_button["command"] = lambda : self.add_subject()
-            new_button.grid(row=2, column=1, sticky = "NSEW", padx=10)
+            new_button.grid(row=2, column=1, sticky = "E", padx=10)
             mframe.grid(row=row, column=column, padx=10)
             self.frames.append(mframe)
             self.add_pressed = True
