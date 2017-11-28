@@ -166,7 +166,7 @@ class Attempt(UserSkeleton):
         label.grid(row=self.i+4, column=0)
         self.texes.append(label)
 
-        fig = matplotlib.figure.Figure(figsize=(2,1), dpi=50)
+        fig = matplotlib.figure.Figure(figsize=(4,2), dpi=50)
         ax = fig.add_subplot(111)
 
         canvas = FigureCanvasTkAgg(fig, master=label)
@@ -177,7 +177,7 @@ class Attempt(UserSkeleton):
         ax.get_yaxis().set_visible(False)
 
         ax.clear()
-        ax.text(0.2, 0.6, txt, fontsize = 20)
+        ax.text(0.1, 0.3, txt, fontsize = 30)
         canvas.draw()
 
 
