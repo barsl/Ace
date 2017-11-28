@@ -152,7 +152,7 @@ class Attempt(UserSkeleton):
         self.update_progress_button["command"] = lambda : self.update_progress()
         self.update_progress_button.grid(row=0, column=4, padx=5)
 
-        self.submit_button = self.create_button(self,"Submit") 
+        self.submit_button = self.create_button(self,"Submit")
         self.submit_button["command"] = lambda : self.submit_progress()
         self.submit_button.grid(row=0, column=5, padx=5)
 
@@ -336,7 +336,7 @@ class Attempt(UserSkeleton):
 
         average_grade = user_total_grade/len(all_assignments)
 
-        db.update_user_grade(self.uid, average_grade, conn)
+        db.update_user_grade(self.uid, round(average_grade, 2), conn)
         db.update_user_time(self.uid, user_total_time, conn)
 
 
@@ -412,7 +412,7 @@ class ViewAttempt(GUISkeleton):
             self.aid, self.uid, (self.atid-1), conn)[3]
         self.existing_progress = self.existing_progress.split(",")
         self.gen_rows()
-        
+
         problem = self.create_label(self, "Problem", APP_HIGHLIGHT_FONT, NICE_BLUE)
         solution = self.create_label(self, "Solution", APP_HIGHLIGHT_FONT, NICE_BLUE)
         problems.grid(row=1,column=1, pady=10)
