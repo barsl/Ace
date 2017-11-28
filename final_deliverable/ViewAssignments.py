@@ -38,7 +38,7 @@ class ViewAssignments(GUISkeleton):
         '''initiate the buttons on the screen'''
         new_frame = ttk.Frame(self)
         #back button
-        self.create_label(new_frame, "View Assignments",
+        self.create_label(new_frame, "Manage Assignments",
                                       TITLE_FONT, "Red").pack(side="left", padx=40)	
         back_button = self.create_button(new_frame, "Back")
         back_button["command"] = lambda: controller.show_frame('HomeScreen')
@@ -51,8 +51,6 @@ class ViewAssignments(GUISkeleton):
         self.list_box = None
         # the functions to initialise the buttons and the widgets
         # the numbers are the row and the column to place the widgets in
-        title = self.create_label(self, "Assignments", APP_HIGHLIGHT_FONT, NICE_BLUE)
-        title.grid(row=1, column=0)
         self.create_frame(2, 0)
         self.init_buttons(3, 0)
         # add the assignments currently in the database to the list

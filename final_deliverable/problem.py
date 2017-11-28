@@ -31,7 +31,7 @@ class Problem():
         self.subject = problem[1]
         self.question = problem[2]
         self.answer = problem[3]
-        
+        self.hint = problem[4]
     # getters and setters
     def get_qid(self):
         return self.qid
@@ -41,6 +41,8 @@ class Problem():
         return self.question
     def get_answer(self):
         return self.answer
+    def get_hint(self):
+        return self.hint
     
 
 class ProblemInterface(GUISkeleton):
@@ -51,6 +53,7 @@ class ProblemInterface(GUISkeleton):
     def __init__(self, parent, controller):
         GUISkeleton.__init__(self, parent)
         self.cont = controller
+        self.is_random = False
         self.labels = ["Subject", "Question", "Answer"]
         # label at top of the frame
      
@@ -77,7 +80,6 @@ class ProblemInterface(GUISkeleton):
         self.create_entries(2,0)
         self.problem_db_buttons()
         self.init_problems_in_lb()
-        self.create_randomized_ui()
         
         
     def create_entries(self, row, column):
@@ -110,6 +112,7 @@ class ProblemInterface(GUISkeleton):
         random_button["command"] = lambda : self.switch()
         random_button.grid(row=0, column=2)
         new_frame.grid(row=i, column=1)
+        self.frame = frame
         frame.grid(row=row, column=column, padx=10)        
 
             
@@ -206,11 +209,11 @@ class ProblemInterface(GUISkeleton):
             result = False
         return result
     
+    
     def clear_entries(self):
         ''' clears the entry fields that have the information'''
-        self.entry_fields[self.labels[0]].set('')
-        self.entry_fields[self.labels[1]].set('')
-        self.entry_fields[self.labels[2]].set('')  
+        for key in self.entry_fields:
+            self.entry_fields[key].set('')
     
     
     def add_problem(self):
@@ -223,12 +226,15 @@ class ProblemInterface(GUISkeleton):
         new_answer = self.entry_fields[self.labels[2]].get() 
         added = self.add_question_to_db(new_subject, new_question, new_answer)
         if (added):
+            lb = self.list_box["problems"]
+            qid = lb.get(lb.size()-1).split()
+            print(qid)
             showinfo("Success", "problem #" +
-                     str(qid) + " has been added to database")
+                     qid[0] + " has been added to database")
             
     def create_randomized_ui(self):
         '''creates the interface for the create random questions'''
-        labels = ["Subjects", "Questions", "Variables", "Ranges"]
+        labels = ["Subject", "Question", "Variables", "Ranges"]
         # create the labels and entry boxes
         frame = ttk.Frame(self)
         i = 0
@@ -251,20 +257,20 @@ class ProblemInterface(GUISkeleton):
         add_button = self.create_button(new_frame, "Add")
         add_button["command"] = lambda : self.add_random()
         add_button.grid(row=0, column=0, sticky="NSEW")
-        switch_button = self.create_button(new_frame, "Switch to Manual")
+        switch_button = self.create_button(new_frame, "Basic")
         switch_button["command"] = lambda : self.switch()
         switch_button.grid(row=0, column=1, sticky="NSEW")
         new_frame.grid(row=i+1, column=1)
         self.frame = frame
-        frame.grid(row=3, column=0)
+        frame.grid(row=2, column=0)
         
     def add_random(self):
         ''' creates a number of unique random questions
         based on parameters given if possible, if it is not possible,
         returns the number of unique problems that it can create'''
         # get the parameters from the entries
-        subject = self.entry_fields["Subjects"].get()
-        question = self.entry_fields["Questions"].get()
+        subject = self.entry_fields["Subject"].get()
+        question = self.entry_fields["Question"].get()
         variables = self.entry_fields["Variables"].get()
         ranges = self.entry_fields["Ranges"].get()
         num = self.entry_fields["Num"].get()
@@ -304,6 +310,7 @@ class ProblemInterface(GUISkeleton):
         # add questions to database
         for key in unique_questions:
             added = self.add_question_to_db(subject, key, unique_questions[key])
+        self.clear_entries()
         # display message of success or failure
         if (added):
             showinfo("Success", "problems have been added to database")
@@ -357,3 +364,17 @@ class ProblemInterface(GUISkeleton):
             q.evaluate_answer()
             unique_questions[q.get_question()] = q.get_answer()
         return unique_questions
+    
+    
+    def switch(self):
+        ''' switches from creating random questions to manually
+        adding questions'''
+        # destroy the frame that is currently using the space
+        self.frame.destroy()
+        # switch to the other frame
+        if (self.is_random == False):
+            self.create_randomized_ui()
+            self.is_random = True
+        else:
+            self.create_entries(2, 0)
+            self.is_random = False
