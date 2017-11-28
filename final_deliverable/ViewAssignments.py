@@ -30,7 +30,8 @@ class ViewAssignments(GUISkeleton):
         '''the names of the entry boxes these are stored as keys
         in the dictionary self.entry_fields which
         is inherited from GUISkeleton'''
-        self.entries = ["Assignment Name", "Due Date", "Visible", "Subject",
+        self.entries = ["Assignment Name","Start Date",
+                        "Due Date", "Visible", "Subject",
                         "Number of Questions"]
         GUISkeleton.__init__(self, parent)
         # create the title label
@@ -136,6 +137,9 @@ class ViewAssignments(GUISkeleton):
                 label = self.create_label(main_frame, entry)
                 # create a new entry
                 new_enterbox = self.create_entry(main_frame, entry)
+                if (entry == "Due Date" or entry == "Start Date"):
+                    # set the default text in the entry box
+                    new_enterbox.insert(0, "dd/mm/yyyy")
                 # pack the label and the entry box into the frame
                 label.grid(row=rw, column=col)
                 new_enterbox.grid(row=rw, column=col+1)
@@ -176,10 +180,12 @@ class ViewAssignments(GUISkeleton):
         # this does not include the subject and number fields, because
         # those are stored in the listbox
         name = self.entry_fields["Assignment Name"].get()
+        start_date = self.entry_fields["Start Date"].get()
         deadline = self.entry_fields["Due Date"].get()
         visible = self.entry_fields["Visible"].get()
+        verified = self.verify_fields()
         # we want to make sure that none of the fields are empty
-        if (name != '' and deadline != '' and visible != ''):
+        if (verified):
             formula = ''
             # get the values from the listbox as a list
             lb = self.subject_box
@@ -194,7 +200,8 @@ class ViewAssignments(GUISkeleton):
                 formula += ","
             formula = formula[:-1]
             # update the database
-            num = self.update_assignments_table(name, formula, deadline, visible)
+            num = self.update_assignments_table(name, formula, start_date,
+                                                deadline, visible)
             self.table_functions(num, formula)
             # check to make sure that the assignment is in the db
             aids = db.get_assignments_ids(conn)
@@ -213,6 +220,27 @@ class ViewAssignments(GUISkeleton):
                 showinfo("Info", "Assignment successfully added")
             else:
                 showinfo("Fail", "Could not add assignment")
+        else:
+            show_info("Failure", "Please fill out all the fields")
+            
+                
+    def verify_fields(self):
+        '''verifies the fields to make sure that there is valid input
+        in the entry fields
+        @returns-> True if valid False if not valid
+        '''
+        result = False
+        entry_list = []
+        # get the entry fields
+        for entry in self.entries:      
+            entry_list.append(self.entry_fields[entry].get().strip())
+        # check to make sure no field is ''
+        if ('' not in entry_list):
+            if (entry_list[1] != "dd/mm/yyyy" and
+                entry_list[2] != "dd/mm/yyyy"):
+                result = True
+        return result
+                
             
     def add_assign_to_lb(self, aid):
         '''adds an assignment to the listbox to be able to be viewed
@@ -227,11 +255,11 @@ class ViewAssignments(GUISkeleton):
         # add the assignment to the list box
         self.add_to_list(self.list_box, assign_string)
 
-    def update_assignments_table(self, name, formula, deadline, visible):
+    def update_assignments_table(self, name, formula, start, deadline, visible):
         ''' 
         insert a new row to the assignments table with the details
         '''
-        num = db.add_assignment(name, formula, "", deadline, visible, conn)
+        num = db.add_assignment(name, formula, start, deadline, visible, conn)
         # return id of new assignment
         return num
         
