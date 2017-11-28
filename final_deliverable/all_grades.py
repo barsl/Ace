@@ -26,6 +26,7 @@ class ViewStudentGrades(GUISkeleton):
 		self.sort_opt = None
 		self.controller = controller			
 		GUISkeleton.__init__(self, parent)
+		self.lb_frame = ttk.Frame(self)
 		self.widgets = {}
 		self.all_grades = 0
 		self.num_users = 0		
@@ -44,6 +45,7 @@ class ViewStudentGrades(GUISkeleton):
 		back_button["command"] = lambda: controller.show_frame('HomeScreen')
 		back_button.pack(side="right", padx=10)
 		new_frame.grid(row=0, column=2, pady=20)
+		self.lb_frame.grid(row=2, column=1, columnspan=3)
 
 	def create_assignments_dropdown(self):
 		'''Create  a drop down menu for the assignments 
@@ -81,7 +83,8 @@ class ViewStudentGrades(GUISkeleton):
 		filter_button.pack(side="left", padx=10)
 		sort_button.pack(side="left")
 		clear_button.pack(side="left", padx=10)
-		frame.grid(row=1, column=1,padx=5, columnspan=2)	
+		frame.grid(row=1, column=1, padx=5, columnspan=3)	
+
 
 	def clear_filters(self):
 		'''clears the filters that have been set by the user
@@ -93,22 +96,21 @@ class ViewStudentGrades(GUISkeleton):
 	def create_listbox(self, eventObject):
 		''' Create a listbox for the last 
 		attempt of each user for selected assignment
-		@param eventObject, dropdown menu item selected
-		
-		
+		@param eventObject, dropdown menu item selected		
 		'''
+		my_frame = ttk.Frame(self.lb_frame)
 		drop_results = self.dropdown.get()
 		#split the selection strng to get the 'aid' 
 		aid = drop_results.split()[1] 
 		self.aid = int(aid)
 		user_ids = db.get_users_ids_assignment(self.aid,conn)
-		self.create_list_box("results", 4, 2, span=3)
-		self.create_edit_grade(5, 3)
+		lb_frame = self.create_list_box_loc(my_frame, "results")
+		lb_frame.grid(row=1, column=0)
 		max_len = self.get_longest_username(user_ids)
-		lb = self.list_box["results"]
 		#label_string = "Uid   Name   Grade  Attempts"
 		label_string = "{:>4}   {:<7}   {:>7}  {:>4}"
 		label_string = label_string.format("Uid", "Name", "Grade", "Attempts")
+		lb = self.list_box["results"]
 		lb.insert(END, label_string)
 		for user in user_ids:
 			# get all the attempts for the user id
@@ -119,19 +121,20 @@ class ViewStudentGrades(GUISkeleton):
 			# place it in the lists_box
 			lb.insert(END, user_result)
 			
-		self.average_labels(user_ids).grid(row=3, column=2,
+		self.average_labels(my_frame, user_ids).grid(row=0, column=0,
 		                                   columnspan=3)
 		self.contents = lb.get(1, lb.size())
+		my_frame.grid(row=0, column=0, rowspan=2)
 		
 	
 	def filter_options(self):
 		'''opens up the filter menu to filter results
 		in the assignment'''
 		# create a new frame
-		frame = ttk.Frame(self)
+		frame = ttk.Frame(self.lb_frame)
 		# create the radio button
 		radio = ttk.Radiobutton(frame, text="Student")
-		radio["command"] = lambda : self.create_student_box(frame)
+		radio["command"] = lambda : self.create_student_box(self.lb_frame)
 		grades = ["All", "0", " < 50", " > 50", " > 70",
 		          " > 80", " > 90", "100"]
 		# create a dropdown menu
@@ -140,11 +143,12 @@ class ViewStudentGrades(GUISkeleton):
 		self.widgets["grades filter"] = dropdown
 		done = self.create_button(frame, "Done")
 		done["command"] = (lambda : self.filter_results())
-		radio.grid(row=0, column=0, sticky="W")
-		dropdown.grid(row=1, column=0)
-		done.grid(row=1, column=3, padx=10)
+		radio.grid(row=0, column=0, sticky="w")
+		dropdown.grid(row=1, column=0, sticky="W")
+		done.grid(row=2, column=0, sticky="W")
 		self.widgets["filter_frame"] = frame
-		frame.grid(row=2, column=1, pady=15)
+		frame.grid(row=0, column=1, padx=10)
+	
 	
 	def hide_options(self):
 		''' destroys frames that contain the buttons, sort and filter
@@ -182,7 +186,7 @@ class ViewStudentGrades(GUISkeleton):
 			
 	def sort_options(self):
 		'''creates the buttons that are enabled when sort is pressed'''
-		frame = ttk.Frame(self)
+		frame = ttk.Frame(self.lb_frame)
 		# options for the dropdown menu 
 		sorts = ["User Id", "Grades", "Attempts"]
 		dropdown = ttk.Combobox(frame)
@@ -195,7 +199,7 @@ class ViewStudentGrades(GUISkeleton):
 		dropdown.pack(side="left", padx=10)
 		done.pack(side="left")
 		self.widgets["sort_frame"] = frame
-		frame.grid(row=2, column=3, pady=10)
+		frame.grid(row=1, column=1, padx=20)
 		
 		
 	def sort_results(self, sorts):
@@ -312,14 +316,14 @@ class ViewStudentGrades(GUISkeleton):
 				result = "{:>3} {:<12}"
 				result = result.format(info[0][0], info[0][2])
 				self.list_box["students"].insert(END, result)
-		list_box.grid(row=0, column=2, rowspan=8, padx=5)
+		list_box.grid(row=0, column=3, rowspan=5, padx=5)
 	
-	def average_labels(self, uids):
+	def average_labels(self, location, uids):
 		'''creates a label for the average and a label
 		for the number of users that have completed the assignment
 		@param uids-> uids of people who have this assignment assigned
 		'''
-		frame = ttk.Frame(self)
+		frame = ttk.Frame(location)
 		# set the strings if we have data
 		if (len(uids) > 0):
 			completion_string = ("Student Completion: {}".format( 
@@ -338,19 +342,6 @@ class ViewStudentGrades(GUISkeleton):
 		average_label.grid(row=1, column=0)
 		self.widgets["average"] = frame
 		return frame
-	
-	def create_edit_grade(self, row, column):
-		'''creates the edit grade frame
-		@param row ->row you want to place the frame in
-		@param column -> column you want to place the frame in
-		'''
-		# create the edit grade button
-		frame = ttk.Frame(self)
-		edit_grade = self.create_button(frame, "Edit Grade")
-		edit_grade["command"] = lambda : self.edit_grade(frame)
-		edit_grade.pack()
-		self.widgets["edit grade"] = frame
-		frame.grid(row=row, column=column)
 			
 	def get_longest_username(self, uids):
 		''' a function that gets the longest user name
