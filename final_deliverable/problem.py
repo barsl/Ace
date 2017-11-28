@@ -54,7 +54,7 @@ class ProblemInterface(GUISkeleton):
         GUISkeleton.__init__(self, parent)
         self.cont = controller
         self.is_random = False
-        self.labels = ["Subject", "Question", "Answer"]
+        self.labels = ["Subject", "Question", "Answer", "Hint"]
         # label at top of the frame
      
         '''initiate the buttons on the screen'''
@@ -128,7 +128,7 @@ class ProblemInterface(GUISkeleton):
         '''initialises the problems and puts them in the list box'''
         lb = self.list_box["problems"]
         # create a label_string
-        label_string = "qid    subject    question    answer"
+        label_string = "qid    subject    question    answer   hint"
         lb.insert(END, label_string)
         # get all the problem ids
         ids = db.get_problem_ids(conn)
@@ -139,12 +139,12 @@ class ProblemInterface(GUISkeleton):
     
     def string_qid(self, qid):
         '''creates a string to add to list box based on the uid'''
-        problem_string = "{:<3}    {:<7}    {:<10}    {:<15}"
+        problem_string = "{:<3}    {:<7}    {:<10}    {:<15}   {:<10}"
         # get the problem from the id
         problem = Problem(qid)
         # create a string to hold the result of the problem
         problem_string = problem_string.format(qid, problem.get_subject(), 
-                           problem.get_question(), problem.get_answer())
+                           problem.get_question(), problem.get_answer(), problem.get_hint())
         # place the string inside the list_box
         return problem_string    
         
@@ -181,6 +181,7 @@ class ProblemInterface(GUISkeleton):
             new_subject = self.entry_fields[self.labels[0]].get()
             new_question = self.entry_fields[self.labels[1]].get()
             new_answer = self.entry_fields[self.labels[2]].get()
+            new_hint = self.entry_fields[self.label[3]].get()
             
             verified = self.verify_problem_input(new_subject, new_question,
                                                  new_answer)
@@ -190,6 +191,7 @@ class ProblemInterface(GUISkeleton):
                 db.update_problem_subject(qid[0], new_subject, conn)
                 db.update_problem_question(qid[0], new_question, conn)
                 db.update_problem_answer(qid[0], new_answer, conn)
+                db.update_problem_hint(qid[0], new_hint, conn)
                 # create a string representation to put in the listbox
                 problem_string = self.string_qid(qid[0])
                 # clear entry boxes
@@ -224,17 +226,17 @@ class ProblemInterface(GUISkeleton):
         new_subject = self.entry_fields[self.labels[0]].get()
         new_question = self.entry_fields[self.labels[1]].get()
         new_answer = self.entry_fields[self.labels[2]].get() 
-        added = self.add_question_to_db(new_subject, new_question, new_answer)
+        new_hint = self.entry_fields[self.labels[3]].get() 
+        added = self.add_question_to_db(new_subject, new_question, new_answer, new_hint)
         if (added):
             lb = self.list_box["problems"]
             qid = lb.get(lb.size()-1).split()
-            print(qid)
             showinfo("Success", "problem #" +
                      qid[0] + " has been added to database")
             
     def create_randomized_ui(self):
         '''creates the interface for the create random questions'''
-        labels = ["Subject", "Question", "Variables", "Ranges"]
+        labels = ["Subject", "Question", "Variables", "Ranges", "Hints"]
         # create the labels and entry boxes
         frame = ttk.Frame(self)
         i = 0
@@ -272,6 +274,7 @@ class ProblemInterface(GUISkeleton):
         subject = self.entry_fields["Subject"].get()
         question = self.entry_fields["Question"].get()
         variables = self.entry_fields["Variables"].get()
+        hints = self.entry_fields["Hints"].get()
         ranges = self.entry_fields["Ranges"].get()
         num = self.entry_fields["Num"].get()
         # create the math question based on the parameters
@@ -299,17 +302,17 @@ class ProblemInterface(GUISkeleton):
         # check if the length is the same
         unique_questions = {}
         if (len(ranges) == 1):
-            unique_questions = self.create_random_questions(question, variables,
+            unique_questions = self.create_random_questions(question, variables, hints,
                                                         ranges, int(num))        
         elif (len(variables) == len(ranges)):
             # then we want to call the specified class
-            unique_questions = self.create_random_questions(question, variables,
+            unique_questions = self.create_random_questions(question, variables, hints,
                                                             ranges, int(num),
                                                             True)
         added = False
         # add questions to database
         for key in unique_questions:
-            added = self.add_question_to_db(subject, key, unique_questions[key])
+            added = self.add_question_to_db(subject, key, unique_questions[key], hints)
         self.clear_entries()
         # display message of success or failure
         if (added):
@@ -318,7 +321,7 @@ class ProblemInterface(GUISkeleton):
             showinfo("Failure", "Some problems not added to database")
         
             
-    def add_question_to_db(self, subject, question, answer):
+    def add_question_to_db(self, subject, question, answer, hint):
         '''takes a question and adds it to the db and list box
         @param subject ->subject of the question
         @param question -> question of the question
@@ -330,7 +333,7 @@ class ProblemInterface(GUISkeleton):
         verified = self.verify_problem_input(subject, question, answer)  
         if (verified):
             # add new problem to databse and save his id number
-            qid = db.add_problem(subject, question, str(answer), '', conn)
+            qid = db.add_problem(subject, question, str(answer), hint, conn)
             # create a string representation to put in the listbox
             problem_string = self.string_qid(qid)
             # clear entry boxes
@@ -341,7 +344,7 @@ class ProblemInterface(GUISkeleton):
         return verified
 
     
-    def create_random_questions(self, question, variables, ranges,
+    def create_random_questions(self, question, variables, hints, ranges,
                                 num, specified=False):
         '''
         create a number of random questions based on the parameters given
