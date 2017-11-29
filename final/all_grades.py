@@ -7,6 +7,7 @@ from assignments import *
 from gui_skeleton import *
 #from ViewAssignments import *
 
+MONOSPACE_FONT = ("Courier", 10 , "normal")
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 14, "normal")
 TITLE_FONT = ("Helvetica", 16, "normal")
@@ -108,7 +109,7 @@ class ViewStudentGrades(GUISkeleton):
 		lb_frame.grid(row=1, column=0)
 		max_len = self.get_longest_username(user_ids)
 		#label_string = "Uid   Name   Grade  Attempts"
-		label_string = "{:>4}   {:<7}   {:>7}  {:>4}"
+		label_string = "{:>3}    {:<7}    {:>3}    {:>3}"
 		label_string = label_string.format("Uid", "Name", "Grade", "Attempts")
 		lb = self.list_box["results"]
 		lb.insert(END, label_string)
@@ -243,7 +244,7 @@ class ViewStudentGrades(GUISkeleton):
 			check_filter = self.check_filters(item)
 			if (check_filter == True):
 				# format the string
-				result = "{:>4}   {:<12}   {:>3}  {:>4}"
+				result = "{:>3}    {:<7}    {:>4}       {:>3}"
 				result = result.format(*item)
 				main_lb.insert(END, result)
 		
@@ -326,12 +327,12 @@ class ViewStudentGrades(GUISkeleton):
 		frame = ttk.Frame(location)
 		# set the strings if we have data
 		if (len(uids) > 0):
-			completion_string = ("Student Completion: {}".format( 
+			completion_string = ("Student Completion: {}%".format( 
 			                     round(self.num_users/len(uids) * 100)))
 		else:
 			completion_string = ''
 		if (self.all_grades > 0):
-			average_string = ("Student Average: {}".format(
+			average_string = ("Student Average: {}%".format(
 			                  round((self.all_grades/self.num_users))))
 		else:
 			average_string = "No grades available"
@@ -377,8 +378,7 @@ class ViewStudentGrades(GUISkeleton):
 		@param max_len -> the length of the maximum name...
 		used for formatting
 		'''
-		tab = self.create_tab()
-		result = "{:>4}   {:<7}   {:>7}   {:>4}"
+		result = "{:>3}    {:<7}    {:>4}       {:>3}"
 		grade = attempts[-1][-2]
 		#check for empty grades
 		if (grade == ''):

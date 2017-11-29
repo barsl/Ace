@@ -4,6 +4,7 @@ from tkinter import ttk, font,  Tk, Label, Button, Entry,\
 from tkinter.messagebox import showinfo
 import database_api as db
 
+MONOSPACE_FONT = ("Courier", 10 , "normal")
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
 NICE_BLUE = "#3399FF"
@@ -80,7 +81,8 @@ class GUISkeleton(ttk.Frame):
 		# create a listbox widget
 		list_box = tk.Listbox(new_frame,
 		                      yscrollcommand=scrollbar.set,
-		                      width=width, height=height)
+		                      width=width, height=height,
+		                      font=MONOSPACE_FONT)
 		#configure the scrollbar
 		scrollbar.config(command=list_box.yview)
 		scrollbar.pack(side="right", fill="y")
@@ -112,7 +114,8 @@ class GUISkeleton(ttk.Frame):
 		# create a listbox widget
 		list_box = tk.Listbox(new_frame,
 		                      yscrollcommand=scrollbar.set,
-		                      width=width, height=height)
+		                      width=width, height=height,
+		                      font=MONOSPACE_FONT)
 		if (mode != None):
 			list_box["selectmode"] = mode
 		#configure the scrollbar
