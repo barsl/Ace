@@ -181,7 +181,7 @@ class ProblemInterface(GUISkeleton):
             new_subject = self.entry_fields[self.labels[0]].get()
             new_question = self.entry_fields[self.labels[1]].get()
             new_answer = self.entry_fields[self.labels[2]].get()
-            new_hint = self.entry_fields[self.label[3]].get()
+            new_hint = self.entry_fields[self.labels[3]].get()
             
             verified = self.verify_problem_input(new_subject, new_question,
                                                  new_answer)
