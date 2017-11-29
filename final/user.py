@@ -93,7 +93,8 @@ class UserInterface(GUISkeleton):
         '''initialises the users and puts them in the list box'''
         lb = self.list_box["users"]
         # create a label_string
-        label_string = "uid    role    name    email"
+        label_string = "{:<3}    {:<7}    {:<10}    {:<15}"
+        label_string = label_string.format("uid", "role", "name", "email")
         lb.insert(END, label_string)
         # get all the user ids
         ids = db.get_user_ids(conn)
