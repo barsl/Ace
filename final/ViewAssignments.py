@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, font,  Tk, Label, Button, Entry,\
-                    StringVar, DISABLED, NORMAL, END, W, E
+     StringVar, DISABLED, NORMAL, END, W, E
 from tkinter.messagebox import showinfo
 import database_api as db
 from assignments import *
@@ -35,23 +35,24 @@ class ViewAssignments(GUISkeleton):
                         "Number of Questions"]
         GUISkeleton.__init__(self, parent)
         # create the title label
-        self.mframe = ttk.Frame(self)
+      
         '''initiate the buttons on the screen'''
         new_frame = ttk.Frame(self)
         #back button
         self.create_label(new_frame, "Manage Assignments",
-                                      TITLE_FONT, "Red").pack(side="left", padx=40)	
+                          TITLE_FONT, "Red").pack(side="left", padx=40)	
         back_button = self.create_button(new_frame, "Back")
         back_button["command"] = lambda: controller.show_frame('HomeScreen')
         back_button.pack(side="right", padx=10)
         new_frame.grid(row=0, column=0, pady=20, sticky="E")
-        
-        
+
+
         # we will fill this in with the listbox after
         self.subject_box = None
         self.list_box = None
         # the functions to initialise the buttons and the widgets
         # the numbers are the row and the column to place the widgets in
+        self.mframe = ttk.Frame(self)
         self.create_frame(self.mframe, 1, 0)
         self.init_buttons(self.mframe, 2, 0)
         self.mframe.grid(row=1, column=0, columnspan=3)
@@ -66,7 +67,7 @@ class ViewAssignments(GUISkeleton):
             self.add_assign_to_lb(aid)
         # list that will hold all the frames of the widgets created 
         self.frames = []
-        
+
     def create_tab(self, num=4):
         '''returns a string that is equivalent to the tab character
         used for formatting purposes
@@ -78,7 +79,7 @@ class ViewAssignments(GUISkeleton):
             res += ' '
             i += 1
         return res
-    
+
     def subject_buttons_init(self, location, row, column):
         '''creates the buttons for the add subject box
         @param row-> The row to place the buttons in
@@ -98,7 +99,7 @@ class ViewAssignments(GUISkeleton):
             new_button.pack(side="left", anchor='center')
         frame.grid(row=row, column=column)
         self.frames.append(frame)
-    
+
     def add_subject_list(self, location, row, column, width=20, height=8):
         '''creates a listbox to display the subjects for adding an assignment
         the parameters adjust the dimensions of the frame
@@ -137,14 +138,14 @@ class ViewAssignments(GUISkeleton):
             title.grid(row=0, column=1)
             # create a new frame
             # this is the main frame that will house all the other frames
-            mframe = ttk.Frame(location)
+            new_frame = ttk.Frame(location)
             rw = 0
             col = 0
             for entry in self.entries:
                 # create a new label and place it in the frame
-                label = self.create_label(mframe, entry)
+                label = self.create_label(new_frame, entry)
                 # create a new entry
-                new_enterbox = self.create_entry(mframe, entry)
+                new_enterbox = self.create_entry(new_frame, entry)
                 if (entry == "Due Date" or entry == "Start Date"):
                     # set the default text in the entry box
                     new_enterbox.insert(0, "dd/mm/yyyy")
@@ -153,13 +154,13 @@ class ViewAssignments(GUISkeleton):
                 new_enterbox.grid(row=rw, column=col+1)
                 rw += 1 
             # create the add button that will be in the bottom of the grid
-            new_button = self.create_button(self.mframe, "Add Subject")
+            new_button = self.create_button(new_frame, "Add Subject")
             new_button["command"] = lambda : self.add_subject()
-            new_button.grid(row=2, column=1, sticky = "E", padx=10)
-            mframe.grid(row=row, column=column, padx=10)
-            self.frames.append(mframe)
+            new_button.grid(row=6, column=1, sticky = "E", padx=10)
+            new_frame.grid(row=row, column=column, padx=10)
+            self.frames.append(new_frame)
             self.add_pressed = True
-        
+
     def add_subject(self):
         '''the method that the add button calls to display the subjects
         in the box on the side'''
@@ -179,7 +180,7 @@ class ViewAssignments(GUISkeleton):
         if (subject != '' and question_num != ''):
             tab = self.create_tab()
             self.add_to_list(self.subject_box, subject + tab + question_num)
-            
+
     def done(self):
         '''the command that happens when the done button is pressed
         This will add the assignment to the database and remove
@@ -230,8 +231,8 @@ class ViewAssignments(GUISkeleton):
                 showinfo("Fail", "Could not add assignment")
         else:
             show_info("Failure", "Please fill out all the fields")
-            
-                
+
+
     def verify_fields(self):
         '''verifies the fields to make sure that there is valid input
         in the entry fields
@@ -248,8 +249,8 @@ class ViewAssignments(GUISkeleton):
                 entry_list[2] != "dd/mm/yyyy"):
                 result = True
         return result
-                
-            
+
+
     def add_assign_to_lb(self, aid):
         '''adds an assignment to the listbox to be able to be viewed
         @param aid-> the assignment id of the assignment to be added'''
@@ -268,7 +269,7 @@ class ViewAssignments(GUISkeleton):
         num = db.add_assignment(name, formula, start, deadline, visible, conn)
         # return id of new assignment
         return num
-        
+
     def table_functions(self, num, formula):
         '''
         create formula, update table, 
@@ -290,7 +291,7 @@ class ViewAssignments(GUISkeleton):
                 prob_ids.append(quest[0])   
             # create the user attempt entry
             db.add_attempt("a"+str(num), uid, prob_ids, "","","", conn)
-        
+
     def create_problem_set(self, formula):
         '''
         takes a formula "subj1:num1,subj2:num2..." , creates a unique set
@@ -312,9 +313,9 @@ class ViewAssignments(GUISkeleton):
             sample_rows = sample(rows, int(item[1]))
             # add subj sample rows to problem_set
             problem_set += sample_rows
-            
+
         return problem_set        
-    
+
     def delete_assignment(self):
         '''deletes a selected assignment from the database'''
         tab = self.create_tab()
@@ -328,8 +329,8 @@ class ViewAssignments(GUISkeleton):
             db.remove_assignment(assignment_string[0], conn)
             # remove assignment from the list
             lb.delete('anchor')
-        
-    
+
+
     def init_buttons(self,location, row, column):
         '''initialises the buttons in a loop'''
         # create a new frame
@@ -342,10 +343,12 @@ class ViewAssignments(GUISkeleton):
             # intialise the buttons
             if button == "Add New":
                 lb = self.list_box
-                new_button["command"] = (lambda :
-                                         self.add_assignment(self.mframe, 1, 1))
+                new_button["command"] = lambda : self.add_assignment(self.mframe,1, 1)
             elif button == "Delete":
                 new_button["command"] = lambda :self.delete_assignment()
+            elif button == "Back":
+                new_button["command"] = lambda : self.back()
+            new_button.pack(side='left')
             # increment the column number
             # col += 1
         frame.grid(row=row, column=column)
@@ -359,7 +362,7 @@ class ViewAssignments(GUISkeleton):
         self.add_pressed = False
         self.subj_pressed = False
         self.controller.show_frame("HomeScreen")        
-        
+
     def create_frame(self, location, row, column, width=50, height=8):
         '''method that creates the frame where the assignments are going
         to be listed
@@ -384,10 +387,8 @@ class ViewAssignments(GUISkeleton):
         list_box.pack(side="left", fill="both")
         new_frame.grid(row=row, column=column, pady=15)
 
-        
+
     def add_to_list(self, box, assignment):
         '''adds an assignment to the listbox, where the assignment is a string
         which represents the name of the assignment. e.g. Assignment 1'''
         box.insert(END, assignment)
-        
-

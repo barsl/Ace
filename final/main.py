@@ -274,7 +274,7 @@ if __name__ == "__main__":
         conn = db.sqlite3.connect('ace.db')
         app = AoS()
         style = ttk.Style()
-        style.theme_use('classic') # Any style other than aqua
+        #style.theme_use('classic') # Any style other than aqua
         style.configure('TFrame', background='#182F52')
         style.configure('TLabel' , background='#182F52', foreground='white')
         app.mainloop()
