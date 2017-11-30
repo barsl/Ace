@@ -118,14 +118,14 @@ class Leaderboard(GUISkeleton):
         
 
             # Append for graph
-            x_ax.append(str(i) + "\n" + str(user[0][2]))
+            x_ax.append(str(i) + "\n" + str(user[0][0]))
             y_ax.append(user[0][5])
             i+=1
 
         fig = Figure(figsize=(5,6), dpi=60)
         graph = fig.add_subplot(111)
         graph.set_title("Leaderboard Graph")
-        graph.set_xlabel("Rank with name")
+        graph.set_xlabel("Rank with UID")
         graph.set_ylabel("Grade in %")
         graph.plot(x_ax, y_ax)
 

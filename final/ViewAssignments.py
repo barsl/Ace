@@ -24,7 +24,7 @@ class ViewAssignments(GUISkeleton):
         self.controller = controller
         self.titles = []
         # name of the buttons for the first assignments box
-        self.buttons = ["Add New", "Delete", "Back"]
+        self.buttons = ["Add New", "Delete"]
         # the name of the buttons for the subject box if its created
         self.subject_buttons = ["Delete", "Done"]
         '''the names of the entry boxes these are stored as keys
@@ -95,7 +95,7 @@ class ViewAssignments(GUISkeleton):
                                          lb.delete('anchor'))
             elif button == "Done":
                 new_button["command"] = lambda : self.done()
-            new_button.pack(side="left")
+            new_button.pack(side="left", anchor='center')
         frame.grid(row=row, column=column)
         self.frames.append(frame)
     
@@ -346,9 +346,6 @@ class ViewAssignments(GUISkeleton):
                                          self.add_assignment(self.mframe, 1, 1))
             elif button == "Delete":
                 new_button["command"] = lambda :self.delete_assignment()
-            elif button == "Back":
-                new_button["command"] = lambda : self.back()
-            new_button.pack(side='left')
             # increment the column number
             # col += 1
         frame.grid(row=row, column=column)

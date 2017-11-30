@@ -24,7 +24,7 @@ import datetime # LEADERBOARD
 
 APP_HIGHLIGHT_FONT = ("Helvetica", 14, "bold")
 REGULAR_FONT = ("Helvetica", 12, "normal")
-TITLE_FONT = ("Helvetica", 14, "normal")
+TITLE_FONT = ("Helvetica", 16, "normal")
 NICE_BLUE = "#3399FF"
 HOME_FONT = ("Comic Sans", 26, "bold")
 
@@ -60,7 +60,7 @@ class Attempt(UserSkeleton):
         self.hints_left = 3
         back_button = self.create_button(self, "Back")
         back_button["command"] = lambda: self.refresh()
-        back_button.grid(row=0, column=3)
+        back_button.grid(row=0, column=5)
 
 
     def set_uid(self, uid, aid=None, atid=None):
@@ -74,7 +74,7 @@ class Attempt(UserSkeleton):
             # label at top of the frame
         title = self.create_label(self, "A"+str(aid)+" Attempt",
                                   TITLE_FONT,
-                                  "Red").grid(row=0, column=1, pady=10, columnspan=2)
+                                  "Red").grid(row=0, column=3, pady=10, columnspan=2)
 
          # get the existing progress for the user for the assignment
         self.existing_progress = db.get_assignment_progress_for_user(
@@ -128,9 +128,9 @@ class Attempt(UserSkeleton):
             self.hints_labels[qid] = hint_label
 
             # set everything nicely on the grid using an iterator i
-            answer_entry.grid(row=self.i+4, column=2)
-            hint_button.grid(row=self.i+4, column=3)
-            hint_label.grid(row=self.i+4, column=4)
+            answer_entry.grid(row=self.i+4, column=4)
+            hint_button.grid(row=self.i+4, column=5)
+            hint_label.grid(row=self.i+4, column=6)
 
             # set each label with the corresponding value from the problem object
             #question_label.config(text=db.get_problem_details(conn, qid)[0][2])
@@ -146,32 +146,32 @@ class Attempt(UserSkeleton):
 
             self.i += 1
 
-        title_hints.grid(row=1, column=2, pady=10)
+        title_hints.grid(row=1, column=4, pady=10)
         # create submit and save progress buttons
         self.update_progress_button = self.create_button(self, "Save")
         self.update_progress_button["command"] = lambda : self.update_progress()
-        self.update_progress_button.grid(row=0, column=4, padx=5)
+        self.update_progress_button.grid(row=0, column=5, padx=5)
 
         self.submit_button = self.create_button(self,"Submit")
         self.submit_button["command"] = lambda : self.submit_progress()
-        self.submit_button.grid(row=0, column=5, padx=5)
+        self.submit_button.grid(row=0, column=6, padx=5)
 
         self.pdf_button = self.create_button(self, "Convert to PDF")
         self.pdf_button["command"]= lambda : self.conv.addOnLatex()
-        self.pdf_button.grid(row=0, column=6, padx=5)
+        self.pdf_button.grid(row=0, column=7, padx=5)
 
     # NEW (latex feature) create the canvas with the latex problem
     def latex_row(self, txt=""):
         label = Label(self)
-        label.grid(row=self.i+4, column=0)
+        label.grid(row=self.i+4, column=3)
         self.texes.append(label)
 
         fig = matplotlib.figure.Figure(figsize=(4,2), dpi=50)
         ax = fig.add_subplot(111)
 
         canvas = FigureCanvasTkAgg(fig, master=label)
-        canvas.get_tk_widget().grid(row=self.i+4, column=0)
-        canvas._tkcanvas.grid(row=self.i+4, column=0)
+        canvas.get_tk_widget().grid(row=self.i+4, column=3)
+        canvas._tkcanvas.grid(row=self.i+4, column=3)
 
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
@@ -306,22 +306,27 @@ class Attempt(UserSkeleton):
             self.aid, self.uid, len(
                 db.get_user_attempts(self.aid, self.uid, conn)), now, conn)
 
-       # LEADERBOARD
+        # LEADERBOARD
         # Update user's time
         user_attempts = db.get_user_attempts(self.aid, self.uid, conn)
         assignment_start = db.get_assignment_details(self.aid, conn)[3]
-
+    
         # Update user's overall grade and time from recalculating all latest
         # submissions they made for all assignments
         ##num_of_assignments = len(db.get_assignments_ids(conn))
         all_assignments = db.get_assignments_ids(conn)
         user_total_grade = 0
         user_total_time = 0
-
+    
         i = 1
         for assignment in all_assignments:
+            ##print(db.get_latest_user_attempts(i, self.uid, conn)[1]) # Index problem with latest a#?
+            print("====================")
+            print("|||", db.get_latest_user_attempts(i, self.uid, conn)[0])
             assignment_start = db.get_assignment_details(i, conn)[3]
-
+            print("CONDITIONAL", db.get_latest_user_attempts(i, self.uid, conn)[0][5])
+            print("CONDITIONAL", type(db.get_latest_user_attempts(i, self.uid, conn)[0][5]))
+    
             # Ensure current user's attempt is not one that has 0 attempt.
             if (db.get_latest_user_attempts(i, self.uid, conn)[0][5] != '0'):
                 # Ensure data from latest submission is retrieved
@@ -329,14 +334,16 @@ class Attempt(UserSkeleton):
                     latest_id = 0
                 else:
                     latest_id = 1
+                print("LATEST ID", latest_id)
                 curr_aid_time = self.start_to_end_sec(assignment_start, db.get_latest_user_attempts(i, self.uid, conn)[latest_id][5])
+                print("CURR_AID_TIME:", curr_aid_time)
                 user_total_grade += int(db.get_latest_user_attempts(i, self.uid, conn)[latest_id][4])
                 user_total_time += int(curr_aid_time)
                 i+=1
-
+    
         average_grade = user_total_grade/len(all_assignments)
-
-        db.update_user_grade(self.uid, round(average_grade, 2), conn)
+    
+        db.update_user_grade(self.uid, average_grade, conn)
         db.update_user_time(self.uid, user_total_time, conn)
 
 
