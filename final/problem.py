@@ -59,15 +59,17 @@ class ProblemInterface(GUISkeleton):
      
         '''initiate the buttons on the screen'''
         new_frame = ttk.Frame(self)
+        self.problem_frame = ttk.Frame(self)
         #back button
         self.create_label(new_frame, "Problem Database Management",
                               TITLE_FONT, "Red").pack(side="left", padx=40)	
         back_button = self.create_button(new_frame, "Back")
         back_button["command"] = lambda: controller.show_frame('HomeScreen')
         back_button.pack(side="right", padx=10)
-        new_frame.grid(row=0, column=0, pady=20, sticky="E")
+        new_frame.place(relx=0.512, rely=0.15, anchor="center")
 
         self.init_window()
+        self.problem_frame.place(relx=0.5, rely=0.5, anchor="center")
         # generate all the dynamically generated widget rows
         #self.gen_rows()
         
@@ -76,8 +78,11 @@ class ProblemInterface(GUISkeleton):
        
     def init_window(self):
         '''intialises the GUI window'''
-        self.create_list_box("problems", 2, 1)
-        self.create_entries(2,0)
+        self.list_box_frame = ttk.Frame(self.problem_frame)
+        problem_box = self.create_list_box_loc(self.list_box_frame, "problems")
+        problem_box.grid(row=0, column=0)
+        self.list_box_frame.grid(row=0, column=1, sticky="NSEW")
+        self.create_entries(0, 0)
         self.problem_db_buttons()
         self.init_problems_in_lb()
         
@@ -85,50 +90,54 @@ class ProblemInterface(GUISkeleton):
     def create_entries(self, row, column):
         '''creates the entry boxes where the problem is going to add problems into'''
         # create a new_frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(self.problem_frame)
         # create an entry for each 
         # the 3 static lables that are always there
         i = 0
         for label in self.labels:
             new_label = self.create_label(frame, label, REGULAR_FONT,
                                           NICE_BLUE).grid(row=i, column=0,
-                                                          padx=10)
+                                                          pady=3, padx=10,
+                                                          sticky="wn")
             # create first row of entries for add_problem function
             # set everything nicely on the grid
             # create first row of entries for add_problem function
             # set everything nicely on the grid            
             new_entry = self.create_entry(frame, label,
-                                          REGULAR_FONT).grid(row=i, column=1, columnspan=3,sticky="NSEW")
+                                          REGULAR_FONT).grid(row=i, column=1,
+                                                             columnspan=3, pady=3,
+                                                             sticky="NSEW")
             i += 1
             # add the buttons to the frame
         new_frame = ttk.Frame(frame)
         add_button = self.create_button(new_frame, "Add")
         add_button["command"] = lambda : self.add_problem()
-        add_button.grid(row=0, column=0, sticky="NSEW")
+        add_button.grid(row=0, column=0, sticky="NSEW", padx=2)
         update_button = self.create_button(new_frame, "Update")
         update_button["command"] = lambda : self.up_problem()
-        update_button.grid(row=0, column=1, sticky="NSEW")
+        update_button.grid(row=0, column=1, sticky="NSEW", padx=2)
         random_button = self.create_button(new_frame, "Random")
         random_button["command"] = lambda : self.switch()
-        random_button.grid(row=0, column=2)
-        new_frame.grid(row=i, column=1)
+        random_button.grid(row=0, column=2, padx=2)
+        new_frame.grid(row=i, column=1, sticky="NSEW", pady=2)
         self.frame = frame
-        frame.grid(row=row, column=column, padx=10)        
+        frame.grid(row=row, column=column, padx=10, sticky="NSEW")        
 
             
     def problem_db_buttons(self):
         '''create the buttons to interact with the database'''
         # create a button
-        delete_button = self.create_button(self, "Delete")
+        delete_button = self.create_button(self.list_box_frame, "Delete")
         delete_button["command"] = lambda : self.del_problem()
-        delete_button.grid(row=3, column=1, stick="E")
+        delete_button.grid(row=1, column=0, sticky="NE", pady=5)
         
         
     def init_problems_in_lb(self):
         '''initialises the problems and puts them in the list box'''
         lb = self.list_box["problems"]
         # create a label_string
-        label_string = "qid    subject    question    answer   hint"
+        label_string = "{:<3}    {:<7}    {:<10}    {:<15}   {:<10}"
+        label_string = label_string.format("qid" ,"subject", "question", "answer", "hint")
         lb.insert(END, label_string)
         # get all the problem ids
         ids = db.get_problem_ids(conn)
@@ -238,33 +247,33 @@ class ProblemInterface(GUISkeleton):
         '''creates the interface for the create random questions'''
         labels = ["Subject", "Question", "Variables", "Ranges", "Hints"]
         # create the labels and entry boxes
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(self.problem_frame)
         i = 0
         for label in labels:
             # create label
             new_label = self.create_label(frame, label, REGULAR_FONT, NICE_BLUE)
-            new_label.grid(row=i, column=0)
+            new_label.grid(row=i, column=0, pady=2, padx=10, sticky="wn")
             # create entry
             new_entry = self.create_entry(frame, label)
-            new_entry.grid(row=i, column=1, padx=10, columnspan=2, sticky="NSEW")
+            new_entry.grid(row=i, column=1, pady=2, columnspan=3, sticky="NSEW")
             i += 1
         # separate label and entry, since we need to customize the width
         num_label = self.create_label(frame, "Num", REGULAR_FONT, NICE_BLUE)
         num_entry = self.create_entry(frame, "Num")
-        num_label.grid(row=i, column=0)
-        num_entry.grid(row=i, column=1, padx=10, columnspan=2, sticky="NSEW")
+        num_label.grid(row=i, column=0,padx=10, pady=2, sticky='wn')
+        num_entry.grid(row=i, column=1, pady=2, columnspan=3, sticky="NSEW")
         # create the buttons
         #put buttons in a frame
         new_frame = ttk.Frame(frame)
         add_button = self.create_button(new_frame, "Add")
         add_button["command"] = lambda : self.add_random()
-        add_button.grid(row=0, column=0, sticky="NSEW")
+        add_button.grid(row=0, column=0, sticky="NSEW", padx=2)
         switch_button = self.create_button(new_frame, "Basic")
         switch_button["command"] = lambda : self.switch()
-        switch_button.grid(row=0, column=1, sticky="NSEW")
-        new_frame.grid(row=i+1, column=1)
+        switch_button.grid(row=0, column=1, sticky="NSEW", padx=2)
+        new_frame.grid(row=i+1, column=1, sticky="NSEW")
         self.frame = frame
-        frame.grid(row=2, column=0)
+        frame.grid(row=0, column=0, padx=10, sticky="NSEW")
         
     def add_random(self):
         ''' creates a number of unique random questions
@@ -379,5 +388,5 @@ class ProblemInterface(GUISkeleton):
             self.create_randomized_ui()
             self.is_random = True
         else:
-            self.create_entries(2, 0)
+            self.create_entries(0, 0)
             self.is_random = False
