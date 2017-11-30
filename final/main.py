@@ -49,7 +49,7 @@ class AoS(tk.Tk):
                               "Attempt":Attempt,
                               "ViewPastAttempt":ViewPastAttempt,
                               "ViewAttempt":ViewAttempt,
-                        "ViewStudentGrades":ViewStudentGrades, "ViewAssignments": ViewAssignments, "Leaderboard":Leaderboard}.items():                        
+                              "ViewStudentGrades":ViewStudentGrades, "ViewAssignments": ViewAssignments, "Leaderboard":Leaderboard}.items():                        
                         new_frame = frame[1](self.container, self)
                         self.frames[frame[0]] = new_frame
                         new_frame.grid(row=0, column=1, sticky="nsew")
@@ -80,7 +80,7 @@ class LoginScreen(GUISkeleton):
                 self.add_pic_panel(img)
                 self.create_login_labels()
                 self.create_entry_fields(controller)
-        
+
         def add_pic_panel(self, pic):
                 img = ImageTk.PhotoImage(Image.open(pic))
                 label = Label(self, image=img, bg="blue")
@@ -156,7 +156,7 @@ class UserHome(GUISkeleton):
                 self.buttons = ["View Assignments", "Leaderboard", "Logout"]
                 self.init_window(controller)
                 self.cont = controller
-                
+
         def add_pic_panel(self, pic):
                 img = ImageTk.PhotoImage(Image.open(pic))
                 label = Label(self, image=img, bg="black")
@@ -173,7 +173,7 @@ class UserHome(GUISkeleton):
 
                         elif button == "Leaderboard": # LEADERBOARD
                                 new_button["command"] = (lambda : self.leaderboard_refresh(controller))    
-                                
+
                         elif (button == "Logout"):
                                 new_button["command"] = (lambda :
                                                          controller.show_frame("LoginScreen"))
@@ -195,13 +195,13 @@ class UserHome(GUISkeleton):
 
         def set_uid(self, uid, aid=None, atid=None):
                 self.uid = uid
-                
+
 
         def leaderboard_refresh(self, controller):
                 controller.show_frame('Leaderboard', self.uid)
                 controller.frames['Leaderboard'].refresh()
                 controller.frames['Leaderboard'].set_back("UserHome")
-                
+
 
 class HomeScreen(GUISkeleton):
         ''' Homescreen that appears after the user logs in
@@ -211,13 +211,13 @@ class HomeScreen(GUISkeleton):
                 self.buttons = ["Manage Users", "Manage Question Bank","View Assignments",
                                 "Student Grades", "Leaderboard", "Logout"]
                 self.init_window(controller)
-                       
+
         def add_pic_panel(self, pic):
                 img = ImageTk.PhotoImage(Image.open(pic))
                 label = Label(self, image=img, bg="black")
                 label.img = img # to keep the reference for the image.
                 label.pack(side="right", padx=80) 
-                
+
         def create_buttons(self, controller):
                 button_frame = ttk.Frame(self)
                 ''' creates logout button'''
@@ -235,14 +235,14 @@ class HomeScreen(GUISkeleton):
                         elif button == "Student Grades":
                                 new_button["command"] = (lambda: 
                                                          controller.show_frame("ViewStudentGrades", self.uid))
-                                
+
                         elif button == "Leaderboard": # LEADERBOARD
                                 new_button["command"] = (lambda : self.leaderboard_refresh(controller))                
-                    
+
                         elif button == "Logout":
                                 new_button["command"] = (lambda :
                                                          controller.show_frame('LoginScreen'))
-                                
+
                         new_button.grid(row=i, column=1, padx=10, pady=2, sticky="NSEW")
                         i+=1 
                 button_frame.pack()
@@ -257,24 +257,25 @@ class HomeScreen(GUISkeleton):
                 homescreen_label.pack()
                 self.create_empty_label(1)
                 self.create_buttons(controller)
-                
+
 
         def set_uid(self, uid, aid=None, atid=None):
                 # del4_separated
                 self.uid = uid
-        
+
 
         def leaderboard_refresh(self, controller):
                 controller.show_frame('Leaderboard')
                 controller.frames['Leaderboard'].refresh()
                 controller.frames['Leaderboard'].set_back("HomeScreen")        
-      
+
 
 if __name__ == "__main__":
-	conn = db.sqlite3.connect('ace.db')
-	app = AoS()
-	style = ttk.Style()
-	style.configure('TFrame', background='#182F52')
-	style.configure('TLabel' , background='#182F52', foreground='white')
-	app.mainloop()
+        conn = db.sqlite3.connect('ace.db')
+        app = AoS()
+        style = ttk.Style()
+        style.theme_use('classic') # Any style other than aqua
+        style.configure('TFrame', background='#182F52')
+        style.configure('TLabel' , background='#182F52', foreground='white')
+        app.mainloop()
 

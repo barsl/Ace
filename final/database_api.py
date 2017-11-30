@@ -474,7 +474,7 @@ def get_latest_user_attempts(table_name, uid, conn):
     cur.execute("SELECT * FROM " + 'a' + str(table_name) + " WHERE uid=" + str(uid) + " ORDER BY id DESC")
 
     rows = cur.fetchall()
-
+    print(rows[0][5])
     return rows
 
 def get_solution_set(problem_set ,conn):

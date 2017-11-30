@@ -32,7 +32,7 @@ class ViewUserAssignments(GUISkeleton):
         back_button = self.create_button(new_frame, "Back")
         back_button["command"] = lambda: controller.show_frame('UserHome', self.real_uid)
         back_button.pack(side="right", padx=10)
-        new_frame.grid(row=0, column=0, pady=20, sticky="E", columnspan=3)
+        new_frame.grid(row=0, column=3, pady=20, sticky="E", columnspan=3)
 
         # dictionaries to contain the widgets and associate widget to
         # correspondin assignment id
@@ -44,7 +44,7 @@ class ViewUserAssignments(GUISkeleton):
         self.new_attempts = {}
         self.cont = controller
 
-        i = 0
+        i = 2
         for label in self.labels:
             new_label = self.create_label(self, label, APP_HIGHLIGHT_FONT,
                                           NICE_BLUE).grid(row=2, column=i)
@@ -59,7 +59,7 @@ class ViewUserAssignments(GUISkeleton):
     def gen_rows(self):
         ids = db.get_assignments_ids(conn)
         # set iterator for grid rows
-        i = 0
+        i = 1
 
         # for each id create a row
         for aid in ids:

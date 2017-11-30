@@ -24,7 +24,7 @@ class ViewAssignments(GUISkeleton):
         self.controller = controller
         self.titles = []
         # name of the buttons for the first assignments box
-        self.buttons = ["Add New", "Delete", "Back"]
+        self.buttons = ["Add New", "Delete"]
         # the name of the buttons for the subject box if its created
         self.subject_buttons = ["Delete", "Done"]
         '''the names of the entry boxes these are stored as keys
@@ -57,6 +57,11 @@ class ViewAssignments(GUISkeleton):
         self.mframe.grid(row=1, column=0, columnspan=3)
         # add the assignments currently in the database to the list
         aids = db.get_assignments_ids(conn) # this returns a list
+        label_string = "{:>3}    {:>15}   {:>10}    {:>10}    {:>10}    {:>3}"
+        label_string = label_string.format("Aid", "Assignment Name",
+                                           "Formula", "Start Date",
+                                           "Deadline", "Visible")
+        self.add_to_list(self.list_box, label_string)        
         for aid in aids:
             self.add_assign_to_lb(aid)
         # list that will hold all the frames of the widgets created 
@@ -90,7 +95,7 @@ class ViewAssignments(GUISkeleton):
                                          lb.delete('anchor'))
             elif button == "Done":
                 new_button["command"] = lambda : self.done()
-            new_button.pack(side="left")
+            new_button.pack(side="left", anchor='center')
         frame.grid(row=row, column=column)
         self.frames.append(frame)
     
@@ -109,7 +114,8 @@ class ViewAssignments(GUISkeleton):
         scrollbar = ttk.Scrollbar(frame, orient='vertical')
         # create listbox widget
         listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set,
-                             width=width, height=height)
+                             width=width, height=height,
+                             font=MONOSPACE_FONT)
         #configure the scrollbar
         scrollbar.config(command=listbox.yview)
         scrollbar.pack(side="right", fill="y")
@@ -206,7 +212,7 @@ class ViewAssignments(GUISkeleton):
                                                 deadline, visible)
             self.table_functions(num, formula)
             # check to make sure that the assignment is in the db
-            aids = db.get_assignments_ids(conn)
+            aids = db.get_assignments_ids(conn)            
             if num in aids:
                 # add assignment to the listbox
                 self.add_assign_to_lb(num)
@@ -250,10 +256,8 @@ class ViewAssignments(GUISkeleton):
         # update the other listbox that displays assignments
         # get the info by AID
         assignment = db.get_assignment_details(aid, conn)
-        assign_string = ''
-        tab = self.create_tab()
-        for col in assignment:
-            assign_string += str(col) + tab
+        assign_string = "{:>3}    {:<15}   {:>10}    {:>10}    {:>10}    {:>3}"
+        assign_string = assign_string.format(*assignment)
         # add the assignment to the list box
         self.add_to_list(self.list_box, assign_string)
 
@@ -342,9 +346,6 @@ class ViewAssignments(GUISkeleton):
                                          self.add_assignment(self.mframe, 1, 1))
             elif button == "Delete":
                 new_button["command"] = lambda :self.delete_assignment()
-            elif button == "Back":
-                new_button["command"] = lambda : self.back()
-            new_button.pack(side='left')
             # increment the column number
             # col += 1
         frame.grid(row=row, column=column)
@@ -373,7 +374,8 @@ class ViewAssignments(GUISkeleton):
         # create a listbox widget
         list_box = tk.Listbox(new_frame,
                               yscrollcommand=scrollbar.set,
-                              width=width, height=height)
+                              width=width, height=height,
+                              font=MONOSPACE_FONT)
         #configure the scrollbar
         scrollbar.config(command=list_box.yview)
         scrollbar.pack(side="right", fill="y")

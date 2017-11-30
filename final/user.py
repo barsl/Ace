@@ -61,21 +61,23 @@ class UserInterface(GUISkeleton):
  
         '''initiate the buttons on the screen'''
         new_frame = ttk.Frame(self)
+        self.user_frame = ttk.Frame(self)
         #back button
         self.create_label(new_frame, "View Users",
                           TITLE_FONT, "Red").pack(side="left", padx=40)	
         back_button = self.create_button(new_frame, "Back")
         back_button["command"] = lambda: controller.show_frame('HomeScreen')
         back_button.pack(side="right", padx=10)
-        new_frame.grid(row=0, column=0, pady=20, sticky="E")
-
+        new_frame.place(relx=0.55, rely=0.145, anchor="center")
         self.init_window()
+        self.user_frame.place(relx=0.5, rely=0.5, anchor="center")
         
         
         
     def init_window(self):
         '''initialises the window of the screen'''
-        self.create_list_box("users", 2, 1)
+        new_lb = self.create_list_box_loc(self.user_frame, "users")
+        new_lb.grid(row=2,column=1)
         self.create_entries(2, 0)
         self.user_db_buttons()
         self.init_users_in_lb()
@@ -84,7 +86,7 @@ class UserInterface(GUISkeleton):
     def user_db_buttons(self):
         '''create the buttons to interact with the database'''
         # create a button
-        delete_button = self.create_button(self, "Delete")
+        delete_button = self.create_button(self.user_frame, "Delete")
         delete_button["command"] = lambda : self.del_user()
         delete_button.grid(row=3, column=1, stick="E")
         
@@ -93,7 +95,8 @@ class UserInterface(GUISkeleton):
         '''initialises the users and puts them in the list box'''
         lb = self.list_box["users"]
         # create a label_string
-        label_string = "uid    role    name    email"
+        label_string = "{:<3}    {:<7}    {:<10}    {:<15}"
+        label_string = label_string.format("uid", "role", "name", "email")
         lb.insert(END, label_string)
         # get all the user ids
         ids = db.get_user_ids(conn)
@@ -117,7 +120,7 @@ class UserInterface(GUISkeleton):
     def create_entries(self, row, column):
         '''creates the entry boxes where the user is going to add users into'''
         # create a new_frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(self.user_frame)
         # create an entry for each 
         # the 3 static lables that are always there
         i = 0
@@ -138,7 +141,7 @@ class UserInterface(GUISkeleton):
         update_button = self.create_button(frame, "Update")
         update_button["command"] = lambda : self.up_user()
         update_button.grid(row=i, column=2, sticky="NSEW")
-        frame.grid(row=row, column=column, padx=10)
+        frame.grid(row=row, column=column, padx=20, sticky="N")
              
     
     def del_user(self):
